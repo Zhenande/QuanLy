@@ -1,0 +1,106 @@
+<resources>
+    <string name="app_name">KhoaLuan_QuanLy</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!--=================================Main Activity===================================================-->
+    <string name="main_language">Ngôn ngữ</string>
+    <string name="main_sign_in">Đăng Nhập</string>
+    <string-array name="main_array_language">
+        <item>English</item>
+        <item>Tiếng Việt</item>
+    </string-array>
+    <string name="main_agree">Đồng ý</string>
+    <string name="main_disagree">Hủy</string>
+
+    <!--=================================Menu Drawer===================================================-->
+    <string name="action_language">Ngôn ngữ</string>
+    <string name="action_sign_in">Đăng Nhập</string>
+    <string name="action_sign_out">Đăng Xuất</string>
+
+    <!--=================================Nav Drawer===================================================-->
+    <string name="nav_restaurant">Nhà Hàng</string>
+    <string name="nav_income">Doanh Thu</string>
+    <string name="nav_account">Tài Khoản</string>
+
+    <!--=================================Restaurant Fragment==========================================-->
+    <string name="tableNumber">Bàn </string>
+
+
+    <!--=================================Bill Detail Activity=========================================-->
+    <string name="customerName">Tên khách hàng: </string>
+    <string name="timeBook">Thời gian: </string>
+    <string name="totalCost">Tổng tiền: </string>
+    <string name="checkOut">Thanh Toán</string>
+
+    <!--=================================Food On Bill List Item=========================================-->
+    <string name="fobFoodName">Tên món</string>
+    <string name="fobFoodPrice">Giá</string>
+    <string name="fobQuantity">Số lượng</string>
+    <string name="fobTotalPrice">Thành tiền</string>
+
+    <!--=================================Income Fragment================================================-->
+    <string name="income_reportTime">Báo cáo theo: </string>
+    <string name="income_startDate">Ngày bắt đầu: </string>
+    <string name="income_endDate">Ngày kết thúc: </string>
+    <string name="income_kindOfChart">Loại báo cáo : </string>
+    <string name="income_action">Báo cáo</string>
+    <string name="income_error_dateStart_after_dateEnd">Ngày bắt đầu không thể sau ngày kết thúc</string>
+    <string name="income_error_dateChoose_after_currentDate">Ngày chọn không thể sau ngày hiện tại</string>
+    <string-array name="income_spinner_reportTime">
+        <item>Năm</item>
+        <item>Quý</item>
+        <item>Tháng</item>
+        <item>Ngày</item>
+    </string-array>
+    <string-array name="income_spinner_kindOfChart">
+        <item>Doanh thu</item>
+        <item>Hóa đơn</item>
+        <item>Cả hai</item>
+    </string-array>
+
+    <!--=================================Employee List Item================================================-->
+    <string name="employee_Name">Tên nhân viên</string>
+    <string name="employee_Position">Chức vụ</string>
+    <string name="employee_Cook">Đầu bếp</string>
+    <string name="employee_Waiter">Phục vụ</string>
+    <string name="employee_Cashier">Thu ngân</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--=================================Add Account Activity================================================-->
+    <string name="add_account_EmployeeName">Họ và tên :</string>
+    <string name="add_account_EmployeeUsername">Tên tài khoản :</string>
+    <string name="add_account_EmployeePassword">Mật khẩu :</string>
+    <string name="add_account_EmployeeContactNumber">Số điện thoại :</string>
+    <string name="add_account_EmployeePosition">Chức vụ :</string>
+    <string-array name="add_account_spinner_Position">
+        <item>Đầu bếp</item>
+        <item>Phục vụ</item>
+        <item>Thu ngân</item>
+    </string-array>
+    <string name="add_account_button_create">Tạo</string>
+
+    <!--=================================Sign In Activity================================================-->
+    <string name="sign_in_faild_input">Email hoặc Password không đúng, vui lòng kiểm tra lại</string>
+    <string name="sign_in_required">Bắt buộc</string>
+
+    <!--=================================Loading Dialog================================================-->
+    <string name="loading_dialog_loading">Đang xử lý</string>
+
+    <!--===============================Employee Detail Activity=============================================-->
+    <string name="employee_detail_button_save">Lưu</string>
+    <string name="employee_detail_error_update">Cập nhật không thành công, vui lòng thử lại</string>
+    <string name="employee_detail_update_success">Cập nhật thành công</string>
+    <string name="employee_detail_delete_success">Xóa thành công</string>
+    <string name="employee_detail_content_delete">Bạn có muốn xóa nhân viên này không?</string>
+
+    <!--===============================Detail Menu=============================================-->
+    <string name="detail_menu_update">Cập nhật</string>
+    <string name="detail_menu_delete">Xóa</string>
+
+
+</resources>

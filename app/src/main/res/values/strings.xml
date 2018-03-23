@@ -1,0 +1,107 @@
+<resources>
+    <string name="app_name">Restaurant Management</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!--=================================Main Activity===================================================-->
+    <string name="main_language">Language</string>
+    <string name="main_sign_in">Sign In</string>
+    <string-array name="main_array_language">
+        <item>English</item>
+        <item>Tiếng Việt</item>
+    </string-array>
+    <string name="main_agree">OK</string>
+    <string name="main_disagree">Cancel</string>
+
+    <!--=================================Menu Drawer===================================================-->
+    <string name="action_language">Language</string>
+    <string name="action_sign_in">Sign In</string>
+    <string name="action_sign_out">Sign Out</string>
+
+    <!--=================================Nav Drawer===================================================-->
+    <string name="nav_restaurant">Restaurant</string>
+    <string name="nav_income">Revenue</string>
+    <string name="nav_account">Account</string>
+
+    <!--=================================Restaurant Fragment==========================================-->
+    <string name="tableNumber">Table </string>
+
+
+    <!--=================================Bill Detail Activity=========================================-->
+    <string name="customerName">Customer Name: </string>
+    <string name="timeBook">Time: </string>
+    <string name="totalCost">Total: </string>
+    <string name="checkOut">Check Out</string>
+
+    <!--=================================Food On Bill List Item=========================================-->
+    <string name="fobFoodName">Food Name</string>
+    <string name="fobFoodPrice">Price</string>
+    <string name="fobQuantity">Quantity</string>
+    <string name="fobTotalPrice">Amount</string>
+
+    <!--=================================Income Fragment================================================-->
+    <string name="income_reportTime">Báo cáo theo: </string>
+    <string name="income_startDate">Date Start: </string>
+    <string name="income_endDate">Date End: </string>
+    <string name="income_kindOfChart">Loại báo cáo : </string>
+    <string name="income_action">Báo cáo</string>
+    <string name="income_error_dateStart_after_dateEnd">Date start can not after date end</string>
+    <string name="income_error_dateChoose_after_currentDate">Can not choose date after the current date</string>
+    <string-array name="income_spinner_reportTime">
+        <item>Year</item>
+        <item>Quarter</item>
+        <item>Month</item>
+        <item>Day</item>
+    </string-array>
+    <string-array name="income_spinner_kindOfChart">
+        <item>Revenue</item>
+        <item>Order</item>
+        <item>Both</item>
+    </string-array>
+
+    <!--=================================Employee List Item================================================-->
+    <string name="employee_Name">Employee Name</string>
+    <string name="employee_Position">Position</string>
+    <string name="employee_Cook">Cook</string>
+    <string name="employee_Waiter">Waiter</string>
+    <string name="employee_Cashier">Cashier</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--=================================Add Account Activity================================================-->
+    <string name="add_account_EmployeeName">Name :</string>
+    <string name="add_account_EmployeeUsername">Username :</string>
+    <string name="add_account_EmployeePassword">Password :</string>
+    <string name="add_account_EmployeeContactNumber">Contact Number :</string>
+    <string name="add_account_EmployeePosition">Position :</string>
+    <string-array name="add_account_spinner_Position">
+        <item>Cook</item>
+        <item>Waiter</item>
+        <item>Cashier</item>
+    </string-array>
+    <string name="add_account_button_create">Create</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!--=================================Sign In Activity================================================-->
+    <string name="sign_in_faild_input">Email or Password is incorrect, please check again.</string>
+    <string name="sign_in_required">Required</string>
+
+    <!--=================================Loading Dialog================================================-->
+    <string name="loading_dialog_loading">Loading</string>
+
+    <!--===============================Employee Detail Activity=============================================-->
+    <string name="employee_detail_button_save">Save</string>
+    <string name="employee_detail_error_update">Update not success, please try again</string>
+    <string name="employee_detail_update_success">Update success</string>
+    <string name="employee_detail_delete_success">Delete success</string>
+    <string name="employee_detail_content_delete">Do you want to delete this employee?</string>
+
+    <!--===============================Detail Menu=============================================-->
+    <string name="detail_menu_update">Update</string>
+    <string name="detail_menu_delete">Delete</string>
+
+
+</resources>
