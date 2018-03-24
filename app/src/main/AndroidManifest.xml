@@ -27,7 +27,8 @@
         <activity android:name=".BillDetailActivity" />
         <activity android:name=".AddAccountActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".EmployeeDetailActivity"></activity>
+        <activity android:name=".EmployeeDetailActivity" />
+        <activity android:name=".FoodDetailActivity"></activity>
     </application>
 
 </manifest>

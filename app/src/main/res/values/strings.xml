@@ -104,5 +104,13 @@
     <string name="detail_menu_update">Update</string>
     <string name="detail_menu_delete">Delete</string>
 
+    <!--===============================Food Detail Activity=============================================-->
+    <string name="food_detail_text_image">Image</string>
+    <string name="food_detail_text_name">Name</string>
+    <string name="food_detail_text_price">Price</string>
+    <string name="food_detail_text_description">Description</string>
+    <string name="food_detail_text_type">Food Type</string>
+
+
 
 </resources>

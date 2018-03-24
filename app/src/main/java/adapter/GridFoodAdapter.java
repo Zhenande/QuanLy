@@ -1,6 +1,8 @@
 package adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -12,6 +14,7 @@ import com.birin.gridlistviewadapters.dataholders.CardDataHolder;
 import com.birin.gridlistviewadapters.utils.ChildViewsClickHandler;
 
 import constants.QuanLyConstants;
+import manhquan.khoaluan_quanly.FoodDetailActivity;
 import manhquan.khoaluan_quanly.R;
 import model.Food;
 
@@ -48,9 +51,9 @@ public class GridFoodAdapter extends ListGridAdapter<Food,FoodHolder>{
 
     @Override
     protected void onCardClicked(Food cardData) {
-        Toast.makeText(getContext(),
-                "Food click " + cardData.getFoodName(), Toast.LENGTH_LONG)
-                .show();
+        Intent i = new Intent(getContext(), FoodDetailActivity.class);
+        i.putExtra(QuanLyConstants.INTENT_FOOD_DETAIL_NAME,cardData.getFoodName());
+        getContext().startActivity(i);
     }
 
     @Override
@@ -61,9 +64,9 @@ public class GridFoodAdapter extends ListGridAdapter<Food,FoodHolder>{
     @Override
     protected void onChildViewClicked(View clickedChildView, Food cardData, int eventId) {
         if(eventId == QuanLyConstants.IMAGE_VIEW_CLICK_ID){
-            Toast.makeText(getContext(),
-                    "FoodImage click " + cardData.getFoodName(), Toast.LENGTH_LONG)
-                    .show();
+            Intent i = new Intent(getContext(), FoodDetailActivity.class);
+            i.putExtra(QuanLyConstants.INTENT_FOOD_DETAIL_NAME,cardData.getFoodName());
+            getContext().startActivity(i);
         }
     }
 }

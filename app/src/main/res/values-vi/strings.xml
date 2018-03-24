@@ -103,5 +103,12 @@
     <string name="detail_menu_update">Cập nhật</string>
     <string name="detail_menu_delete">Xóa</string>
 
+    <!--===============================Food Detail Activity=============================================-->
+    <string name="food_detail_text_image">Hình ảnh</string>
+    <string name="food_detail_text_name">Tên món:</string>
+    <string name="food_detail_text_price">Giá:</string>
+    <string name="food_detail_text_description">Mô tả chi tiết</string>
+    <string name="food_detail_text_type">Nhóm:</string>
+
 
 </resources>
