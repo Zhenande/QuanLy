@@ -7,14 +7,10 @@
     tools:context="manhquan.khoaluan_quanly.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-
     <FrameLayout
         android:id="@+id/main_app_framelayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
     </FrameLayout>
-
-
 
 </LinearLayout>

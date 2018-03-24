@@ -23,6 +23,7 @@
     <string name="nav_restaurant">Nhà Hàng</string>
     <string name="nav_income">Doanh Thu</string>
     <string name="nav_account">Tài Khoản</string>
+    <string name="nav_food">Thức Ăn</string>
 
     <!--=================================Restaurant Fragment==========================================-->
     <string name="tableNumber">Bàn </string>

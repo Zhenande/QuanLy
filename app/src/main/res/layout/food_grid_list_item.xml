@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/food_item_image"
+            android:src="@drawable/beefsteak"
+            android:paddingLeft="10dp"
+            android:scaleType="fitXY"
+            android:layout_width="150dp"
+            android:layout_height="150dp" />
+
+        <TextView
+            android:id="@+id/food_item_price"
+            android:layout_below="@+id/food_item_image"
+            android:background="#AAD3D3D3"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="-20dp"
+            android:textColor="@android:color/black"
+            android:gravity="center"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/food_item_name"
+        android:layout_marginStart="10dp"
+        android:textColor="@android:color/black"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

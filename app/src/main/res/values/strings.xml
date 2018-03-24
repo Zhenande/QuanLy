@@ -23,6 +23,7 @@
     <string name="nav_restaurant">Restaurant</string>
     <string name="nav_income">Revenue</string>
     <string name="nav_account">Account</string>
+    <string name="nav_food">Food</string>
 
     <!--=================================Restaurant Fragment==========================================-->
     <string name="tableNumber">Table </string>

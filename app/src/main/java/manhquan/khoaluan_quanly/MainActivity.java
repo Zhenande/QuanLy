@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.Locale;
 
 import fragment.EmployeeFragment;
+import fragment.FoodFragment;
 import fragment.IncomeFragment;
 import fragment.RestaurantFragment;
 
@@ -194,6 +195,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_account:
                 fragment = new EmployeeFragment();
+                break;
+            case R.id.nav_food:
+                fragment = new FoodFragment();
                 break;
             default:
                 fragment = new RestaurantFragment();

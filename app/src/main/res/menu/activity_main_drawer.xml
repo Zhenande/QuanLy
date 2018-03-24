@@ -17,6 +17,11 @@
             android:icon="@drawable/ic_account_box_black_24px"
             android:title="@string/nav_account" />
 
+        <item
+            android:id="@+id/nav_food"
+            android:icon="@drawable/ic_food"
+            android:title="@string/nav_food" />
+
     </group>
 
 </menu>
