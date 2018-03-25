@@ -3,6 +3,7 @@
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
     android:paddingLeft="10dp"
+    android:paddingTop="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="manhquan.khoaluan_quanly.FoodDetailActivity">
@@ -29,6 +30,20 @@
                 android:layout_marginStart="100dp"
                 android:layout_width="150dp"
                 android:layout_height="150dp" />
+
+            <Button
+                android:id="@+id/food_detail_gallary_pick"
+                android:layout_marginStart="50dp"
+                android:text="@string/food_detail_button_galary_pick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/food_detail_camera"
+                android:layout_marginStart="10dp"
+                android:text="@string/food_detail_button_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 
@@ -72,8 +87,6 @@
             android:id="@+id/food_detail_food_type"
             android:layout_width="250dp"
             android:layout_height="wrap_content" />
-
-
 
         <LinearLayout
             android:orientation="vertical"

@@ -109,6 +109,8 @@
     <string name="food_detail_text_price">Giá:</string>
     <string name="food_detail_text_description">Mô tả chi tiết</string>
     <string name="food_detail_text_type">Nhóm:</string>
+    <string name="food_detail_button_galary_pick">Bộ sưu tập</string>
+    <string name="food_detail_button_camera">Máy ảnh</string>
 
 
 </resources>

@@ -110,6 +110,8 @@
     <string name="food_detail_text_price">Price</string>
     <string name="food_detail_text_description">Description</string>
     <string name="food_detail_text_type">Food Type</string>
+    <string name="food_detail_button_galary_pick">Gallery</string>
+    <string name="food_detail_button_camera">Camera</string>
 
 
 

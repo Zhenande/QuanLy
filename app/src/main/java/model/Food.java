@@ -10,14 +10,17 @@ public class Food extends FoodAbstract {
 
     private String description;
     private String foodType;
-    private int imageResource;
+    private String imageResource;
 
 
-    public Food(String foodId, String foodName, int price, String description, int imageResource, String foodType) {
+    public Food(String foodId, String foodName, int price, String description, String imageResource, String foodType) {
         super(foodId, foodName, price);
         this.description = description;
         this.foodType = foodType;
         this.imageResource = imageResource;
+    }
+
+    public Food() {
     }
 
     public String getDescription() {
@@ -28,11 +31,11 @@ public class Food extends FoodAbstract {
         this.description = description;
     }
 
-    public int getImageResource() {
+    public String getImageResource() {
         return imageResource;
     }
 
-    public void setImageResource(int imageResource) {
+    public void setImageResource(String imageResource) {
         this.imageResource = imageResource;
     }
 

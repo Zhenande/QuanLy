@@ -16,6 +16,9 @@ public abstract class FoodAbstract {
         this.price = price;
     }
 
+    public FoodAbstract() {
+    }
+
     public String getFoodId() {
         return foodId;
     }

@@ -2,25 +2,30 @@ package adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.birin.gridlistviewadapters.Card;
 import com.birin.gridlistviewadapters.ListGridAdapter;
 import com.birin.gridlistviewadapters.dataholders.CardDataHolder;
 import com.birin.gridlistviewadapters.utils.ChildViewsClickHandler;
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+
+
 import constants.QuanLyConstants;
 import manhquan.khoaluan_quanly.FoodDetailActivity;
 import manhquan.khoaluan_quanly.R;
 import model.Food;
+import util.GlideApp;
 
-/**
- * Created by ABC on 3/23/2018.
- */
+
 
 public class GridFoodAdapter extends ListGridAdapter<Food,FoodHolder>{
 
@@ -44,7 +49,12 @@ public class GridFoodAdapter extends ListGridAdapter<Food,FoodHolder>{
     @Override
     protected void setCardView(CardDataHolder<Food> cardDataHolder, FoodHolder cardViewHolder) {
         Food food = cardDataHolder.getData();
-        cardViewHolder.foodImage.setImageResource(food.getImageResource());
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+        StorageReference imageRef = storageReference.child("images/" + food.getImageResource());
+        Log.i("ImageLink","images/" + food.getImageResource());
+        GlideApp.with(getContext())
+                .load(imageRef)
+                .into(cardViewHolder.foodImage);
         cardViewHolder.foodPrice.setText(food.getPrice()+"");
         cardViewHolder.foodName.setText(food.getFoodName());
     }
@@ -69,6 +79,7 @@ public class GridFoodAdapter extends ListGridAdapter<Food,FoodHolder>{
             getContext().startActivity(i);
         }
     }
+
 }
 
 class FoodHolder{
