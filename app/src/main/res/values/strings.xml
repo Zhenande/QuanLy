@@ -42,18 +42,20 @@
     <string name="fobTotalPrice">Amount</string>
 
     <!--=================================Income Fragment================================================-->
-    <string name="income_reportTime">Báo cáo theo: </string>
+    <string name="income_reportTime">Report Time: </string>
     <string name="income_startDate">Date Start: </string>
     <string name="income_endDate">Date End: </string>
-    <string name="income_kindOfChart">Loại báo cáo : </string>
-    <string name="income_action">Báo cáo</string>
+    <string name="income_kindOfChart">Chart Type: </string>
+    <string name="income_action">Report</string>
     <string name="income_error_dateStart_after_dateEnd">Date start can not after date end</string>
     <string name="income_error_dateChoose_after_currentDate">Can not choose date after the current date</string>
+    <string name="income_reportMonth">Month: </string>
+    <string name="income_reportQuarter">Quarter: </string>
+    <string name="income_reportYear">Year: </string>
     <string-array name="income_spinner_reportTime">
-        <item>Year</item>
-        <item>Quarter</item>
-        <item>Month</item>
         <item>Day</item>
+        <item>Month</item>
+        <item>Year</item>
     </string-array>
     <string-array name="income_spinner_kindOfChart">
         <item>Revenue</item>

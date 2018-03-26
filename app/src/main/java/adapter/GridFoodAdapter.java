@@ -51,7 +51,6 @@ public class GridFoodAdapter extends ListGridAdapter<Food,FoodHolder>{
         Food food = cardDataHolder.getData();
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef = storageReference.child("images/" + food.getImageResource());
-        Log.i("ImageLink","images/" + food.getImageResource());
         GlideApp.with(getContext())
                 .load(imageRef)
                 .into(cardViewHolder.foodImage);

@@ -49,11 +49,13 @@
     <string name="income_action">Báo cáo</string>
     <string name="income_error_dateStart_after_dateEnd">Ngày bắt đầu không thể sau ngày kết thúc</string>
     <string name="income_error_dateChoose_after_currentDate">Ngày chọn không thể sau ngày hiện tại</string>
+    <string name="income_reportMonth">Tháng: </string>
+    <string name="income_reportQuarter">Quý: </string>
+    <string name="income_reportYear">Năm: </string>
     <string-array name="income_spinner_reportTime">
-        <item>Năm</item>
-        <item>Quý</item>
-        <item>Tháng</item>
         <item>Ngày</item>
+        <item>Tháng</item>
+        <item>Năm</item>
     </string-array>
     <string-array name="income_spinner_kindOfChart">
         <item>Doanh thu</item>

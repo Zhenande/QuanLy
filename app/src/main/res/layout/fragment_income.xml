@@ -27,6 +27,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/linear_report_date"
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
@@ -54,6 +55,48 @@
                 android:id="@+id/income_button_endDate"
                 android:layout_weight="2"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_report_month"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/income_Month"
+                android:text="@string/income_reportMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/income_button_Month"
+                android:layout_marginStart="19dp"
+                android:layout_width="270dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_report_year"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/income_Year"
+                android:text="@string/income_reportYear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/income_button_Year"
+                android:layout_marginStart="33dp"
+                android:layout_width="270dp"
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
