@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setCheckedItem(R.id.nav_restaurant);
         navigationView.setNavigationItemSelectedListener(this);
 
         FragmentManager fragmentManager = getFragmentManager();
@@ -117,9 +118,11 @@ public class MainActivity extends AppCompatActivity
                 .show();
     }
 
-
-    // Not Done
-    // Does not know how to restart activity
+    /*Mục đích: Lựa chọn language cho chương trình
+    *
+    *
+    *
+    * */
     private void selectLanguage(){
         new MaterialDialog.Builder(this)
                 .title(getResources().getString(R.string.main_language))

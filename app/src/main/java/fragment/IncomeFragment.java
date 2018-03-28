@@ -65,6 +65,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_income, container, false);
+        view.setBackgroundColor(getResources().getColor(R.color.table_color));
 
         buttonStartDate = view.findViewById(R.id.income_button_startDate);
         buttonEndDate = view.findViewById(R.id.income_button_endDate);

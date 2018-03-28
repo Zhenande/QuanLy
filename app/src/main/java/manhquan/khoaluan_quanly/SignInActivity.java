@@ -93,33 +93,33 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         // [END sign_in_with_email]
     }
 
-    public Restaurant getRestaurant(){
-        restaurant = new Restaurant();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("restaurant")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                        String managerUID = mAuth.getUid();
-                        if(task.isSuccessful()){
-                            for(DocumentSnapshot document : task.getResult()){
-                                if(managerUID.equals(document.get("ManagerUID").toString())){
-                                    restaurant.setId(document.getId());
-                                    restaurant.setAddress(document.get("Address").toString());
-                                    restaurant.setCity(document.get("City").toString());
-                                    restaurant.setContact(document.get("Contact").toString());
-                                    restaurant.setDistrict(document.get("District").toString());
-                                    restaurant.setName(document.get("Name").toString());
-                                    restaurant.setTimeOpenClose(document.get("TimeOpenClose").toString());
-                                }
-                            }
-                        }
-                    }
-                });
-        return restaurant;
-    }
+//    public Restaurant getRestaurant(){
+//        restaurant = new Restaurant();
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        db.collection("restaurant")
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+//                        String managerUID = mAuth.getUid();
+//                        if(task.isSuccessful()){
+//                            for(DocumentSnapshot document : task.getResult()){
+//                                if(managerUID.equals(document.get("ManagerUID").toString())){
+//                                    restaurant.setId(document.getId());
+//                                    restaurant.setAddress(document.get("Address").toString());
+//                                    restaurant.setCity(document.get("City").toString());
+//                                    restaurant.setContact(document.get("Contact").toString());
+//                                    restaurant.setDistrict(document.get("District").toString());
+//                                    restaurant.setName(document.get("Name").toString());
+//                                    restaurant.setTimeOpenClose(document.get("TimeOpenClose").toString());
+//                                }
+//                            }
+//                        }
+//                    }
+//                });
+//        return restaurant;
+//    }
 
     private boolean validateForm() {
         boolean valid = true;
@@ -196,6 +196,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     public void showLoadingDialog(){
         dialogLoading = new MaterialDialog.Builder(this)
                 .customView(R.layout.loading_dialog,true)
+                .backgroundColor(getResources().getColor(R.color.primary_darker))
                 .show();
     }
 

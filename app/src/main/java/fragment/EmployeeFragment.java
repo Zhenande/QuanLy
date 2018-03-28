@@ -58,6 +58,7 @@ public class EmployeeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_employee, container, false);
+        view.setBackgroundColor(getResources().getColor(R.color.table_color));
 
         employeeListView = view.findViewById(R.id.employee_listview);
         buttonAdd = view.findViewById(R.id.employee_button_addAccount);
