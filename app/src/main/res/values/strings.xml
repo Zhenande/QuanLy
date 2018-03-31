@@ -21,6 +21,7 @@
 
     <!--=================================Nav Drawer===================================================-->
     <string name="nav_restaurant">Restaurant</string>
+    <string name="nav_bill">Bill</string>
     <string name="nav_income">Revenue</string>
     <string name="nav_account">Account</string>
     <string name="nav_food">Food</string>
@@ -114,7 +115,6 @@
     <string name="food_detail_text_type">Food Type</string>
     <string name="food_detail_button_galary_pick">Gallery</string>
     <string name="food_detail_button_camera">Camera</string>
-
 
 
 </resources>

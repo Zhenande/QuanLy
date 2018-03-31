@@ -16,6 +16,7 @@
             <TextView
                 android:id="@+id/income_ReportTime"
                 android:text="@string/income_reportTime"
+                android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -36,24 +37,28 @@
             <TextView
                 android:id="@+id/income_startDate"
                 android:text="@string/income_startDate"
+                android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <Button
                 android:id="@+id/income_button_startDate"
                 android:layout_weight="2"
+                android:textColor="@color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <TextView
                 android:id="@+id/income_endDate"
                 android:text="@string/income_endDate"
+                android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <Button
                 android:id="@+id/income_button_endDate"
                 android:layout_weight="2"
+                android:textColor="@color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -68,6 +73,7 @@
 
             <TextView
                 android:id="@+id/income_Month"
+                android:textColor="@color/black"
                 android:text="@string/income_reportMonth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -75,6 +81,7 @@
             <Button
                 android:id="@+id/income_button_Month"
                 android:layout_marginStart="19dp"
+                android:textColor="@color/white"
                 android:layout_width="270dp"
                 android:layout_height="wrap_content" />
 
@@ -89,6 +96,7 @@
 
             <TextView
                 android:id="@+id/income_Year"
+                android:textColor="@color/black"
                 android:text="@string/income_reportYear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -96,6 +104,7 @@
             <Button
                 android:id="@+id/income_button_Year"
                 android:layout_marginStart="33dp"
+                android:textColor="@color/white"
                 android:layout_width="270dp"
                 android:layout_height="wrap_content" />
 
@@ -109,6 +118,7 @@
 
             <TextView
                 android:id="@+id/income_kindOfChart"
+                android:textColor="@color/black"
                 android:text="@string/income_kindOfChart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -127,6 +137,7 @@
             <Button
                 android:id="@+id/income_button_Action"
                 android:text="@string/income_action"
+                android:textColor="@color/white"
                 android:layout_weight="0.5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

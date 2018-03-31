@@ -79,6 +79,17 @@ public class GridFoodAdapter extends ListGridAdapter<Food,FoodHolder>{
         }
     }
 
+    @Override
+    public int getCardSpacing() {
+        return (6 * super.getCardSpacing());
+    }
+
+    @Override
+    protected void setRowView(View rowView, int arg1) {
+        rowView.setBackgroundColor(getContext().getResources().getColor(
+                R.color.primary_dark));
+    }
+
 }
 
 class FoodHolder{

@@ -7,6 +7,7 @@
     <TextView
         android:id="@+id/employee_list_txtName"
         android:text="@string/employee_Name"
+        android:textColor="@color/black"
         android:layout_weight="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -15,6 +16,7 @@
         android:id="@+id/employee_list_txtPosition"
         android:text="@string/employee_Position"
         android:layout_marginRight="10dp"
+        android:textColor="@color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
