@@ -28,6 +28,8 @@
 
     <!--=================================Restaurant Fragment==========================================-->
     <string name="tableNumber">Table </string>
+    <string name="notification">Notification</string>
+    <string name="noti_content">This table %s is not available</string>
 
 
     <!--=================================Bill Detail Activity=========================================-->

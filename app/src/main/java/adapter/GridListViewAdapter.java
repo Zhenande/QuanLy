@@ -7,11 +7,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.birin.gridlistviewadapters.Card;
 import com.birin.gridlistviewadapters.ListGridAdapter;
 import com.birin.gridlistviewadapters.dataholders.CardDataHolder;
 import com.birin.gridlistviewadapters.utils.ChildViewsClickHandler;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import manhquan.khoaluan_quanly.BillDetailActivity;
 import manhquan.khoaluan_quanly.R;
@@ -23,10 +26,11 @@ import model.TableModel;
 
 public class GridListViewAdapter extends ListGridAdapter<TableModel, ViewHolder>{
 
-
+    private Context context;
 
     public GridListViewAdapter(Context context, int totalCardsInRow) {
         super(context, totalCardsInRow);
+        this.context = context;
     }
 
     @Override
@@ -34,9 +38,7 @@ public class GridListViewAdapter extends ListGridAdapter<TableModel, ViewHolder>
         View cardView = getLayoutInflater().inflate(R.layout.table_list_item,null);
         cardView.setMinimumHeight(cardwidth);
 
-        ViewHolder viewHolder = new ViewHolder();
-        viewHolder.imgTable = cardView.findViewById(R.id.table_list_image);
-        viewHolder.tableNumber = cardView.findViewById(R.id.table_list_number);
+        ViewHolder viewHolder = new ViewHolder(cardView);
 
         return new Card<>(cardView,viewHolder);
     }
@@ -54,9 +56,18 @@ public class GridListViewAdapter extends ListGridAdapter<TableModel, ViewHolder>
 
     @Override
     protected void onCardClicked(TableModel cardData) {
-        Intent i = new Intent(getContext(), BillDetailActivity.class);
-        i.putExtra("TableNumber", cardData.getTableNumber());
-        getContext().startActivity(i);
+        if(cardData.isAvailable()) {
+            Intent i = new Intent(getContext(), BillDetailActivity.class);
+            i.putExtra("TableNumber", cardData.getTableNumber());
+            getContext().startActivity(i);
+        }
+        else{
+            new MaterialDialog.Builder(context)
+                    .title(context.getResources().getString(R.string.notification))
+                    .content(context.getResources().getString(R.string.noti_content,cardData.getTableNumber()))
+                    .build()
+                    .show();
+        }
     }
 
     @Override
@@ -87,6 +98,10 @@ public class GridListViewAdapter extends ListGridAdapter<TableModel, ViewHolder>
 }
 
 class ViewHolder{
-    ImageView imgTable;
-    TextView tableNumber;
+    @BindView(R.id.table_list_image) ImageView imgTable;
+    @BindView(R.id.table_list_number) TextView tableNumber;
+
+    public ViewHolder(View view) {
+        ButterKnife.bind(this,view);
+    }
 }

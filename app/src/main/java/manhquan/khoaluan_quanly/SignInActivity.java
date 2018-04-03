@@ -23,19 +23,22 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import model.Restaurant;
 
 public class SignInActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "SignInActivity";
-    private EditText mEmailField;
-    private EditText mPasswordField;
+    @BindView(R.id.sign_in_editUsername)
+    public EditText mEmailField;
+    @BindView(R.id.sign_in_editPassword)
+    public EditText mPasswordField;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore mStore;
     private int position;
     private MaterialDialog dialogLoading;
-    private Restaurant restaurant;
 
     // [START on_start_check_user]
     @Override
@@ -53,8 +56,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        mEmailField = findViewById(R.id.sign_in_editUsername);
-        mPasswordField = findViewById(R.id.sign_in_editPassword);
+        ButterKnife.bind(this);
+
         Button buttonSignIn = findViewById(R.id.sign_in_button_action);
 
 

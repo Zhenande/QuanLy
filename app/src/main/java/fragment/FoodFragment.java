@@ -29,6 +29,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 
 import adapter.GridFoodAdapter;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import manhquan.khoaluan_quanly.FoodDetailActivity;
 import manhquan.khoaluan_quanly.R;
@@ -41,10 +43,12 @@ import model.Food;
 public class FoodFragment extends Fragment {
 
 
-    private ListView listView;
+    @BindView(R.id.list_view_food)
+    public ListView listView;
     private ArrayList<Food> listData = new ArrayList<>();
     private GridFoodAdapter listFoodAdapter;
-    private FloatingActionButton buttonCreate;
+    @BindView(R.id.food_button_add)
+    public FloatingActionButton buttonCreate;
     private FirebaseFirestore db;
     private static final String TAG = "FoodFragment";
 
@@ -59,8 +63,7 @@ public class FoodFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_food, container, false);
 
-        listView = view.findViewById(R.id.list_view_food);
-        buttonCreate = view.findViewById(R.id.food_button_add);
+        ButterKnife.bind(this,view);
         db = FirebaseFirestore.getInstance();
         renderData();
 

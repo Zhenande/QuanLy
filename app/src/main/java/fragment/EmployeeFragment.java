@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import abstractModel.Employee;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import adapter.EmployeeListViewAdapter;
 import manhquan.khoaluan_quanly.AddAccountActivity;
@@ -43,9 +45,11 @@ public class EmployeeFragment extends Fragment {
 
     private static final String TAG = "EmployeeFragment";
     public List<Employee> listData;
-    private ListView employeeListView;
+    @BindView(R.id.employee_listview)
+    public ListView employeeListView;
     private EmployeeListViewAdapter employeeAdapter;
-    private FloatingActionButton buttonAdd;
+    @BindView(R.id.employee_button_addAccount)
+    public FloatingActionButton buttonAdd;
     private ArrayList<String> listEmployeeID = new ArrayList<>();
 
 
@@ -60,8 +64,7 @@ public class EmployeeFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_employee, container, false);
         view.setBackgroundColor(getResources().getColor(R.color.table_color));
 
-        employeeListView = view.findViewById(R.id.employee_listview);
-        buttonAdd = view.findViewById(R.id.employee_button_addAccount);
+        ButterKnife.bind(view);
 
         listData = new ArrayList<>();
         GetDataFromServer();

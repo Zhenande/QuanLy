@@ -10,6 +10,8 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import adapter.GridListViewAdapter;
 import fcm.MyFirebaseMessagingService;
@@ -23,7 +25,8 @@ import model.TableModel;
 public class RestaurantFragment extends Fragment {
 
 
-    private ListView listView;
+    @BindView(R.id.list_view_table)
+    public ListView listView;
     private ArrayList<TableModel> listData;
     private GridListViewAdapter gridListAdapter;
     private MyFirebaseMessagingService messService;
@@ -41,7 +44,7 @@ public class RestaurantFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_restaurant, container, false);
 
-        listView = view.findViewById(R.id.list_view_table);
+        ButterKnife.bind(this,view);
         listData = generateRawData();
         gridListAdapter = new GridListViewAdapter(view.getContext(), QuanLyConstants.MAX_CARDS_LIST_TABLE);
         gridListAdapter.addItemsInGrid(listData);

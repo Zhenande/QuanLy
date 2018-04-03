@@ -43,6 +43,7 @@
     </LinearLayout>
 
     <ListView
+        android:background="@color/white"
         android:id="@+id/bill_detail_list_food"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></ListView>

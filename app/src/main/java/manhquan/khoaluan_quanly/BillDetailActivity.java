@@ -4,45 +4,40 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import constants.QuanLyConstants;
-import adapter.GridFoodOnBillAdapter;
+import adapter.ListFoodOnBillAdapter;
 import model.FoodOnBill;
 
 public class BillDetailActivity extends AppCompatActivity {
 
-    private TextView txtCustomerName;
-    private TextView txtTimeBook;
-    private TextView txtTotalCost;
-    private Button buttonCheckOut;
-    private ListView listFoodOnBill;
+    @BindView(R.id.bill_detail_button_check_out)
+    public Button buttonCheckOut;
+    @BindView(R.id.bill_detail_list_food)
+    public ListView listFoodOnBill;
     private ArrayList<FoodOnBill> listData;
-    private GridFoodOnBillAdapter gridFoodOnBillAdapter;
+    private ListFoodOnBillAdapter listFoodOnBillAdapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bill_detail);
+        ButterKnife.bind(this);
 
         String tableNumber = getIntent().getStringExtra("TableNumber");
         Toast.makeText(getApplicationContext(),"Hoa don cua ban " + tableNumber,Toast.LENGTH_SHORT).show();
 
-        txtCustomerName = findViewById(R.id.bill_detail_customerName);
-        txtTimeBook = findViewById(R.id.bill_detail_timeBook);
-        txtTotalCost = findViewById(R.id.bill_detail_totalCost);
-        buttonCheckOut = findViewById(R.id.bill_detail_button_check_out);
-        listFoodOnBill = findViewById(R.id.bill_detail_list_food);
 
         listData = GenerateRawData();
-        gridFoodOnBillAdapter = new GridFoodOnBillAdapter(this, QuanLyConstants.MAX_CARDS_LIST_FOOD_ON_BILL);
-        gridFoodOnBillAdapter.addItemsInGrid(listData);
+        listFoodOnBillAdapter = new ListFoodOnBillAdapter(this, listData);
+        listFoodOnBill.setAdapter(listFoodOnBillAdapter);
 
-        listFoodOnBill.setAdapter(gridFoodOnBillAdapter);
     }
 
     private ArrayList<FoodOnBill> GenerateRawData() {

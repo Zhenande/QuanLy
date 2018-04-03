@@ -41,6 +41,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import fcm.MyFirebaseMessagingService;
 import model.Food;
@@ -50,12 +52,19 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
 
     private String foodName;
     private boolean flag = false; // meaning on create
+    @BindView(R.id.food_detail_name)
     public EditText txtName;
+    @BindView(R.id.food_detail_price)
     public EditText txtPrice;
+    @BindView(R.id.food_detail_description)
     public EditText txtDescription;
+    @BindView(R.id.food_detail_food_type)
     public EditText txtType;
+    @BindView(R.id.food_detail_button_add)
     public Button buttonCreate;
+    @BindView(R.id.food_detail_gallary_pick)
     public Button buttonGallary;
+    @BindView(R.id.food_detail_camera)
     public Button buttonCamera;
     public ImageView imageFood;
     private Uri uri;
@@ -75,14 +84,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
 
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-        txtName = findViewById(R.id.food_detail_name);
-        txtPrice = findViewById(R.id.food_detail_price);
-        txtDescription = findViewById(R.id.food_detail_description);
-        txtType = findViewById(R.id.food_detail_food_type);
-        imageFood = findViewById(R.id.food_detail_image);
-        buttonCreate = findViewById(R.id.food_detail_button_add);
-        buttonGallary = findViewById(R.id.food_detail_gallary_pick);
-        buttonCamera = findViewById(R.id.food_detail_camera);
+        ButterKnife.bind(this);
 
         mStorage = FirebaseStorage.getInstance().getReference();
 

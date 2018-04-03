@@ -36,13 +36,17 @@ import manhquan.khoaluan_quanly.R;
  */
 public class IncomeFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener, DatePickerDialog.OnDateSetListener {
 
-    private Button buttonStartDate;
-    private Button buttonEndDate;
+    @BindView(R.id.income_button_startDate)
+    public Button buttonStartDate;
+    @BindView(R.id.income_button_endDate)
+    public Button buttonEndDate;
     private View view;
     private boolean flag = false;
-    private Spinner spinnerReportTime;
-    private Spinner spinnerKindOfChart;
-    private BarChart chart;
+    @BindView(R.id.income_spinner_ReportTime)
+    public Spinner spinnerReportTime;
+    @BindView(R.id.income_spinner_kindOfChart)
+    public Spinner spinnerKindOfChart;
+    public BarChart chart;
     @BindView(R.id.linear_report_date)
     LinearLayout dateLayout;
     @BindView(R.id.linear_report_month)
@@ -66,11 +70,6 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_income, container, false);
         view.setBackgroundColor(getResources().getColor(R.color.table_color));
-
-        buttonStartDate = view.findViewById(R.id.income_button_startDate);
-        buttonEndDate = view.findViewById(R.id.income_button_endDate);
-        spinnerReportTime = view.findViewById(R.id.income_spinner_ReportTime);
-        spinnerKindOfChart = view.findViewById(R.id.income_spinner_kindOfChart);
 
         dateSpinner = new SpinnerDatePickerDialogBuilder();
         ButterKnife.bind(this,view);

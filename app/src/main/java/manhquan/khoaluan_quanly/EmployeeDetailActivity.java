@@ -31,17 +31,25 @@ import com.google.firebase.firestore.SetOptions;
 import java.util.HashMap;
 import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import model.Restaurant;
 
 public class EmployeeDetailActivity extends AppCompatActivity {
 
-    private Spinner spinnerPosition;
-    private EditText txtName;
-    private EditText txtUsername;
-    private EditText txtPassword;
-    private EditText txtContactNumber;
+    @BindView(R.id.employee_detail_spinnerEmployeePosition)
+    public Spinner spinnerPosition;
+    @BindView(R.id.employee_detail_editEmployeeName)
+    public EditText txtName;
+    @BindView(R.id.employee_detail_editEmployeeUsername)
+    public EditText txtUsername;
+    @BindView(R.id.employee_detail_editEmployeePassword)
+    public EditText txtPassword;
+    @BindView(R.id.employee_detail_editEmployeeContactNumber)
+    public EditText txtContactNumber;
     private MaterialDialog dialogLoading;
-    private Button buttonUpdate;
+    @BindView(R.id.employee_detail_button_create)
+    public Button buttonUpdate;
     private String RestaurantID;
     private boolean flag = false;
     private String documentID;
@@ -52,12 +60,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employee_detail);
 
-        txtName = findViewById(R.id.employee_detail_editEmployeeName);
-        txtUsername = findViewById(R.id.employee_detail_editEmployeeUsername);
-        txtPassword = findViewById(R.id.employee_detail_editEmployeePassword);
-        txtContactNumber = findViewById(R.id.employee_detail_editEmployeeContactNumber);
-        spinnerPosition = findViewById(R.id.employee_detail_spinnerEmployeePosition);
-        buttonUpdate = findViewById(R.id.employee_detail_button_create);
+        ButterKnife.bind(this);
 
         spinnerPosition = findViewById(R.id.employee_detail_spinnerEmployeePosition);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(getApplicationContext(),R.array.add_account_spinner_Position

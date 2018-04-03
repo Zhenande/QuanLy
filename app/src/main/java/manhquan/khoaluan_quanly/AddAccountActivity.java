@@ -31,16 +31,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import model.Restaurant;
 
 public class AddAccountActivity extends AppCompatActivity {
 
     private static final String TAG = "AddAccountActivity";
-    private Spinner spinnerPosition;
-    private EditText txtName;
-    private EditText txtUsername;
-    private EditText txtPassword;
-    private EditText txtContactNumber;
+    @BindView(R.id.add_account_spinnerEmployeePosition)
+    public Spinner spinnerPosition;
+    @BindView(R.id.add_account_txtEmployeeName)
+    public EditText txtName;
+    @BindView(R.id.add_account_txtEmployeeUsername)
+    public EditText txtUsername;
+    @BindView(R.id.add_account_txtEmployeePassword)
+    public EditText txtPassword;
+    @BindView(R.id.add_account_txtEmployeeContactNumber)
+    public EditText txtContactNumber;
     private MaterialDialog dialogLoading;
     private boolean createOK = false;
 
@@ -51,11 +58,8 @@ public class AddAccountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_account);
+        ButterKnife.bind(this);
 
-        txtName = findViewById(R.id.add_account_editEmployeeName);
-        txtUsername = findViewById(R.id.add_account_editEmployeeUsername);
-        txtPassword = findViewById(R.id.add_account_editEmployeePassword);
-        txtContactNumber = findViewById(R.id.add_account_editEmployeeContactNumber);
         Button buttonCreate = findViewById(R.id.add_account_button_create);
 
         spinnerPosition = findViewById(R.id.add_account_spinnerEmployeePosition);

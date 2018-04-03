@@ -10,6 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import manhquan.khoaluan_quanly.R;
 import model.Bill;
 
@@ -28,8 +29,6 @@ public class BillListAdapter extends BaseAdapter {
         this.context = context;
         layoutInflater = LayoutInflater.from(context);
     }
-
-
 
     @Override
     public int getCount() {
@@ -51,12 +50,8 @@ public class BillListAdapter extends BaseAdapter {
         BillHolder holder;
 
         if(convertView == null){
-            convertView = layoutInflater.inflate(R.layout.bill_list_item,null);
-            holder = new BillHolder();
-            holder.txtBillNumber = convertView.findViewById(R.id.bill_list_bill_number);
-            holder.txtTime = convertView.findViewById(R.id.bill_list_time);
-            holder.txtCustomerName = convertView.findViewById(R.id.bill_list_customer_name);
-            holder.txtCost = convertView.findViewById(R.id.bill_list_cost);
+            convertView = layoutInflater.inflate(R.layout.food_on_bill_list_item,null);
+            holder = new BillHolder(convertView);
             convertView.setTag(holder);
         }
         else{
@@ -74,8 +69,12 @@ public class BillListAdapter extends BaseAdapter {
 }
 
 class BillHolder{
-    TextView txtBillNumber;
-    TextView txtTime;
-    TextView txtCustomerName;
-    TextView txtCost;
+    @BindView(R.id.bill_list_bill_number) TextView txtBillNumber;
+    @BindView(R.id.bill_list_time) TextView txtTime;
+    @BindView(R.id.bill_list_customer_name) TextView txtCustomerName;
+    @BindView(R.id.bill_list_cost) TextView txtCost;
+
+    public BillHolder(View view) {
+        ButterKnife.bind(this,view);
+    }
 }
