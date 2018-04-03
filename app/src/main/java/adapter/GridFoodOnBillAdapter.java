@@ -15,7 +15,7 @@ import manhquan.khoaluan_quanly.R;
 import model.FoodOnBill;
 
 /**
- * Created by ABC on 3/11/2018.
+ * Created by LieuDucManh on 3/11/2018.
  */
 
 public class GridFoodOnBillAdapter extends ListGridAdapter<FoodOnBill, FoodOnBillHolder> {

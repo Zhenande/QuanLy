@@ -87,7 +87,7 @@ public class GridFoodAdapter extends ListGridAdapter<Food,FoodHolder>{
     @Override
     protected void setRowView(View rowView, int arg1) {
         rowView.setBackgroundColor(getContext().getResources().getColor(
-                R.color.primary_dark));
+                R.color.white));
     }
 
 }

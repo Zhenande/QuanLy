@@ -115,5 +115,15 @@
     <string name="food_detail_button_galary_pick">Bộ sưu tập</string>
     <string name="food_detail_button_camera">Máy ảnh</string>
 
+    <!--===============================Bill Fragment=============================================-->
+    <string name="bill_fragment_date">Ngày: </string>
+    <string name="bill_fragment_id">Mã hóa đơn: </string>
+    <string name="bill_fragment_search">Tìm Kiếm</string>
+
+    <!--===============================Bill List Item=============================================-->
+    <string name="bill_list_id">Mã Hóa Đơn</string>
+    <string name="bill_list_time">Thời Gian</string>
+    <string name="bill_list_customer_name">Tên Khách Hàng</string>
+    <string name="bill_list_cost_total">Giá</string>
 
 </resources>

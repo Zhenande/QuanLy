@@ -1,7 +1,7 @@
 package constants;
 
 /**
- * Created by ABC on 3/11/2018.
+ * Created by LieuDucManh on 3/11/2018.
  */
 
 public class QuanLyConstants {
@@ -10,6 +10,9 @@ public class QuanLyConstants {
     public static final int CREATE_EMPLOYEE = 2;
     public static final int MAX_CARDS_LIST_TABLE = 3;
     public static final int DETAIL_EMPLOYEE = 4;
+    public static final int FOOD_DETAIL = 5;
     public static final String INTENT_FOOD_DETAIL_NAME = "FoodName";
+    public static final String INTENT_FOOD_DETAIL_FLAG = "FoodDetailFlag";
+    public static final String RESTAURANT_ID = "RestaurantID";
 
 }

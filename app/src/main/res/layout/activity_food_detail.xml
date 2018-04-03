@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
     android:paddingLeft="10dp"
     android:paddingTop="10dp"
     android:layout_width="match_parent"
@@ -20,6 +21,7 @@
 
             <TextView
                 android:text="@string/food_detail_text_image"
+                style="@style/TextBlack"
                 android:layout_width="wrap_content"
                 android:gravity="center_vertical"
                 android:layout_height="150dp" />
@@ -34,6 +36,7 @@
             <Button
                 android:id="@+id/food_detail_gallary_pick"
                 android:layout_marginStart="50dp"
+                style="@style/TextStyle"
                 android:text="@string/food_detail_button_galary_pick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -41,6 +44,7 @@
             <Button
                 android:id="@+id/food_detail_camera"
                 android:layout_marginStart="10dp"
+                style="@style/TextStyle"
                 android:text="@string/food_detail_button_camera"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -49,42 +53,50 @@
 
         <TextView
             android:text="@string/food_detail_text_name"
+            style="@style/TextBlack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <EditText
             android:id="@+id/food_detail_name"
+            android:theme="@style/FirebaseUI.TextInputEditText"
             android:layout_width="250dp"
             android:layout_height="wrap_content" />
 
         <TextView
             android:text="@string/food_detail_text_price"
+            style="@style/TextBlack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <EditText
             android:id="@+id/food_detail_price"
+            android:theme="@style/FirebaseUI.TextInputEditText"
             android:layout_width="250dp"
             android:layout_height="wrap_content" />
 
         <TextView
             android:text="@string/food_detail_text_description"
+            style="@style/TextBlack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <EditText
             android:id="@+id/food_detail_description"
             android:minLines="10"
+            android:theme="@style/FirebaseUI.TextInputEditText"
             android:layout_width="250dp"
             android:layout_height="wrap_content" />
 
         <TextView
             android:text="@string/food_detail_text_type"
+            style="@style/TextBlack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <EditText
             android:id="@+id/food_detail_food_type"
+            android:theme="@style/FirebaseUI.TextInputEditText"
             android:layout_width="250dp"
             android:layout_height="wrap_content" />
 
@@ -96,6 +108,7 @@
             <Button
                 android:id="@+id/food_detail_button_add"
                 android:text="@string/add_account_button_create"
+                style="@style/TextStyle"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

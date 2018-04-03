@@ -1,7 +1,7 @@
 package model;
 
 /**
- * Created by ABC on 3/21/2018.
+ * Created by LieuDucManh on 3/21/2018.
  */
 
 public class Restaurant {

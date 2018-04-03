@@ -42,6 +42,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import constants.QuanLyConstants;
+import fcm.MyFirebaseMessagingService;
 import model.Food;
 import util.GlideApp;
 
@@ -64,6 +65,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     private String foodID;
     private MaterialDialog dialogLoading;
     private String imageName;
+    private boolean createDone = false;
 
 
     @Override
@@ -137,6 +139,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                     updateButtonClick();
                 }
                 else{
+                    showLoadingDialog();
                     createButtonClick();
                 }
             }
@@ -168,6 +171,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                     public void onComplete(@NonNull Task<Void> task) {
                         closeLoadingDialog();
                         Toast.makeText(getApplicationContext(),"Update Success",Toast.LENGTH_SHORT).show();
+                        createDone = true;
                         onBackPressed();
                     }
                 });
@@ -200,6 +204,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                                     public void onSuccess(Void aVoid) {
                                         Toast.makeText(getApplicationContext(),"Delete Success",Toast.LENGTH_SHORT).show();
                                         closeLoadingDialog();
+                                        createDone = true;
                                         onBackPressed();
                                     }
                                 });
@@ -230,6 +235,11 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         if(id == R.id.action_delete){
             showLoadingDialog();
             deleteFood();
+            return true;
+        }
+        if(id == R.id.action_test){
+            MyFirebaseMessagingService messaging = new MyFirebaseMessagingService();
+            messaging.sendNotification("I don't know what to write - Test 1");
             return true;
         }
 
@@ -277,6 +287,9 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
                             Toast.makeText(getApplicationContext(), "Add Success", Toast.LENGTH_SHORT).show();
+                            closeLoadingDialog();
+                            createDone = true;
+                            onBackPressed();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -399,4 +412,13 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         buttonCreate.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void finish() {
+
+        Intent data = new Intent();
+        data.putExtra(QuanLyConstants.INTENT_FOOD_DETAIL_FLAG,createDone);
+
+        this.setResult(Activity.RESULT_OK, data);
+        super.finish();
+    }
 }

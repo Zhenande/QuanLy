@@ -1,7 +1,7 @@
 package abstractModel;
 
 /**
- * Created by ABC on 3/11/2018.
+ * Created by LieuDucManh on 3/11/2018.
  */
 
 public abstract class FoodAbstract {

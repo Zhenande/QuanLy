@@ -3,8 +3,11 @@ package manhquan.khoaluan_quanly;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -63,7 +66,15 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment = new RestaurantFragment();
         fragmentManager.beginTransaction().replace(R.id.main_app_framelayout,fragment).commit();
 
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            String channelId  = "test";
+            String channelName = "dontknow";
+            NotificationManager notificationManager =
+                    getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(new NotificationChannel(channelId,
+                    channelName, NotificationManager.IMPORTANCE_LOW));
+        }
     }
 
     @Override

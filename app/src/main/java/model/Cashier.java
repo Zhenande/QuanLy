@@ -3,7 +3,7 @@ package model;
 import abstractModel.Employee;
 
 /**
- * Created by ABC on 3/17/2018.
+ * Created by LieuDucManh on 3/17/2018.
  */
 
 public class Cashier extends Employee {

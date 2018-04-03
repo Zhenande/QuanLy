@@ -12,7 +12,7 @@ import com.google.firebase.storage.StorageReference;
 import java.io.InputStream;
 
 /**
- * Created by ABC on 3/25/2018.
+ * Created by LieuDucManh on 3/25/2018.
  */
 
 @GlideModule

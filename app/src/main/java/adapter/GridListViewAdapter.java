@@ -18,7 +18,7 @@ import manhquan.khoaluan_quanly.R;
 import model.TableModel;
 
 /**
- * Created by ABC on 3/11/2018.
+ * Created by LieuDucManh on 3/11/2018.
  */
 
 public class GridListViewAdapter extends ListGridAdapter<TableModel, ViewHolder>{

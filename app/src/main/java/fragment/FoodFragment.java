@@ -9,16 +9,21 @@ import android.os.Bundle;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -40,6 +45,9 @@ public class FoodFragment extends Fragment {
     private ArrayList<Food> listData = new ArrayList<>();
     private GridFoodAdapter listFoodAdapter;
     private FloatingActionButton buttonCreate;
+    private FirebaseFirestore db;
+    private static final String TAG = "FoodFragment";
+
 
     public FoodFragment() {
         // Required empty public constructor
@@ -53,26 +61,51 @@ public class FoodFragment extends Fragment {
 
         listView = view.findViewById(R.id.list_view_food);
         buttonCreate = view.findViewById(R.id.food_button_add);
-        generateRawData();
+        db = FirebaseFirestore.getInstance();
+        renderData();
 
         listFoodAdapter = new GridFoodAdapter(view.getContext(),3);
-
+        listFoodAdapter.addItemsInGrid(listData);
+        listView.setAdapter(listFoodAdapter);
+        listFoodAdapter.notifyDataSetChanged();
 
         buttonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity().getApplicationContext(), FoodDetailActivity.class);
-                startActivityForResult(i, QuanLyConstants.CREATE_EMPLOYEE);
+                startActivityForResult(i, QuanLyConstants.FOOD_DETAIL);
             }
         });
 
         return view;
     }
 
-    private void generateRawData() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private void onChangeListener(String docID) {
+
+        final DocumentReference docRef = db.collection("food").document(docID);
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
+                if(e!= null){
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+
+                String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
+                        ? "Local" : "Server";
+
+                if (snapshot != null && snapshot.exists()) {
+                    Log.d(TAG, source + " data: " + snapshot.getData());
+                } else {
+                    Log.d(TAG, source + " data: null");
+                }
+            }
+        });
+    }
+
+    private void renderData() {
         db.collection("food")
-                .whereEqualTo("RestaurantID",getRestaurantID())
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,getRestaurantID())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -86,6 +119,7 @@ public class FoodFragment extends Fragment {
                                 food.setFoodName(document.get("Name").toString());
                                 food.setPrice(Integer.parseInt(document.get("Price").toString()));
                                 listData.add(food);
+                                onChangeListener(document.getId());
                             }
                             listFoodAdapter.addItemsInGrid(listData);
                             listView.setAdapter(listFoodAdapter);
@@ -102,4 +136,13 @@ public class FoodFragment extends Fragment {
         return prefs.getString(langPref,"");
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == Activity.RESULT_OK && requestCode == QuanLyConstants.FOOD_DETAIL){
+            boolean flag = data.getBooleanExtra(QuanLyConstants.INTENT_FOOD_DETAIL_FLAG,false);
+            if(flag){
+                renderData();
+            }
+        }
+    }
 }

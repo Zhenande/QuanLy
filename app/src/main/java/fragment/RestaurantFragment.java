@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import constants.QuanLyConstants;
 import adapter.GridListViewAdapter;
+import fcm.MyFirebaseMessagingService;
 import manhquan.khoaluan_quanly.R;
 import model.TableModel;
 
@@ -25,6 +26,7 @@ public class RestaurantFragment extends Fragment {
     private ListView listView;
     private ArrayList<TableModel> listData;
     private GridListViewAdapter gridListAdapter;
+    private MyFirebaseMessagingService messService;
 
 
 
@@ -43,6 +45,8 @@ public class RestaurantFragment extends Fragment {
         listData = generateRawData();
         gridListAdapter = new GridListViewAdapter(view.getContext(), QuanLyConstants.MAX_CARDS_LIST_TABLE);
         gridListAdapter.addItemsInGrid(listData);
+        messService = new MyFirebaseMessagingService();
+
 
         listView.setAdapter(gridListAdapter);
 

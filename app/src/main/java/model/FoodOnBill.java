@@ -3,7 +3,7 @@ package model;
 import abstractModel.FoodAbstract;
 
 /**
- * Created by ABC on 3/11/2018.
+ * Created by LieuDucManh on 3/11/2018.
  */
 
 public class FoodOnBill extends FoodAbstract {
