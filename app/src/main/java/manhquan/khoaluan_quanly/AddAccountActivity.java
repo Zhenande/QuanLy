@@ -40,13 +40,13 @@ public class AddAccountActivity extends AppCompatActivity {
     private static final String TAG = "AddAccountActivity";
     @BindView(R.id.add_account_spinnerEmployeePosition)
     public Spinner spinnerPosition;
-    @BindView(R.id.add_account_txtEmployeeName)
+    @BindView(R.id.add_account_editEmployeeName)
     public EditText txtName;
-    @BindView(R.id.add_account_txtEmployeeUsername)
+    @BindView(R.id.add_account_editEmployeeUsername)
     public EditText txtUsername;
-    @BindView(R.id.add_account_txtEmployeePassword)
+    @BindView(R.id.add_account_editEmployeePassword)
     public EditText txtPassword;
-    @BindView(R.id.add_account_txtEmployeeContactNumber)
+    @BindView(R.id.add_account_editEmployeeContactNumber)
     public EditText txtContactNumber;
     private MaterialDialog dialogLoading;
     private boolean createOK = false;
@@ -82,7 +82,10 @@ public class AddAccountActivity extends AppCompatActivity {
     }
 
 
-    // Create account for new employee
+    /*
+    * @author: ManhLD
+    * @purpose: Create Authenticate for new employee
+    * */
     private void createAuthForEmployee() {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         final String currentEmail = mAuth.getCurrentUser().getEmail();
@@ -109,7 +112,11 @@ public class AddAccountActivity extends AppCompatActivity {
                 });
     }
 
-    // Sign in again for the manager
+    /*
+    * @author: ManhLD
+    * @purpose: When create an Authenticate for new employee, the manager has sign out
+    *           So this method will sign in again for the manager.
+    * */
     private void getBackToCurrentUser(final String currentEmail) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("employee")
@@ -150,7 +157,7 @@ public class AddAccountActivity extends AppCompatActivity {
         dialogLoading.dismiss();
     }
 
-    // Create employee information
+
     private void createEmployee(String restaurantID){
         switch (spinnerPosition.getSelectedItemPosition()){
             case 0 : createCook(restaurantID);
@@ -162,7 +169,10 @@ public class AddAccountActivity extends AppCompatActivity {
         }
     }
 
-    // Create cook
+    /*
+    * @author: ManhLD
+    * @purpose: Create cook employee.
+    * */
     private void createCook(String restaurantID){
         Map<String, Object > cook = new HashMap<>();
         cook.put("RestaurantID",restaurantID);
@@ -188,6 +198,10 @@ public class AddAccountActivity extends AppCompatActivity {
                 });
     }
 
+    /*
+    * @author: ManhLD
+    * @purpose: Create waiter employee.
+    * */
     private void createWaiter(String restaurantID){
         Map<String, Object > waiter = new HashMap<>();
         waiter.put("RestaurantID",restaurantID);
@@ -213,6 +227,10 @@ public class AddAccountActivity extends AppCompatActivity {
                 });
     }
 
+    /*
+    * @author: ManhLD
+    * @purpose: Create cashier employee.
+    * */
     private void createCashier(String restaurantID){
         Map<String, Object > cashier = new HashMap<>();
         cashier.put("RestaurantID",restaurantID);
@@ -238,7 +256,10 @@ public class AddAccountActivity extends AppCompatActivity {
                 });
     }
 
-    // Check the input form
+    /*
+    * @author: ManhLD
+    * @purpose: Check input form
+    * */
     private boolean validateForm() {
         boolean valid = true;
 

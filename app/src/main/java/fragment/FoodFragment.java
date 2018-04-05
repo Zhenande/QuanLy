@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -27,6 +26,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import adapter.GridFoodAdapter;
 import butterknife.BindView;
@@ -98,6 +99,15 @@ public class FoodFragment extends Fragment {
                         ? "Local" : "Server";
 
                 if (snapshot != null && snapshot.exists()) {
+                    Map<String, Object> food = snapshot.getData();
+                    String foodName = food.get(QuanLyConstants.FOOD_NAME).toString();
+                    for(int i = 0; i < listData.size();i++){
+                        if(listData.get(i).getFoodName().equals(foodName)){
+                            listData.get(i).setPrice(Integer.parseInt(food.get(QuanLyConstants.FOOD_PRICE).toString()));
+                            break;
+                        }
+                    }
+                    listFoodAdapter.notifyDataSetChanged();
                     Log.d(TAG, source + " data: " + snapshot.getData());
                 } else {
                     Log.d(TAG, source + " data: null");
@@ -106,7 +116,12 @@ public class FoodFragment extends Fragment {
         });
     }
 
+    /*
+    * @author: ManhLD
+    * @purpose: Get the collection of the food had in the restaurant.
+    * */
     private void renderData() {
+        listData.clear();
         db.collection("food")
                 .whereEqualTo(QuanLyConstants.RESTAURANT_ID,getRestaurantID())
                 .get()
@@ -116,11 +131,11 @@ public class FoodFragment extends Fragment {
                         if(task.isSuccessful()){
                             for(DocumentSnapshot document : task.getResult()){
                                 Food food = new Food();
-                                food.setDescription(document.get("Description").toString());
-                                food.setFoodType(document.get("Type").toString());
-                                food.setImageResource(document.get("ImageName").toString());
-                                food.setFoodName(document.get("Name").toString());
-                                food.setPrice(Integer.parseInt(document.get("Price").toString()));
+                                food.setDescription(document.get(QuanLyConstants.FOOD_DESCRIPTION).toString());
+                                food.setFoodType(document.get(QuanLyConstants.FOOD_TYPE).toString());
+                                food.setImageResource(document.get(QuanLyConstants.FOOD_IMAGE_NAME).toString());
+                                food.setFoodName(document.get(QuanLyConstants.FOOD_NAME).toString());
+                                food.setPrice(Integer.parseInt(document.get(QuanLyConstants.FOOD_PRICE).toString()));
                                 listData.add(food);
                                 onChangeListener(document.getId());
                             }
@@ -133,6 +148,10 @@ public class FoodFragment extends Fragment {
 
     }
 
+    /*
+    * @author: ManhLD
+    * @purpose: Get the restaurantID of the restaurant from SharedPreferences
+    * */
     public String getRestaurantID(){
         String langPref = "restaurantID";
         SharedPreferences prefs = getActivity().getSharedPreferences("CommonPrefs", Activity.MODE_PRIVATE);

@@ -28,7 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".BillDetailActivity" />
+        <activity android:name=".OrderDetailActivity" />
         <activity android:name=".AddAccountActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".EmployeeDetailActivity" />

@@ -2,18 +2,14 @@ package fragment;
 
 
 
-import android.app.Dialog;
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -130,7 +126,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         }
     }
 
-
+    /*
+    * @author: ManhLD
+    * @purpose: Check the date selected is correct or not.
+    * Both date can not be after the current day
+    * The day start must after the date end.
+    * */
     private boolean checkCorrectDate(Calendar dateChoosen){
         Calendar currentDate = Calendar.getInstance();
         if(currentDate.before(dateChoosen)){
@@ -163,6 +164,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         return true;
     }
 
+
+    /*
+    * @author: ManhLD
+    * @purpose: Check the Year selected is correct or not. The month selected can not after the current Year.
+    * */
     private boolean checkCorrectYear(int year) {
         Calendar cal = Calendar.getInstance();
         if(cal.get(Calendar.YEAR) < year){
@@ -172,6 +178,10 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         return true;
     }
 
+    /*
+    * @author: ManhLD
+    * @purpose: Check the Month selected is correct or not. The month selected can not after the current Month.
+    * */
     private boolean checkCorrectMonth(Calendar dateChoose) {
         Calendar dateCheck = Calendar.getInstance();
         dateCheck.get(Calendar.MONTH);
@@ -189,6 +199,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         return true;
     }
 
+    /*
+    * @author: ManhLD
+    * @purpose: Render the Date Start = The first day of the month (1/1/2018)
+    *           Render the Date End = The current day
+    * */
     private void initDateStartEnd(){
         Calendar currentDate = Calendar.getInstance();
         String dateStart = "";
@@ -204,6 +219,10 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         buttonEndDate.setText(dateEnd);
     }
 
+    /*
+    * @author: ManhLD
+    * @purpose: Render the current Month and Year to the Button
+    * */
     private void initMonth() {
         Calendar currentMonth = Calendar.getInstance();
         String curMonth = currentMonth.get(Calendar.MONTH)+1 + "/";
@@ -211,6 +230,10 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         buttonMonth.setText(curMonth);
     }
 
+    /*
+    * @author: ManhLD
+    * @purpose: Render the current Year to the Button
+    * */
     private void initYear() {
         Calendar currentMonth = Calendar.getInstance();
         String curYear = currentMonth.get(Calendar.YEAR) + "";
@@ -246,6 +269,14 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     }
 
 
+    /*
+    * @author: ManhLD
+    * @param: view
+    * @param: year
+    * @param: monthOfYear
+    * @param: dayOfMonth
+    * @purpose: Render date selected to the button
+    * */
     @Override
     public void onDateSet(com.tsongkha.spinnerdatepicker.DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         Calendar dateChoose = Calendar.getInstance();
@@ -255,19 +286,23 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         switch (spinnerReportTime.getSelectedItemPosition()){
             case 0: if(checkCorrectDate(dateChoose)) {
                 if (flag) {
-                    buttonStartDate.setText(dayOfMonth+"/"+(monthOfYear+1)+"/"+year);
+                    //buttonStartDate.setText(dayOfMonth+"/"+(monthOfYear+1)+"/"+year);
+                    buttonStartDate.setText(view.getContext().getResources().getString(R.string.full_date,new Object[]{dayOfMonth,monthOfYear+1,year}));
                 } else {
-                    buttonEndDate.setText(dayOfMonth+"/"+(monthOfYear+1)+"/"+year);
+                    //buttonEndDate.setText(dayOfMonth+"/"+(monthOfYear+1)+"/"+year);
+                    buttonEndDate.setText(view.getContext().getResources().getString(R.string.full_date,new Object[]{dayOfMonth,monthOfYear+1,year}));
                 }
             }
                 break;
             case 1: if(checkCorrectMonth(dateChoose)){
-                buttonMonth.setText((monthOfYear+1)+"/"+year);
-            }
+                //buttonMonth.setText((monthOfYear+1)+"/"+year);
+                buttonMonth.setText(view.getContext().getResources().getString(R.string.month_year_date,new Object[]{monthOfYear+1,year}));
+                }
                 break;
             case 2: if(checkCorrectYear(year)){
-                buttonYear.setText(year + "");
-            }
+                //buttonYear.setText(year + "");
+                buttonYear.setText(view.getContext().getResources().getString(R.string.year_date,new Object[]{year}));
+                }
                 break;
         }
     }

@@ -13,7 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -21,8 +20,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -33,7 +30,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import model.Restaurant;
+import constants.QuanLyConstants;
 
 public class EmployeeDetailActivity extends AppCompatActivity {
 
@@ -72,7 +69,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
         RestaurantID = getRestaurantID();
 
         showLoadingDialog();
-        documentID = getIntent().getStringExtra("documentID");
+        documentID = getIntent().getStringExtra(QuanLyConstants.INTENT_DOCUMENT_ID);
         renderUI(documentID);
 
         buttonUpdate.setOnClickListener(new View.OnClickListener() {
@@ -81,13 +78,13 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                 showLoadingDialog();
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 Map<String, Object > employee = new HashMap<>();
-                employee.put("RestaurantID",RestaurantID);
-                employee.put("Name",txtName.getText().toString().trim());
-                employee.put("Username",txtUsername.getText().toString().trim());
-                employee.put("Password",txtPassword.getText().toString().trim());
-                employee.put("ContactNumber",txtContactNumber.getText().toString().trim());
-                employee.put("Position",spinnerPosition.getSelectedItemPosition()+2);
-                db.collection("employee").document(documentID)
+                employee.put(QuanLyConstants.RESTAURANT_ID,RestaurantID);
+                employee.put(QuanLyConstants.EMPLOYEE_NAME,txtName.getText().toString().trim());
+                employee.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
+                employee.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
+                employee.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
+                employee.put(QuanLyConstants.EMPLOYEE_POSITION,spinnerPosition.getSelectedItemPosition()+2);
+                db.collection(QuanLyConstants.EMPLOYEE).document(documentID)
                         .set(employee, SetOptions.merge());
                 Toast.makeText(getApplicationContext(),getResources().getString(R.string.employee_detail_update_success)
                         ,Toast.LENGTH_SHORT).show();
@@ -135,7 +132,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("employee").document(documentID)
+                        db.collection(QuanLyConstants.EMPLOYEE).document(documentID)
                                 .delete()
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -153,7 +150,7 @@ public class EmployeeDetailActivity extends AppCompatActivity {
 
     public void renderUI(final String documentID){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("employee")
+        db.collection(QuanLyConstants.EMPLOYEE)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -161,11 +158,11 @@ public class EmployeeDetailActivity extends AppCompatActivity {
                         if(task.isSuccessful()){
                             for(DocumentSnapshot document : task.getResult()){
                                 if(document.getId().equals(documentID)){
-                                    txtName.setText(document.get("Name").toString());
-                                    txtUsername.setText(document.get("Username").toString());
-                                    txtPassword.setText(document.get("Password").toString());
-                                    txtContactNumber.setText(document.get("ContactNumber").toString());
-                                    spinnerPosition.setSelection(Integer.parseInt(document.get("Position").toString())-2);
+                                    txtName.setText(document.get(QuanLyConstants.EMPLOYEE_NAME).toString());
+                                    txtUsername.setText(document.get(QuanLyConstants.EMPLOYEE_USERNAME).toString());
+                                    txtPassword.setText(document.get(QuanLyConstants.EMPLOYEE_PASSWORD).toString());
+                                    txtContactNumber.setText(document.get(QuanLyConstants.EMPLOYEE_CONTACT).toString());
+                                    spinnerPosition.setSelection(Integer.parseInt(document.get(QuanLyConstants.EMPLOYEE_POSITION).toString())-2);
                                     closeEditText();
                                     closeLoadingDialog();
                                     flag = true;
@@ -186,6 +183,10 @@ public class EmployeeDetailActivity extends AppCompatActivity {
         dialogLoading.dismiss();
     }
 
+    /*
+    * @author: ManhLD
+    * @purpose: Open Edittext for the user update new information of the employee
+    * */
     private void openEditText(){
         txtName.setEnabled(true);
         txtUsername.setEnabled(true);
@@ -195,6 +196,10 @@ public class EmployeeDetailActivity extends AppCompatActivity {
         buttonUpdate.setVisibility(View.VISIBLE);
     }
 
+    /*
+    * @author: ManhLD
+    * @purpose: Close Edittext
+    * */
     private void closeEditText(){
         txtName.setEnabled(false);
         txtUsername.setEnabled(false);
@@ -205,15 +210,15 @@ public class EmployeeDetailActivity extends AppCompatActivity {
     }
 
     public String getRestaurantID(){
-        String langPref = "restaurantID";
-        SharedPreferences prefs = getSharedPreferences("CommonPrefs", Activity.MODE_PRIVATE);
+        String langPref = QuanLyConstants.RESTAURANT_ID;
+        SharedPreferences prefs = getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE, Activity.MODE_PRIVATE);
         return prefs.getString(langPref,"");
     }
 
     @Override
     public void finish() {
         Intent dataBack = new Intent();
-        dataBack.putExtra("flag",flag);
+        dataBack.putExtra(QuanLyConstants.FLAG,flag);
         this.setResult(Activity.RESULT_OK,dataBack);
         super.finish();
     }

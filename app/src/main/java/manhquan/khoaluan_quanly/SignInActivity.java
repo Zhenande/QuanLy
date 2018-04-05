@@ -25,6 +25,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import constants.QuanLyConstants;
 import model.Restaurant;
 
 public class SignInActivity extends AppCompatActivity implements View.OnClickListener {
@@ -96,33 +97,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         // [END sign_in_with_email]
     }
 
-//    public Restaurant getRestaurant(){
-//        restaurant = new Restaurant();
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        db.collection("restaurant")
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-//                        String managerUID = mAuth.getUid();
-//                        if(task.isSuccessful()){
-//                            for(DocumentSnapshot document : task.getResult()){
-//                                if(managerUID.equals(document.get("ManagerUID").toString())){
-//                                    restaurant.setId(document.getId());
-//                                    restaurant.setAddress(document.get("Address").toString());
-//                                    restaurant.setCity(document.get("City").toString());
-//                                    restaurant.setContact(document.get("Contact").toString());
-//                                    restaurant.setDistrict(document.get("District").toString());
-//                                    restaurant.setName(document.get("Name").toString());
-//                                    restaurant.setTimeOpenClose(document.get("TimeOpenClose").toString());
-//                                }
-//                            }
-//                        }
-//                    }
-//                });
-//        return restaurant;
-//    }
 
     private boolean validateForm() {
         boolean valid = true;
@@ -178,8 +152,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void saveRestaurantID(String restaurantID){
-        String restaurantPref = "restaurantID";
-        SharedPreferences sharedPreferences = getSharedPreferences("CommonPrefs", Activity.MODE_PRIVATE);
+        String restaurantPref = QuanLyConstants.RESTAURANT_ID;
+        SharedPreferences sharedPreferences = getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE, Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(restaurantPref, restaurantID);
         editor.apply();

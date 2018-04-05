@@ -6,7 +6,6 @@ package constants;
 
 public class QuanLyConstants {
     public static final int IMAGE_VIEW_CLICK_ID = 0;
-    public static final int MAX_CARDS_LIST_FOOD_ON_BILL = 1;
     public static final int CREATE_EMPLOYEE = 2;
     public static final int MAX_CARDS_LIST_TABLE = 3;
     public static final int DETAIL_EMPLOYEE = 4;
@@ -14,5 +13,37 @@ public class QuanLyConstants {
     public static final String INTENT_FOOD_DETAIL_NAME = "FoodName";
     public static final String INTENT_FOOD_DETAIL_FLAG = "FoodDetailFlag";
     public static final String RESTAURANT_ID = "RestaurantID";
+    public static final String ID = "ID";
+    public static final String INTENT_DOCUMENT_ID = "documentID";
+    public static final String FLAG = "flag";
+    public static final String SHARED_PERFERENCE = "CommonPrefs";
 
+
+    // Field of employee
+    public static final String EMPLOYEE = "employee";
+    public static final String EMPLOYEE_NAME = "Name";
+    public static final String EMPLOYEE_USERNAME = "Username";
+    public static final String EMPLOYEE_PASSWORD = "Password";
+    public static final String EMPLOYEE_CONTACT = "ContactNumber";
+    public static final String EMPLOYEE_POSITION = "Position";
+
+    // Field of food
+    public static final String FOOD = "food";
+    public static final String FOOD_NAME = "Name";
+    public static final String FOOD_IMAGE_NAME = "ImageName";
+    public static final String FOOD_PATH_IMAGE = "images/";
+    public static final String FOOD_PRICE = "Price";
+    public static final String FOOD_DESCRIPTION = "Description";
+    public static final String FOOD_TYPE = "Type";
+
+    // Field of Order
+    public static final String ORDER = "order";
+    public static final String ORDER_TABLE = "Table";
+    public static final String ORDER_CASH_TOTAL = "CashTotal";
+    public static final String ORDER_TIME = "Time";
+    public static final String CUSTOMER_ID = "CustomerID";
+
+    // Field of Customer
+    public static final String CUSTOMER = "customer";
+    public static final String CUS_NAME = "Name";
 }

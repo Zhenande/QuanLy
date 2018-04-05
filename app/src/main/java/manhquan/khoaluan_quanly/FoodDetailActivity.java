@@ -38,14 +38,12 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.text.Normalizer;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import fcm.MyFirebaseMessagingService;
-import model.Food;
 import util.GlideApp;
 
 public class FoodDetailActivity extends AppCompatActivity implements View.OnClickListener {
@@ -66,6 +64,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     public Button buttonGallary;
     @BindView(R.id.food_detail_camera)
     public Button buttonCamera;
+    @BindView(R.id.food_detail_image)
     public ImageView imageFood;
     private Uri uri;
     private StorageReference mStorage;
@@ -101,29 +100,33 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         buttonCreate.setOnClickListener(this);
     }
 
+    /*
+    * @author: ManhLD
+    * @purpose: Render the food selected by the user
+    * */
     private void GetFoodNeedUpdate() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("food")
-                .whereEqualTo("RestaurantID",getRestaurantID())
-                .whereEqualTo("Name",foodName)
+        db.collection(QuanLyConstants.FOOD)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,getRestaurantID())
+                .whereEqualTo(QuanLyConstants.FOOD_NAME,foodName)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             for(DocumentSnapshot document : task.getResult()){
-                                String imageResource = document.get("ImageName").toString();
+                                String imageResource = document.get(QuanLyConstants.FOOD_IMAGE_NAME).toString();
                                 StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-                                StorageReference imageRef = storageReference.child("images/" + imageResource);
+                                StorageReference imageRef = storageReference.child(QuanLyConstants.FOOD_PATH_IMAGE + imageResource);
                                 GlideApp.with(getApplicationContext())
                                         .load(imageRef)
                                         .into(imageFood);
-                                txtName.setText(document.get("Name").toString());
-                                txtPrice.setText(document.get("Price").toString());
-                                txtDescription.setText(document.get("Description").toString());
-                                txtType.setText(document.get("Type").toString());
+                                txtName.setText(document.get(QuanLyConstants.FOOD_NAME).toString());
+                                txtPrice.setText(document.get(QuanLyConstants.FOOD_PRICE).toString());
+                                txtDescription.setText(document.get(QuanLyConstants.FOOD_DESCRIPTION).toString());
+                                txtType.setText(document.get(QuanLyConstants.FOOD_TYPE).toString());
                                 foodID = document.getId();
-                                imageName = document.get("ImageName").toString();
+                                imageName = document.get(QuanLyConstants.FOOD_IMAGE_NAME).toString();
                             }
                             closeLoadingDialog();
                         }
@@ -160,13 +163,13 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     private void updateButtonClick() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Map<String, Object> food = new HashMap<>();
-        food.put("Name",txtName.getText().toString());
-        food.put("Price",txtPrice.getText().toString());
-        food.put("RestaurantID",getRestaurantID());
-        food.put("Description",txtDescription.getText().toString());
-        food.put("Type",txtType.getText().toString());
-        food.put("ImageName",imageName);
-        db.collection("food").document(foodID)
+        food.put(QuanLyConstants.FOOD_NAME,txtName.getText().toString());
+        food.put(QuanLyConstants.FOOD_PRICE,txtPrice.getText().toString());
+        food.put(QuanLyConstants.RESTAURANT_ID,getRestaurantID());
+        food.put(QuanLyConstants.FOOD_DESCRIPTION,txtDescription.getText().toString());
+        food.put(QuanLyConstants.FOOD_TYPE,txtType.getText().toString());
+        food.put(QuanLyConstants.FOOD_IMAGE_NAME,imageName);
+        db.collection(QuanLyConstants.FOOD).document(foodID)
                 .set(food, SetOptions.merge())
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -189,7 +192,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("food").document(foodID)
+                        db.collection(QuanLyConstants.FOOD).document(foodID)
                                 .delete()
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -253,13 +256,12 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
             // Upload image of food to storage -- Start
             String newPath = changeFileName(image.getPath());
             uri = Uri.fromFile(new File(newPath));
-            StorageReference imageRef = mStorage.child("images/" + uri.getLastPathSegment());
+            StorageReference imageRef = mStorage.child(QuanLyConstants.FOOD_PATH_IMAGE + uri.getLastPathSegment());
             UploadTask uploadTask = imageRef.putFile(uri);
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Uri downloadURL = taskSnapshot.getDownloadUrl();
-                    Log.i("DownloadURL", downloadURL.getPath());
+                    //Uri downloadURL = taskSnapshot.getDownloadUrl();
                 }
             });
             uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -276,14 +278,14 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
             String[] getImageName = newPath.split("/");
             String imageName = getImageName[getImageName.length-1];
             Map<String, Object> food = new HashMap<>();
-            food.put("Name",txtName.getText().toString());
-            food.put("Price",txtPrice.getText().toString());
-            food.put("RestaurantID",getRestaurantID());
-            food.put("Description",txtDescription.getText().toString());
-            food.put("Type",txtType.getText().toString());
-            food.put("ImageName",imageName);
+            food.put(QuanLyConstants.FOOD_NAME,txtName.getText().toString());
+            food.put(QuanLyConstants.FOOD_PRICE,txtPrice.getText().toString());
+            food.put(QuanLyConstants.RESTAURANT_ID,getRestaurantID());
+            food.put(QuanLyConstants.FOOD_DESCRIPTION,txtDescription.getText().toString());
+            food.put(QuanLyConstants.FOOD_TYPE,txtType.getText().toString());
+            food.put(QuanLyConstants.FOOD_IMAGE_NAME,imageName);
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("food")
+            db.collection(QuanLyConstants.FOOD)
                     .add(food)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
@@ -305,13 +307,16 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    // Check the input form
+    /*
+    * @author: ManhLD
+    * @purpose: Validate form input
+    * */
     private boolean validateForm() {
         boolean valid = true;
 
         String name = txtName.getText().toString();
         if (TextUtils.isEmpty(name)) {
-            txtName.setError("Required.");
+            txtName.setError(getResources().getString(R.string.required));
             valid = false;
         } else {
             txtName.setError(null);
@@ -319,7 +324,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
 
         String price = txtPrice.getText().toString();
         if (TextUtils.isEmpty(price)) {
-            txtPrice.setError("Required.");
+            txtPrice.setError(getResources().getString(R.string.required));
             valid = false;
         } else {
             txtPrice.setError(null);
@@ -327,7 +332,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
 
         String description = txtDescription.getText().toString();
         if (TextUtils.isEmpty(description)) {
-            txtDescription.setError("Required.");
+            txtDescription.setError(getResources().getString(R.string.required));
             valid = false;
         } else {
             txtDescription.setError(null);
@@ -335,7 +340,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
 
         String type = txtType.getText().toString();
         if (TextUtils.isEmpty(type)) {
-            txtType.setError("Required.");
+            txtType.setError(getResources().getString(R.string.required));
             valid = false;
         } else {
             txtType.setError(null);
@@ -353,28 +358,33 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         if(ImagePicker.shouldHandle(requestCode,resultCode,data)){
             image = ImagePicker.getFirstImageOrNull(data);
             uri = Uri.fromFile(new File(image.getPath()));
-            imageFood.setImageURI(uri);
+            if(uri!= null){
+                imageFood.setImageURI(uri);
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     public String getRestaurantID(){
-        String langPref = "restaurantID";
-        SharedPreferences prefs = getSharedPreferences("CommonPrefs", Activity.MODE_PRIVATE);
+        String langPref = QuanLyConstants.RESTAURANT_ID;
+        SharedPreferences prefs = getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE, Activity.MODE_PRIVATE);
         return prefs.getString(langPref,"");
     }
 
     public String changeFileName(String inputFilePath){
         StringBuilder result = new StringBuilder();
+        // Remove all the special character, include letter of vietnamese
         String foodName = Normalizer.normalize(txtName.getText().toString(), Normalizer.Form.NFD).replaceAll("[^a-zA-Z]", "");
         String[] oldPath = inputFilePath.split("/");
         for(int i = 0; i < oldPath.length; i++){
             if(i+1 == oldPath.length){
                 String[] getImageType = oldPath[i].split("\\.");
-                result.append(getRestaurantID() + "_" + foodName + "." +getImageType[getImageType.length-1]);
+                result.append(getRestaurantID())
+                        .append("_").append(foodName)
+                        .append(".").append(getImageType[getImageType.length - 1]);
             }
             else{
-                result.append(oldPath[i]+"/");
+                result.append(oldPath[i]).append("/");
             }
         }
         File oldFile = new File(image.getPath());
@@ -410,13 +420,12 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         txtDescription.setEnabled(true);
         txtPrice.setEnabled(true);
         txtName.setEnabled(true);
-        buttonCreate.setText("Update");
+        buttonCreate.setText(getResources().getString(R.string.detail_menu_update));
         buttonCreate.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void finish() {
-
         Intent data = new Intent();
         data.putExtra(QuanLyConstants.INTENT_FOOD_DETAIL_FLAG,createDone);
 

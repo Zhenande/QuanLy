@@ -16,7 +16,7 @@ import com.birin.gridlistviewadapters.utils.ChildViewsClickHandler;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
-import manhquan.khoaluan_quanly.BillDetailActivity;
+import manhquan.khoaluan_quanly.OrderDetailActivity;
 import manhquan.khoaluan_quanly.R;
 import model.TableModel;
 
@@ -57,7 +57,7 @@ public class GridListViewAdapter extends ListGridAdapter<TableModel, ViewHolder>
     @Override
     protected void onCardClicked(TableModel cardData) {
         if(cardData.isAvailable()) {
-            Intent i = new Intent(getContext(), BillDetailActivity.class);
+            Intent i = new Intent(getContext(), OrderDetailActivity.class);
             i.putExtra("TableNumber", cardData.getTableNumber());
             getContext().startActivity(i);
         }

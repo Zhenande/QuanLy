@@ -3,6 +3,7 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="required">Required.</string>
 
     <!--=================================Main Activity===================================================-->
     <string name="main_language">Language</string>
@@ -33,9 +34,10 @@
 
 
     <!--=================================Bill Detail Activity=========================================-->
-    <string name="customerName">Customer Name: </string>
-    <string name="timeBook">Time: </string>
-    <string name="totalCost">Total: </string>
+    <string name="customerName">Customer Name: %s</string>
+    <string name="timeBook">Time: %s</string>
+    <string name="table">Table: %s</string>
+    <string name="totalCost">Total: %s</string>
     <string name="checkOut">Check Out</string>
 
     <!--=================================Food On Bill List Item=========================================-->
@@ -55,6 +57,9 @@
     <string name="income_reportMonth">Month: </string>
     <string name="income_reportQuarter">Quarter: </string>
     <string name="income_reportYear">Year: </string>
+    <string name="full_date">%s/%s/%s</string>
+    <string name="month_year_date">%s/%s</string>
+    <string name="year_date">%s</string>
     <string-array name="income_spinner_reportTime">
         <item>Day</item>
         <item>Month</item>

@@ -4,6 +4,7 @@ package fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import android.support.annotation.NonNull;
@@ -45,12 +46,15 @@ public class EmployeeFragment extends Fragment {
 
     private static final String TAG = "EmployeeFragment";
     public List<Employee> listData;
+
     @BindView(R.id.employee_listview)
     public ListView employeeListView;
     private EmployeeListViewAdapter employeeAdapter;
+
     @BindView(R.id.employee_button_addAccount)
     public FloatingActionButton buttonAdd;
     private ArrayList<String> listEmployeeID = new ArrayList<>();
+    private View view;
 
 
     public EmployeeFragment() {
@@ -61,13 +65,13 @@ public class EmployeeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_employee, container, false);
+        view = inflater.inflate(R.layout.fragment_employee, container, false);
         view.setBackgroundColor(getResources().getColor(R.color.table_color));
 
-        ButterKnife.bind(view);
+        ButterKnife.bind(this,view);
 
         listData = new ArrayList<>();
-        GetDataFromServer();
+        renderData();
         employeeAdapter = new EmployeeListViewAdapter(view.getContext(),listData);
         employeeListView.setAdapter(employeeAdapter);
 
@@ -91,10 +95,16 @@ public class EmployeeFragment extends Fragment {
         return view;
     }
 
-    private void GetDataFromServer() {
+
+    /*
+    * @author: ManhLD
+    * @purpose: Get the collection of the employee work in the restaurant.
+    * */
+    private void renderData() {
         listData.clear();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("employee")
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID, getRestaurantID())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -134,9 +144,19 @@ public class EmployeeFragment extends Fragment {
             if (requestCode == QuanLyConstants.CREATE_EMPLOYEE || requestCode == QuanLyConstants.DETAIL_EMPLOYEE) {
                 boolean flag = data.getBooleanExtra("flag", false);
                 if (flag) {
-                    GetDataFromServer();
+                    renderData();
                 }
             }
         }
+    }
+
+    /*
+    * @author: ManhLD
+    * @purpose: Get the restaurantID of the restaurant from SharedPreferences
+    * */
+    public String getRestaurantID(){
+        String langPref = "restaurantID";
+        SharedPreferences prefs = view.getContext().getSharedPreferences("CommonPrefs", Activity.MODE_PRIVATE);
+        return prefs.getString(langPref,"");
     }
 }

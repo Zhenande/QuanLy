@@ -59,9 +59,9 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
         buttonSearch.setOnClickListener(BillFragment.this);
 
         Calendar cal = Calendar.getInstance();
-        buttonDate.setText(cal.get(Calendar.DAY_OF_MONTH) + "/"
-                        + cal.get(Calendar.MONTH)+1 + "/"
-                        + cal.get(Calendar.YEAR));
+        buttonDate.setText(view.getResources().getString(R.string.full_date,new Object[]{cal.get(Calendar.DAY_OF_MONTH),
+                                                            cal.get(Calendar.MONTH)+1,
+                                                            cal.get(Calendar.YEAR)}));
 
         return view;
     }
@@ -75,7 +75,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
             dateSpinner.context(view.getContext())
                     .callback(this)
                     .showTitle(true)
-                    .defaultDate(cal.get(Calendar.YEAR),cal.get(Calendar.MONTH),cal.get(Calendar.DAY_OF_MONTH))
+                    .defaultDate(cal.get(Calendar.YEAR),cal.get(Calendar.MONTH)+1,cal.get(Calendar.DAY_OF_MONTH))
                     .build().show();
 
         }
@@ -95,6 +95,12 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
         }
     }
 
+    /*
+    * @author: ManhLD
+    * @param: dateChoosen
+    * @purpose: Check the selected day by the user is correct.
+    * The day can be called correct is the day can not after today.
+    * */
     private boolean checkCorrectDate(Calendar dateChoosen){
         Calendar currentDate = Calendar.getInstance();
         if(currentDate.before(dateChoosen)){
