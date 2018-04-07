@@ -54,18 +54,13 @@
         
     </LinearLayout>
 
-    <ScrollView
-        android:layout_weight="1"
+
+    <ListView
+        android:id="@+id/bill_fragment_list_bill"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ListView
-            android:id="@+id/bill_fragment_list_bill"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    </ListView>
 
-        </ListView>
-
-    </ScrollView>
 
 </LinearLayout>

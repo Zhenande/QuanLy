@@ -14,35 +14,51 @@
     </string-array>
     <string name="main_agree">Đồng ý</string>
     <string name="main_disagree">Hủy</string>
+    <string name="manager">Quản Lý</string>
+    <string name="cook">Đầu Bếp</string>
+    <string name="waiter">Phục Vụ</string>
+    <string name="cashier">Thu Ngân</string>
+
+    <!--=================================Create Table Dialog==============================================-->
+    <string name="content_dialog_create_table">Nhập số bàn: </string>
+    <string name="table_create">Thêm</string>
+    <string name="table_delete">Xóa</string>
+    <string name="table_error_delete_too_much">Bạn không thể xóa %d bàn bởi vì bạn chỉ có %d bàn</string>
 
     <!--=================================Menu Drawer===================================================-->
-    <string name="action_language">Ngôn ngữ</string>
+    <string name="action_language">Ngôn Ngữ</string>
     <string name="action_sign_in">Đăng Nhập</string>
     <string name="action_sign_out">Đăng Xuất</string>
+    <string name="action_create_table">Thêm Bàn</string>
 
     <!--=================================Nav Drawer===================================================-->
     <string name="nav_restaurant">Nhà Hàng</string>
     <string name="nav_bill">Hóa Đơn</string>
     <string name="nav_income">Doanh Thu</string>
     <string name="nav_account">Tài Khoản</string>
-    <string name="nav_food">Thức Ăn</string>
+    <string name="nav_food">Món Ăn</string>
 
     <!--=================================Restaurant Fragment==========================================-->
     <string name="tableNumber">Bàn </string>
+    <string name="notification">Thông báo</string>
+    <string name="noti_content">Bàn %s không có khách ngồi</string>
 
 
-    <!--=================================Bill Detail Activity=========================================-->
+    <!--=================================Order Detail Activity=========================================-->
     <string name="customerName">Tên khách hàng: %s</string>
     <string name="timeBook">Thời gian: %s</string>
     <string name="table">Bàn: %s</string>
     <string name="totalCost">Tổng tiền: %s</string>
     <string name="checkOut">Thanh Toán</string>
+    <string name="dialogCheckOut">Bạn muốn thanh toán hóa đơn này?</string>
+    <string name="checkOutDone">Thanh toán thành công</string>
 
     <!--=================================Food On Bill List Item=========================================-->
     <string name="fobFoodName">Tên món</string>
     <string name="fobFoodPrice">Giá</string>
     <string name="fobQuantity">Số lượng</string>
     <string name="fobTotalPrice">Thành tiền</string>
+    <string name="fobTotal">Tổng</string>
 
     <!--=================================Income Fragment================================================-->
     <string name="income_reportTime">Báo cáo theo: </string>

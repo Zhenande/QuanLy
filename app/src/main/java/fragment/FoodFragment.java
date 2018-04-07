@@ -86,7 +86,7 @@ public class FoodFragment extends Fragment {
 
     private void onChangeListener(String docID) {
 
-        final DocumentReference docRef = db.collection("food").document(docID);
+        final DocumentReference docRef = db.collection(QuanLyConstants.FOOD).document(docID);
         docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
@@ -122,7 +122,7 @@ public class FoodFragment extends Fragment {
     * */
     private void renderData() {
         listData.clear();
-        db.collection("food")
+        db.collection(QuanLyConstants.FOOD)
                 .whereEqualTo(QuanLyConstants.RESTAURANT_ID,getRestaurantID())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -139,9 +139,8 @@ public class FoodFragment extends Fragment {
                                 listData.add(food);
                                 onChangeListener(document.getId());
                             }
+                            listFoodAdapter.clearList();
                             listFoodAdapter.addItemsInGrid(listData);
-                            listView.setAdapter(listFoodAdapter);
-                            listFoodAdapter.notifyDataSetChanged();
                         }
                     }
                 });
@@ -153,8 +152,8 @@ public class FoodFragment extends Fragment {
     * @purpose: Get the restaurantID of the restaurant from SharedPreferences
     * */
     public String getRestaurantID(){
-        String langPref = "restaurantID";
-        SharedPreferences prefs = getActivity().getSharedPreferences("CommonPrefs", Activity.MODE_PRIVATE);
+        String langPref = QuanLyConstants.RESTAURANT_ID;
+        SharedPreferences prefs = getActivity().getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE, Activity.MODE_PRIVATE);
         return prefs.getString(langPref,"");
     }
 

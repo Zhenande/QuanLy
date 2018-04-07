@@ -16,6 +16,9 @@ public class FoodOnBill extends FoodAbstract {
         this.quantity = quantity;
     }
 
+    public FoodOnBill() {
+    }
+
     public int getQuantity() {
         return quantity;
     }

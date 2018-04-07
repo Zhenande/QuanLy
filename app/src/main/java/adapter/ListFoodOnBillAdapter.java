@@ -21,6 +21,7 @@ import constants.QuanLyConstants;
 import manhquan.khoaluan_quanly.R;
 import model.Bill;
 import model.FoodOnBill;
+import util.MoneyFormatter;
 
 /**
  * Created by LieuDucManh on 3/11/2018.
@@ -67,9 +68,9 @@ public class ListFoodOnBillAdapter extends BaseAdapter {
 
         FoodOnBill foodOnBill = listData.get(position);
         holder.txtFoodName.setText(foodOnBill.getFoodName());
-        holder.txtPrice.setText(foodOnBill.getPrice() + "");
+        holder.txtPrice.setText(MoneyFormatter.formatToMoney(foodOnBill.getPrice()+""));
         holder.txtQuantity.setText(foodOnBill.getQuantity()+"");
-        holder.txtTotalPrice.setText(foodOnBill.getPrice()*foodOnBill.getQuantity() + "");
+        holder.txtTotalPrice.setText(MoneyFormatter.formatToMoney(foodOnBill.getPrice()*foodOnBill.getQuantity()+""));
 
         return convertView;
     }

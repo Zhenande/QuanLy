@@ -123,18 +123,20 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private void updateUI(FirebaseUser user) {
         final FirebaseUser finalUser = user;
         if (user != null) {
-            mStore.collection("employee")
+            mStore.collection(QuanLyConstants.EMPLOYEE)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if(task.isSuccessful()){
                                 for(DocumentSnapshot document : task.getResult()){
-                                    if(document.get("Username").toString().equals(finalUser.getEmail())){
-                                        position = Integer.parseInt(document.get("Position").toString());
+                                    if(document.get(QuanLyConstants.EMPLOYEE_USERNAME).toString().equals(finalUser.getEmail())){
+                                        position = Integer.parseInt(document.get(QuanLyConstants.EMPLOYEE_POSITION).toString());
+                                        String emName = document.get(QuanLyConstants.EMPLOYEE_NAME).toString();
                                         Intent i = new Intent(SignInActivity.this,MainActivity.class);
-                                        i.putExtra("position",position);
-                                        saveRestaurantID(document.get("RestaurantID").toString());
+                                        i.putExtra(QuanLyConstants.EMPLOYEE_POSITION,position);
+                                        i.putExtra(QuanLyConstants.EMPLOYEE_NAME,emName);
+                                        saveRestaurantID(document.get(QuanLyConstants.RESTAURANT_ID).toString());
                                         closeLoadingDialog();
                                         startActivity(i);
                                     }

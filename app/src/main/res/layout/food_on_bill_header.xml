@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
-    android:background="@color/white"
-    android:padding="0dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:background="@color/white_greyish"
+    android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/food_on_bill_list_food_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1.5"
@@ -20,7 +17,6 @@
 
 
     <TextView
-        android:id="@+id/food_on_bill_list_food_price"
         android:layout_weight="2.75"
         android:gravity="center"
         android:text="@string/fobFoodPrice"
@@ -32,7 +28,6 @@
 
 
     <TextView
-        android:id="@+id/food_on_bill_list_quantity"
         android:layout_weight="2.65"
         android:gravity="center"
         android:text="@string/fobQuantity"
@@ -44,12 +39,11 @@
 
 
     <TextView
-        android:id="@+id/food_on_bill_list_total_price"
         android:layout_weight="2.5"
         android:gravity="center"
-        android:text="@string/fobTotalPrice"
         style="@style/TextBlack"
         android:textSize="15sp"
+        android:text="@string/fobTotalPrice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

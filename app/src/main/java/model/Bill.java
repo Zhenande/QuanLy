@@ -8,13 +8,11 @@ public class Bill {
 
     private String id;
     private String time;
-    private String customerName;
     private String costTotal;
 
-    public Bill(String id, String time, String customerName, String costTotal) {
+    public Bill(String id, String time, String costTotal) {
         this.id = id;
         this.time = time;
-        this.customerName = customerName;
         this.costTotal = costTotal;
     }
 
@@ -35,14 +33,6 @@ public class Bill {
 
     public void setTime(String time) {
         this.time = time;
-    }
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
     }
 
     public String getCostTotal() {

@@ -46,7 +46,7 @@ public class GridListViewAdapter extends ListGridAdapter<TableModel, ViewHolder>
     @Override
     protected void setCardView(CardDataHolder<TableModel> cardDataHolder, ViewHolder cardViewHolder) {
         TableModel tModel = cardDataHolder.getData();
-        if(tModel.isAvailable()){
+        if(!tModel.isAvailable()){
             cardViewHolder.imgTable.setImageResource(R.drawable.ic_table_close);
         }else{
             cardViewHolder.imgTable.setImageResource(R.drawable.ic_table_open);
@@ -56,9 +56,9 @@ public class GridListViewAdapter extends ListGridAdapter<TableModel, ViewHolder>
 
     @Override
     protected void onCardClicked(TableModel cardData) {
-        if(cardData.isAvailable()) {
+        if(!cardData.isAvailable()) {
             Intent i = new Intent(getContext(), OrderDetailActivity.class);
-            i.putExtra("TableNumber", cardData.getTableNumber());
+            i.putExtra(QuanLyConstants.TABLE_NUMBER, cardData.getTableNumber());
             getContext().startActivity(i);
         }
         else{

@@ -155,8 +155,8 @@ public class EmployeeFragment extends Fragment {
     * @purpose: Get the restaurantID of the restaurant from SharedPreferences
     * */
     public String getRestaurantID(){
-        String langPref = "restaurantID";
-        SharedPreferences prefs = view.getContext().getSharedPreferences("CommonPrefs", Activity.MODE_PRIVATE);
+        String langPref = QuanLyConstants.RESTAURANT_ID;
+        SharedPreferences prefs = view.getContext().getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE, Activity.MODE_PRIVATE);
         return prefs.getString(langPref,"");
     }
 }

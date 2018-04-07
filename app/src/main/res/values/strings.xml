@@ -14,11 +14,22 @@
     </string-array>
     <string name="main_agree">OK</string>
     <string name="main_disagree">Cancel</string>
+    <string name="manager">Manager</string>
+    <string name="cook">Cook</string>
+    <string name="waiter">Waiter</string>
+    <string name="cashier">Cashier</string>
+
+    <!--=================================Create Table Dialog==============================================-->
+    <string name="content_dialog_create_table">Input number of table: </string>
+    <string name="table_create">Create</string>
+    <string name="table_delete">Delete</string>
+    <string name="table_error_delete_too_much">Can not delete %d table because you just have %d table</string>
 
     <!--=================================Menu Drawer===================================================-->
     <string name="action_language">Language</string>
     <string name="action_sign_in">Sign In</string>
     <string name="action_sign_out">Sign Out</string>
+    <string name="action_create_table">Create Table</string>
 
     <!--=================================Nav Drawer===================================================-->
     <string name="nav_restaurant">Restaurant</string>
@@ -30,21 +41,24 @@
     <!--=================================Restaurant Fragment==========================================-->
     <string name="tableNumber">Table </string>
     <string name="notification">Notification</string>
-    <string name="noti_content">This table %s is not available</string>
+    <string name="noti_content">The table %s is not available</string>
 
 
-    <!--=================================Bill Detail Activity=========================================-->
+    <!--=================================Order Detail Activity=========================================-->
     <string name="customerName">Customer Name: %s</string>
     <string name="timeBook">Time: %s</string>
     <string name="table">Table: %s</string>
     <string name="totalCost">Total: %s</string>
     <string name="checkOut">Check Out</string>
+    <string name="dialogCheckOut">Do you want to check out this order?</string>
+    <string name="checkOutDone">Check out complete</string>
 
     <!--=================================Food On Bill List Item=========================================-->
     <string name="fobFoodName">Food Name</string>
     <string name="fobFoodPrice">Price</string>
     <string name="fobQuantity">Quantity</string>
     <string name="fobTotalPrice">Amount</string>
+    <string name="fobTotal">Total</string>
 
     <!--=================================Income Fragment================================================-->
     <string name="income_reportTime">Report Time: </string>

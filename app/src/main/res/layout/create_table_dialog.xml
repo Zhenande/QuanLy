@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:padding="20dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        style="@style/TextBlack"
+        android:text="@string/content_dialog_create_table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/create_table_number"
+        style="@style/FirebaseUI.TextInputEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RadioGroup
+        android:id="@+id/create_table_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checkedButton="@+id/create_table_create_radio"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/create_table_create_radio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/FirebaseUI"
+            android:layout_weight="1"
+            android:text="@string/table_create" />
+
+        <RadioButton
+            android:id="@+id/create_table_delete_radio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/FirebaseUI"
+            android:layout_weight="1"
+            android:text="@string/table_delete" />
+
+    </RadioGroup>
+
+</LinearLayout>

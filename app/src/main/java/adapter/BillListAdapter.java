@@ -20,7 +20,7 @@ import model.Bill;
 
 public class BillListAdapter extends BaseAdapter {
 
-    private ArrayList<Bill> listBill = new ArrayList<>();
+    private ArrayList<Bill> listBill;
     private LayoutInflater layoutInflater;
     private Context context;
 
@@ -50,7 +50,7 @@ public class BillListAdapter extends BaseAdapter {
         BillHolder holder;
 
         if(convertView == null){
-            convertView = layoutInflater.inflate(R.layout.food_on_bill_list_item,null);
+            convertView = layoutInflater.inflate(R.layout.bill_list_item,null);
             holder = new BillHolder(convertView);
             convertView.setTag(holder);
         }
@@ -61,7 +61,6 @@ public class BillListAdapter extends BaseAdapter {
         Bill bill = listBill.get(position);
         holder.txtBillNumber.setText(bill.getId());
         holder.txtTime.setText(bill.getTime());
-        holder.txtCustomerName.setText(bill.getCustomerName());
         holder.txtCost.setText(bill.getCostTotal());
 
         return convertView;
@@ -71,7 +70,6 @@ public class BillListAdapter extends BaseAdapter {
 class BillHolder{
     @BindView(R.id.bill_list_bill_number) TextView txtBillNumber;
     @BindView(R.id.bill_list_time) TextView txtTime;
-    @BindView(R.id.bill_list_customer_name) TextView txtCustomerName;
     @BindView(R.id.bill_list_cost) TextView txtCost;
 
     public BillHolder(View view) {
