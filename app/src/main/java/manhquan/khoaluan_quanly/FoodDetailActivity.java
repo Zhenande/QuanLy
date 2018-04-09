@@ -95,7 +95,6 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
 
         foodName = getIntent().getStringExtra(QuanLyConstants.INTENT_FOOD_DETAIL_NAME);
         if(!TextUtils.isEmpty(foodName)){
-            showLoadingDialog();
             GetFoodNeedUpdate();
             closeEdit();
         }
@@ -130,6 +129,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     * @purpose: Render the food selected by the user
     * */
     private void GetFoodNeedUpdate() {
+        showLoadingDialog();
         db.collection(QuanLyConstants.FOOD)
                 .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
                 .whereEqualTo(QuanLyConstants.FOOD_NAME,foodName)

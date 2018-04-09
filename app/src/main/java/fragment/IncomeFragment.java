@@ -3,6 +3,7 @@ package fragment;
 
 
 import android.app.Fragment;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,6 +67,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_income, container, false);
         view.setBackgroundColor(getResources().getColor(R.color.table_color));
+
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         dateSpinner = new SpinnerDatePickerDialogBuilder();
         ButterKnife.bind(this,view);

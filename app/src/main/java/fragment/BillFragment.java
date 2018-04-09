@@ -4,6 +4,7 @@ package fragment;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import android.support.annotation.NonNull;
@@ -80,6 +81,9 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_bill, container, false);
+
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
         ButterKnife.bind(this,view);
         db = FirebaseFirestore.getInstance();
 

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import android.support.annotation.NonNull;
@@ -67,6 +68,8 @@ public class EmployeeFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_employee, container, false);
         view.setBackgroundColor(getResources().getColor(R.color.table_color));
+
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         ButterKnife.bind(this,view);
 
