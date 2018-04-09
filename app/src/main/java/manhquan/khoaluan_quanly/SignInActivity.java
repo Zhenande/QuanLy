@@ -149,7 +149,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         }
                     });
         } else {
-            Toast.makeText(getApplicationContext(),"....",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(),"....",Toast.LENGTH_SHORT).show();
         }
     }
 

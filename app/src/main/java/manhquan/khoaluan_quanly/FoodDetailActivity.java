@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -37,19 +39,18 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
-import fcm.MyFirebaseMessagingService;
 import util.GlideApp;
 
 public class FoodDetailActivity extends AppCompatActivity implements View.OnClickListener {
 
     private String foodName;
-    private boolean flag = false; // meaning on create
     @BindView(R.id.food_detail_name)
     public EditText txtName;
     @BindView(R.id.food_detail_price)
@@ -57,7 +58,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     @BindView(R.id.food_detail_description)
     public EditText txtDescription;
     @BindView(R.id.food_detail_food_type)
-    public EditText txtType;
+    public AutoCompleteTextView txtType;
     @BindView(R.id.food_detail_button_add)
     public Button buttonCreate;
     @BindView(R.id.food_detail_gallary_pick)
@@ -74,6 +75,9 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     private MaterialDialog dialogLoading;
     private String imageName;
     private boolean createDone = false;
+    private FirebaseFirestore db;
+    private String restaurantID;
+    private ArrayList<String> listFoodType = new ArrayList<>();
 
 
     @Override
@@ -82,14 +86,15 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_food_detail);
 
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
+        db = FirebaseFirestore.getInstance();
+        restaurantID = getRestaurantID();
         ButterKnife.bind(this);
+        GetListFoodType();
 
         mStorage = FirebaseStorage.getInstance().getReference();
 
         foodName = getIntent().getStringExtra(QuanLyConstants.INTENT_FOOD_DETAIL_NAME);
         if(!TextUtils.isEmpty(foodName)){
-            flag = true; // meaning we are on updated
             showLoadingDialog();
             GetFoodNeedUpdate();
             closeEdit();
@@ -100,14 +105,33 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         buttonCreate.setOnClickListener(this);
     }
 
+    private void GetListFoodType() {
+        db.collection(QuanLyConstants.RESTAURANT)
+                .document(restaurantID)
+                .collection(QuanLyConstants.RESTAURANT_FOOD_TYPE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for(DocumentSnapshot document : task.getResult()){
+                                listFoodType.add(document.get(QuanLyConstants.FOOD_TYPE_NAME).toString());
+                            }
+                            ArrayAdapter<String> adapter = new ArrayAdapter<>(FoodDetailActivity.this,
+                                    android.R.layout.simple_dropdown_item_1line,listFoodType);
+                            txtType.setAdapter(adapter);
+                        }
+                    }
+                });
+    }
+
     /*
     * @author: ManhLD
     * @purpose: Render the food selected by the user
     * */
     private void GetFoodNeedUpdate() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(QuanLyConstants.FOOD)
-                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,getRestaurantID())
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
                 .whereEqualTo(QuanLyConstants.FOOD_NAME,foodName)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -139,7 +163,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         int viewID = v.getId();
         if(viewID == R.id.food_detail_button_add){
             if(validateForm()){
-                if(buttonCreate.getText().toString().equals("Update")){
+                if(buttonCreate.getText().toString().equals(getResources().getString(R.string.detail_menu_update))){
                     showLoadingDialog();
                     updateButtonClick();
                 }
@@ -151,6 +175,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         }
         else if(viewID == R.id.food_detail_gallary_pick){
             ImagePicker.create(this)
+                    .folderMode(true)
                     .single()
                     .start();
 
@@ -165,7 +190,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         Map<String, Object> food = new HashMap<>();
         food.put(QuanLyConstants.FOOD_NAME,txtName.getText().toString());
         food.put(QuanLyConstants.FOOD_PRICE,txtPrice.getText().toString());
-        food.put(QuanLyConstants.RESTAURANT_ID,getRestaurantID());
+        food.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
         food.put(QuanLyConstants.FOOD_DESCRIPTION,txtDescription.getText().toString());
         food.put(QuanLyConstants.FOOD_TYPE,txtType.getText().toString());
         food.put(QuanLyConstants.FOOD_IMAGE_NAME,imageName);
@@ -177,37 +202,37 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                         closeLoadingDialog();
                         Toast.makeText(getApplicationContext(),"Update Success",Toast.LENGTH_SHORT).show();
                         createDone = true;
-                        onBackPressed();
                     }
                 });
+        CheckIsNewFoodType();
     }
 
+    /*
+    * @author: ManhLD
+    * Delete food when click on menu
+    * */
     private void deleteFood(){
+        showLoadingDialog();
         new MaterialDialog.Builder(this)
                 .title(getResources().getString(R.string.detail_menu_delete))
-                .content(getResources().getString(R.string.employee_detail_content_delete))
+                .content(getResources().getString(R.string.food_detail_content_delete))
                 .positiveText(getResources().getString(R.string.main_agree))
                 .negativeText(getResources().getString(R.string.main_disagree))
+                .positiveColor(getResources().getColor(R.color.primary_dark))
+                .negativeColor(getResources().getColor(R.color.black))
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
                         db.collection(QuanLyConstants.FOOD).document(foodID)
-                                .delete()
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.employee_detail_delete_success)
-                                                ,Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                .delete();
                         StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-                        StorageReference imageRef = mStorage.child("images/" + imageName);
+                        StorageReference imageRef = mStorage.child(QuanLyConstants.FOOD_PATH_IMAGE + imageName);
                         imageRef.delete()
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Toast.makeText(getApplicationContext(),"Delete Success",Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.employee_detail_delete_success),Toast.LENGTH_SHORT).show();
                                         closeLoadingDialog();
                                         createDone = true;
                                         onBackPressed();
@@ -215,6 +240,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                                 });
                     }
                 })
+                .canceledOnTouchOutside(false)
                 .show();
     }
 
@@ -238,13 +264,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
             return true;
         }
         if(id == R.id.action_delete){
-            showLoadingDialog();
             deleteFood();
-            return true;
-        }
-        if(id == R.id.action_test){
-            MyFirebaseMessagingService messaging = new MyFirebaseMessagingService();
-            messaging.sendNotification("I don't know what to write - Test 1");
             return true;
         }
 
@@ -280,11 +300,10 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
             Map<String, Object> food = new HashMap<>();
             food.put(QuanLyConstants.FOOD_NAME,txtName.getText().toString());
             food.put(QuanLyConstants.FOOD_PRICE,txtPrice.getText().toString());
-            food.put(QuanLyConstants.RESTAURANT_ID,getRestaurantID());
+            food.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
             food.put(QuanLyConstants.FOOD_DESCRIPTION,txtDescription.getText().toString());
-            food.put(QuanLyConstants.FOOD_TYPE,txtType.getText().toString());
+            food.put(QuanLyConstants.FOOD_TYPE,txtType.getText().toString().toLowerCase());
             food.put(QuanLyConstants.FOOD_IMAGE_NAME,imageName);
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection(QuanLyConstants.FOOD)
                     .add(food)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -304,7 +323,27 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
             // ------------------------------------- End of create a document food
+            CheckIsNewFoodType();
         }
+    }
+
+    private void CheckIsNewFoodType() {
+        // If Restaurant add new food have new food type, we will insert new food type -- Start
+        if(!listFoodType.contains(txtType.getText().toString().toLowerCase())){
+            Map<String, Object> foodType = new HashMap<>();
+            foodType.put(QuanLyConstants.FOOD_TYPE_NAME, txtType.getText().toString().toLowerCase());
+            db.collection(QuanLyConstants.RESTAURANT)
+                    .document(restaurantID)
+                    .collection(QuanLyConstants.RESTAURANT_FOOD_TYPE)
+                    .add(foodType)
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, e.getMessage());
+                        }
+                    });
+        }
+        // -------------------------------------- End
     }
 
     /*
@@ -379,7 +418,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         for(int i = 0; i < oldPath.length; i++){
             if(i+1 == oldPath.length){
                 String[] getImageType = oldPath[i].split("\\.");
-                result.append(getRestaurantID())
+                result.append(restaurantID)
                         .append("_").append(foodName)
                         .append(".").append(getImageType[getImageType.length - 1]);
             }
@@ -390,7 +429,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         File oldFile = new File(image.getPath());
         File newFile = new File(result.toString());
         if(oldFile.renameTo(newFile)){
-            Toast.makeText(getApplicationContext(),"Rename Done",Toast.LENGTH_SHORT).show();
+
         }
         return result.toString();
     }

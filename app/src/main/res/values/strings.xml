@@ -47,6 +47,7 @@
     <!--=================================Order Detail Activity=========================================-->
     <string name="customerName">Customer Name: %s</string>
     <string name="timeBook">Time: %s</string>
+    <string name="dateBook">Date: %s</string>
     <string name="table">Table: %s</string>
     <string name="totalCost">Total: %s</string>
     <string name="checkOut">Check Out</string>
@@ -107,7 +108,7 @@
         <item>Waiter</item>
         <item>Cashier</item>
     </string-array>
-    <string name="add_account_button_create">Create</string>
+    <string name="button_create">Create</string>
     <string name="title_activity_login">Sign in</string>
 
     <!--=================================Sign In Activity================================================-->
@@ -136,6 +137,7 @@
     <string name="food_detail_text_type">Food Type</string>
     <string name="food_detail_button_galary_pick">Gallery</string>
     <string name="food_detail_button_camera">Camera</string>
+    <string name="food_detail_content_delete">Do you want to delete this food?</string>
 
     <!--===============================Bill Fragment=============================================-->
     <string name="bill_fragment_date">Date: </string>
@@ -148,5 +150,12 @@
     <string name="bill_list_customer_name">Customer Name</string>
     <string name="bill_list_cost_total">Cost</string>
 
+    <!--===============================Choose Food Dialog=============================================-->
+    <string name="choose_food_dialog_quantity">Quantity: </string>
+
+    <!--===============================Cart Activity=============================================-->
+    <string name="cart_table">Table: </string>
+    <string name="cart_cus_id">Customer ID: </string>
+    <string name="card_hint_cus_id">You can input Customer ID or Phone Number or Email</string>
 
 </resources>

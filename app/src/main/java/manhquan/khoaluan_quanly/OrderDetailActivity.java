@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -48,6 +51,8 @@ public class OrderDetailActivity extends AppCompatActivity {
     public TextView txtTime;
     @BindView(R.id.order_detail_totalCost)
     public TextView txtTotalCost;
+    @BindView(R.id.order_detail_dateBook)
+    public TextView txtDateBook;
     private ArrayList<FoodOnBill> listData;
     private ListFoodOnBillAdapter listFoodOnBillAdapter;
     private MaterialDialog dialogLoading;
@@ -63,13 +68,22 @@ public class OrderDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_detail);
         ButterKnife.bind(this);
+        db = FirebaseFirestore.getInstance();
 
         tableNumber = getIntent().getStringExtra(QuanLyConstants.TABLE_NUMBER);
+        if(TextUtils.isEmpty(tableNumber)) {
+            saveOrderID = getIntent().getStringExtra(QuanLyConstants.TABLE_ORDER_ID);
+            processCheckOrder();
+            displayOrderDetail();
+        }
+        else{
+            renderData();
+        }
 
-        db = FirebaseFirestore.getInstance();
+
         listData = new ArrayList<>();
-        showLoadingDialog();
-        renderData();
+
+
 
         LayoutInflater layoutInflater = getLayoutInflater();
         ViewGroup myHeader = (ViewGroup)layoutInflater.inflate(R.layout.food_on_bill_header,listViewFoodOnBill,false);
@@ -78,6 +92,33 @@ public class OrderDetailActivity extends AppCompatActivity {
         listFoodOnBillAdapter = new ListFoodOnBillAdapter(this, listData);
         listViewFoodOnBill.setAdapter(listFoodOnBillAdapter);
 
+    }
+
+    private void processCheckOrder() {
+        buttonCheckOut.setVisibility(View.GONE);
+        txtTable.setVisibility(View.GONE);
+    }
+
+    private void displayOrderDetail() {
+        showLoadingDialog();
+        db.collection(QuanLyConstants.ORDER)
+            .document(saveOrderID)
+            .get()
+            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot document) {
+                    txtTable.setText(getResources().getString(R.string.table,
+                            tableNumber));
+                    txtTime.setText(getResources().getString(R.string.timeBook,
+                            document.get(QuanLyConstants.ORDER_TIME)));
+                    txtDateBook.setText(getResources().getString(R.string.dateBook,
+                            document.get(QuanLyConstants.ORDER_DATE)));
+                    String customerID = document.get(QuanLyConstants.CUSTOMER_ID).toString();
+                    Log.i(TAG,document.getId());
+                    renderCusName(customerID);
+                    renderListFood(saveOrderID);
+                }
+            });
     }
 
     public void showLoadingDialog(){
@@ -97,6 +138,7 @@ public class OrderDetailActivity extends AppCompatActivity {
      * Second, it will put that into this method to display the needed information
      * */
     public void renderData(){
+        showLoadingDialog();
         db.collection(QuanLyConstants.TABLE)
             .whereEqualTo(QuanLyConstants.RESTAURANT_ID,getRestaurantID())
             .get()
@@ -134,6 +176,8 @@ public class OrderDetailActivity extends AppCompatActivity {
                                             tableNumber));
                                     txtTime.setText(getResources().getString(R.string.timeBook,
                                             document.get(QuanLyConstants.ORDER_TIME)));
+                                    txtDateBook.setText(getResources().getString(R.string.dateBook,
+                                            document.get(QuanLyConstants.ORDER_DATE)));
                                     String customerID = document.get(QuanLyConstants.CUSTOMER_ID).toString();
                                     Log.i(TAG,document.getId());
                                     saveOrderID = orderID;

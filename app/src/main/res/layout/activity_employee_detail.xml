@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:background="@color/white"
@@ -8,84 +7,91 @@
     android:layout_height="match_parent"
     tools:context="manhquan.khoaluan_quanly.EmployeeDetailActivity">
 
-    <TextView
-        android:id="@+id/employee_detail_txtEmployeeName"
-        android:text="@string/add_account_EmployeeName"
-        style="@style/TextBlack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <EditText
-        android:id="@+id/employee_detail_editEmployeeName"
-        android:theme="@style/FirebaseUI.TextInputEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/employee_detail_txtEmployeeUsername"
-        android:text="@string/add_account_EmployeeUsername"
-        style="@style/TextBlack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <EditText
-        android:id="@+id/employee_detail_editEmployeeUsername"
-        android:theme="@style/FirebaseUI.TextInputEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/employee_detail_txtEmployeePassword"
-        android:text="@string/add_account_EmployeePassword"
-        style="@style/TextBlack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <EditText
-        android:id="@+id/employee_detail_editEmployeePassword"
-        android:theme="@style/FirebaseUI.TextInputEditText"
-        android:inputType="textPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/employee_detail_txtEmployeeContactNumber"
-        android:text="@string/add_account_EmployeeContactNumber"
-        style="@style/TextBlack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <EditText
-        android:id="@+id/employee_detail_editEmployeeContactNumber"
-        android:theme="@style/FirebaseUI.TextInputEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/employee_detail_txtEmployeePosition"
-        android:text="@string/add_account_EmployeePosition"
-        style="@style/TextBlack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <Spinner
-        android:id="@+id/employee_detail_spinnerEmployeePosition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/employee_detail_button_create"
-            android:text="@string/employee_detail_button_save"
-            style="@style/TextStyle"
+        <TextView
+            android:id="@+id/employee_detail_txtEmployeeName"
+            android:text="@string/add_account_EmployeeName"
+            style="@style/TextBlack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <EditText
+            android:id="@+id/employee_detail_editEmployeeName"
+            android:theme="@style/FirebaseUI.TextInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/employee_detail_txtEmployeeUsername"
+            android:text="@string/add_account_EmployeeUsername"
+            style="@style/TextBlack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/employee_detail_editEmployeeUsername"
+            android:theme="@style/FirebaseUI.TextInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/employee_detail_txtEmployeePassword"
+            android:text="@string/add_account_EmployeePassword"
+            style="@style/TextBlack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/employee_detail_editEmployeePassword"
+            android:theme="@style/FirebaseUI.TextInputEditText"
+            android:inputType="textPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/employee_detail_txtEmployeeContactNumber"
+            android:text="@string/add_account_EmployeeContactNumber"
+            style="@style/TextBlack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/employee_detail_editEmployeeContactNumber"
+            android:theme="@style/FirebaseUI.TextInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/employee_detail_txtEmployeePosition"
+            android:text="@string/add_account_EmployeePosition"
+            style="@style/TextBlack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Spinner
+            android:id="@+id/employee_detail_spinnerEmployeePosition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/employee_detail_button_create"
+                android:text="@string/employee_detail_button_save"
+                style="@style/TextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

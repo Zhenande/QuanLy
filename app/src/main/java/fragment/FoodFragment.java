@@ -9,49 +9,52 @@ import android.os.Bundle;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-import adapter.GridFoodAdapter;
+import java.util.ArrayList;
+
+import adapter.FoodPagerAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import manhquan.khoaluan_quanly.FoodDetailActivity;
 import manhquan.khoaluan_quanly.R;
-import model.Food;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FoodFragment extends Fragment {
+public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedListener {
 
 
-    @BindView(R.id.list_view_food)
-    public ListView listView;
-    private ArrayList<Food> listData = new ArrayList<>();
-    private GridFoodAdapter listFoodAdapter;
     @BindView(R.id.food_button_add)
     public FloatingActionButton buttonCreate;
+    @BindView(R.id.food_fragment_viewPager)
+    public ViewPager viewPager;
+    @BindView(R.id.food_fragment_tablayout)
+    public TabLayout tabLayout;
     private FirebaseFirestore db;
     private static final String TAG = "FoodFragment";
+    private String restaurantID;
+    private ArrayList<String> listFoodType = new ArrayList<>();
+    private MaterialDialog dialogLoading;
+    private View view;
+    private FoodPagerAdapter adapter;
+    private int positionEm;
 
 
     public FoodFragment() {
@@ -62,16 +65,18 @@ public class FoodFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_food, container, false);
+        view = inflater.inflate(R.layout.fragment_food, container, false);
 
         ButterKnife.bind(this,view);
         db = FirebaseFirestore.getInstance();
-        renderData();
+        restaurantID = getRestaurantID();
+        showLoadingDialog();
+        GetListFoodType();
 
-        listFoodAdapter = new GridFoodAdapter(view.getContext(),3);
-        listFoodAdapter.addItemsInGrid(listData);
-        listView.setAdapter(listFoodAdapter);
-        listFoodAdapter.notifyDataSetChanged();
+        positionEm = getPosition();
+        if(positionEm!=0){
+            buttonCreate.setImageResource(R.drawable.icon_cart);
+        }
 
         buttonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,68 +89,42 @@ public class FoodFragment extends Fragment {
         return view;
     }
 
-    private void onChangeListener(String docID) {
-
-        final DocumentReference docRef = db.collection(QuanLyConstants.FOOD).document(docID);
-        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
-                if(e!= null){
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
-
-                String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
-                        ? "Local" : "Server";
-
-                if (snapshot != null && snapshot.exists()) {
-                    Map<String, Object> food = snapshot.getData();
-                    String foodName = food.get(QuanLyConstants.FOOD_NAME).toString();
-                    for(int i = 0; i < listData.size();i++){
-                        if(listData.get(i).getFoodName().equals(foodName)){
-                            listData.get(i).setPrice(Integer.parseInt(food.get(QuanLyConstants.FOOD_PRICE).toString()));
-                            break;
-                        }
-                    }
-                    listFoodAdapter.notifyDataSetChanged();
-                    Log.d(TAG, source + " data: " + snapshot.getData());
-                } else {
-                    Log.d(TAG, source + " data: null");
-                }
-            }
-        });
-    }
-
     /*
     * @author: ManhLD
-    * @purpose: Get the collection of the food had in the restaurant.
+    * Defines the number of tabs by setting appropriate fragment and tab name.
     * */
-    private void renderData() {
-        listData.clear();
-        db.collection(QuanLyConstants.FOOD)
-                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,getRestaurantID())
+    private void setupViewPager(ViewPager viewPager) {
+        adapter = new FoodPagerAdapter(getChildFragmentManager(),view.getContext());
+        for(String name : listFoodType){
+            adapter.addFragment(new MenuFragment(),name);
+        }
+        viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(1);
+        tabLayout.setupWithViewPager(viewPager,true);
+        tabLayout.addOnTabSelectedListener(FoodFragment.this);
+    }
+
+    private void GetListFoodType() {
+        db.collection(QuanLyConstants.RESTAURANT)
+                .document(restaurantID)
+                .collection(QuanLyConstants.RESTAURANT_FOOD_TYPE)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             for(DocumentSnapshot document : task.getResult()){
-                                Food food = new Food();
-                                food.setDescription(document.get(QuanLyConstants.FOOD_DESCRIPTION).toString());
-                                food.setFoodType(document.get(QuanLyConstants.FOOD_TYPE).toString());
-                                food.setImageResource(document.get(QuanLyConstants.FOOD_IMAGE_NAME).toString());
-                                food.setFoodName(document.get(QuanLyConstants.FOOD_NAME).toString());
-                                food.setPrice(Integer.parseInt(document.get(QuanLyConstants.FOOD_PRICE).toString()));
-                                listData.add(food);
-                                onChangeListener(document.getId());
+                                listFoodType.add(document.get(QuanLyConstants.FOOD_TYPE_NAME).toString());
                             }
-                            listFoodAdapter.clearList();
-                            listFoodAdapter.addItemsInGrid(listData);
+                            setupViewPager(viewPager);
+                            closeLoadingDialog();
+                            Log.i(TAG, listFoodType.size()+"");
                         }
                     }
                 });
-
     }
+
+
 
     /*
     * @author: ManhLD
@@ -157,13 +136,44 @@ public class FoodFragment extends Fragment {
         return prefs.getString(langPref,"");
     }
 
+    public void showLoadingDialog(){
+        dialogLoading = new MaterialDialog.Builder(view.getContext())
+                .customView(R.layout.loading_dialog,true)
+                .show();
+    }
+
+    public void closeLoadingDialog(){
+        dialogLoading.dismiss();
+    }
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        viewPager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == Activity.RESULT_OK && requestCode == QuanLyConstants.FOOD_DETAIL){
-            boolean flag = data.getBooleanExtra(QuanLyConstants.INTENT_FOOD_DETAIL_FLAG,false);
-            if(flag){
-                renderData();
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == Activity.RESULT_OK){
+            if(requestCode == QuanLyConstants.FOOD_DETAIL){
+                adapter.notifyDataSetChanged();
             }
         }
     }
+
+    public int getPosition(){
+        String langPref = QuanLyConstants.SHARED_POSITION;
+        SharedPreferences prefs = view.getContext().getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE, Activity.MODE_PRIVATE);
+        return prefs.getInt(langPref,0);
+    }
+
+
 }

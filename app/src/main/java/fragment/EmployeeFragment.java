@@ -15,9 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -33,7 +33,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import adapter.EmployeeListViewAdapter;
-import manhquan.khoaluan_quanly.AddAccountActivity;
 import manhquan.khoaluan_quanly.EmployeeDetailActivity;
 import manhquan.khoaluan_quanly.R;
 import model.Cook;
@@ -55,6 +54,7 @@ public class EmployeeFragment extends Fragment {
     public FloatingActionButton buttonAdd;
     private ArrayList<String> listEmployeeID = new ArrayList<>();
     private View view;
+    private MaterialDialog dialogLoading;
 
 
     public EmployeeFragment() {
@@ -71,6 +71,8 @@ public class EmployeeFragment extends Fragment {
         ButterKnife.bind(this,view);
 
         listData = new ArrayList<>();
+
+        showLoadingDialog();
         renderData();
         employeeAdapter = new EmployeeListViewAdapter(view.getContext(),listData);
         employeeListView.setAdapter(employeeAdapter);
@@ -78,8 +80,9 @@ public class EmployeeFragment extends Fragment {
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(view.getContext(), AddAccountActivity.class);
-                startActivityForResult(i, QuanLyConstants.CREATE_EMPLOYEE);
+                Intent i = new Intent(getActivity().getApplicationContext(), EmployeeDetailActivity.class);
+                i.putExtra(QuanLyConstants.INTENT_DOCUMENT_ID,"");
+                startActivityForResult(i, QuanLyConstants.DETAIL_EMPLOYEE);
             }
         });
 
@@ -87,7 +90,7 @@ public class EmployeeFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(getActivity().getApplicationContext(), EmployeeDetailActivity.class);
-                i.putExtra("documentID",listEmployeeID.get(position));
+                i.putExtra(QuanLyConstants.INTENT_DOCUMENT_ID,listEmployeeID.get(position));
                 startActivityForResult(i, QuanLyConstants.DETAIL_EMPLOYEE);
             }
         });
@@ -111,16 +114,17 @@ public class EmployeeFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             for(DocumentSnapshot document : task.getResult()){
-                                int position = Integer.parseInt(document.get("Position").toString());
+                                int position = Integer.parseInt(document.get(QuanLyConstants.EMPLOYEE_POSITION).toString());
                                 if(position>1){
                                     Employee em = new Cook();
-                                    em.setName(document.get("Name").toString());
+                                    em.setName(document.get(QuanLyConstants.EMPLOYEE_NAME).toString());
                                     em.setPosition(position);
                                     listData.add(em);
                                     listEmployeeID.add(document.getId());
                                     Log.i("ListNumber", listData.size()+"");
                                 }
                             }
+                            closeLoadingDialog();
                             employeeAdapter.notifyDataSetChanged();
                         }
                         else{
@@ -142,7 +146,7 @@ public class EmployeeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == Activity.RESULT_OK ) {
             if (requestCode == QuanLyConstants.CREATE_EMPLOYEE || requestCode == QuanLyConstants.DETAIL_EMPLOYEE) {
-                boolean flag = data.getBooleanExtra("flag", false);
+                boolean flag = data.getBooleanExtra(QuanLyConstants.FLAG, false);
                 if (flag) {
                     renderData();
                 }
@@ -158,5 +162,15 @@ public class EmployeeFragment extends Fragment {
         String langPref = QuanLyConstants.RESTAURANT_ID;
         SharedPreferences prefs = view.getContext().getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE, Activity.MODE_PRIVATE);
         return prefs.getString(langPref,"");
+    }
+
+    public void showLoadingDialog(){
+        dialogLoading = new MaterialDialog.Builder(view.getContext())
+                .customView(R.layout.loading_dialog,true)
+                .show();
+    }
+
+    public void closeLoadingDialog(){
+        dialogLoading.dismiss();
     }
 }

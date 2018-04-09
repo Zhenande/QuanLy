@@ -94,7 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/food_detail_food_type"
             android:theme="@style/FirebaseUI.TextInputEditText"
             android:layout_width="250dp"
@@ -107,7 +107,7 @@
 
             <Button
                 android:id="@+id/food_detail_button_add"
-                android:text="@string/add_account_button_create"
+                android:text="@string/button_create"
                 style="@style/TextStyle"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"

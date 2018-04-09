@@ -98,6 +98,9 @@ public class MainActivity extends AppCompatActivity
 
         int position = getIntent().getIntExtra(QuanLyConstants.EMPLOYEE_POSITION,0);
         String emName = getIntent().getStringExtra(QuanLyConstants.EMPLOYEE_NAME);
+        if(getPosition() != position){
+            savePosition(position);
+        }
         renderDrawerData(emName,position);
 
 
@@ -262,6 +265,10 @@ public class MainActivity extends AppCompatActivity
     private void SignOut() {
         new MaterialDialog.Builder(this)
                 .title(getResources().getString(R.string.action_sign_out))
+                .positiveText(getResources().getString(R.string.main_agree))
+                .negativeText(getResources().getString(R.string.main_disagree))
+                .positiveColor(getResources().getColor(R.color.primary_dark))
+                .negativeColor(getResources().getColor(R.color.black))
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -283,6 +290,11 @@ public class MainActivity extends AppCompatActivity
     private void selectLanguage(){
         new MaterialDialog.Builder(this)
                 .title(getResources().getString(R.string.main_language))
+                .positiveText(getResources().getString(R.string.main_agree))
+                .negativeText(getResources().getString(R.string.main_disagree))
+                .positiveColor(getResources().getColor(R.color.primary_dark))
+                .negativeColor(getResources().getColor(R.color.black))
+                .widgetColor(getResources().getColor(R.color.colorAccent))
                 .items(getResources().getStringArray(R.array.main_array_language))
                 .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
                     @Override
@@ -335,6 +347,21 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(langPref, language);
         editor.apply();
+    }
+
+    public void savePosition(int position){
+        String positionPref = QuanLyConstants.SHARED_POSITION;
+        SharedPreferences prefs = getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE,
+                Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(positionPref, position);
+        editor.apply();
+    }
+
+    public int getPosition(){
+        String langPref = QuanLyConstants.SHARED_POSITION;
+        SharedPreferences prefs = getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE, Activity.MODE_PRIVATE);
+        return prefs.getInt(langPref,0);
     }
 
 

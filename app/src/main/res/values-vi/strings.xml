@@ -46,7 +46,8 @@
 
     <!--=================================Order Detail Activity=========================================-->
     <string name="customerName">Tên khách hàng: %s</string>
-    <string name="timeBook">Thời gian: %s</string>
+    <string name="timeBook">Giờ: %s</string>
+    <string name="dateBook">Ngày: %s</string>
     <string name="table">Bàn: %s</string>
     <string name="totalCost">Tổng tiền: %s</string>
     <string name="checkOut">Thanh Toán</string>
@@ -135,6 +136,7 @@
     <string name="food_detail_text_type">Nhóm:</string>
     <string name="food_detail_button_galary_pick">Bộ sưu tập</string>
     <string name="food_detail_button_camera">Máy ảnh</string>
+    <string name="food_detail_content_delete">Do you want to delete this food?</string>
 
     <!--===============================Bill Fragment=============================================-->
     <string name="bill_fragment_date">Ngày: </string>
@@ -146,5 +148,13 @@
     <string name="bill_list_time">Thời Gian</string>
     <string name="bill_list_customer_name">Tên Khách Hàng</string>
     <string name="bill_list_cost_total">Giá</string>
+
+    <!--===============================Choose Food Dialog=============================================-->
+    <string name="choose_food_dialog_quantity">Số lượng: </string>
+
+    <!--===============================Cart Activity=============================================-->
+    <string name="cart_table">Bàn: </string>
+    <string name="cart_cus_id">Khách hàng ID: </string>
+    <string name="card_hint_cus_id">Bạn có thể nhập Mã Khách Hàng or Số Điện Thoại or Email</string>
 
 </resources>

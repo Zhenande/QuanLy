@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:minHeight="100dp"
+    android:layout_height="match_parent">
+
+
+    <ImageView
+        android:id="@+id/food_item_image"
+        android:src="@drawable/beefsteak"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:scaleType="fitXY"
+        android:layout_width="100dp"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/food_item_name"
+        android:layout_marginStart="10dp"
+        style="@style/TextBlack"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/food_item_price"
+        style="@style/TextBlack"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+</LinearLayout>

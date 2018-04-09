@@ -22,13 +22,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/order_detail_timeBook"
-        style="@style/TextStyle"
-        android:textSize="15sp"
-        android:text="@string/timeBook"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/order_detail_dateBook"
+            style="@style/TextStyle"
+            android:textSize="15sp"
+            android:layout_weight="3"
+            android:text="@string/dateBook"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/order_detail_timeBook"
+            style="@style/TextStyle"
+            android:textSize="15sp"
+            android:layout_weight="1"
+            android:text="@string/timeBook"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"

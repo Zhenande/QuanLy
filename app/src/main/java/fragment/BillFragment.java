@@ -3,6 +3,7 @@ package fragment;
 
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.support.annotation.NonNull;
@@ -15,9 +16,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -37,6 +40,8 @@ import adapter.BillListAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
+import manhquan.khoaluan_quanly.FoodDetailActivity;
+import manhquan.khoaluan_quanly.OrderDetailActivity;
 import manhquan.khoaluan_quanly.R;
 import model.Bill;
 
@@ -44,7 +49,7 @@ import model.Bill;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BillFragment extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
+public class BillFragment extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener, AdapterView.OnItemClickListener {
 
 
     private static final String TAG = "BillFragment";
@@ -92,6 +97,8 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
         listData = new ArrayList<>();
         listBillAdapter = new BillListAdapter(view.getContext(),listData);
         listBill.setAdapter(listBillAdapter);
+
+        listBill.setOnItemClickListener(this);
 
         Calendar cal = Calendar.getInstance();
         buttonDate.setText(view.getResources().getString(R.string.full_date,new Object[]{cal.get(Calendar.DAY_OF_MONTH),
@@ -184,5 +191,13 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
 
     public void closeLoadingDialog(){
         dialogLoading.dismiss();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        TextView txtBillNumber = view.findViewById(R.id.bill_list_bill_number);
+        Intent i = new Intent(view.getContext(), OrderDetailActivity.class);
+        i.putExtra(QuanLyConstants.TABLE_ORDER_ID,txtBillNumber.getText().toString());
+        startActivity(i);
     }
 }
