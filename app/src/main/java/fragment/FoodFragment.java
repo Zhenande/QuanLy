@@ -32,8 +32,11 @@ import adapter.FoodPagerAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
+import manhquan.khoaluan_quanly.CartActivity;
 import manhquan.khoaluan_quanly.FoodDetailActivity;
 import manhquan.khoaluan_quanly.R;
+import model.Food;
+import model.FoodOnBill;
 
 
 /**
@@ -55,13 +58,18 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
     private MaterialDialog dialogLoading;
     private View view;
     private FoodPagerAdapter adapter;
+    public volatile static ArrayList<FoodOnBill> listFoodChoose = new ArrayList<>();
     private int positionEm;
+    private boolean flag = false;
 
 
     public FoodFragment() {
         // Required empty public constructor
     }
 
+    public synchronized static void addFoodChoose(FoodOnBill food){
+        listFoodChoose.add(food);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,15 +85,25 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
         GetListFoodType();
 
         positionEm = getPosition();
-        if(positionEm!=0){
+        if(positionEm!=1){
             buttonCreate.setImageResource(R.drawable.icon_cart);
+            flag = true;
         }
 
         buttonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getActivity().getApplicationContext(), FoodDetailActivity.class);
-                startActivityForResult(i, QuanLyConstants.FOOD_DETAIL);
+                if(!flag){
+                    Intent i = new Intent(getActivity().getApplicationContext(), FoodDetailActivity.class);
+                    startActivityForResult(i, QuanLyConstants.FOOD_DETAIL);
+                }
+                else{
+                    Intent i = new Intent(getActivity().getApplicationContext(), CartActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable(QuanLyConstants.INTENT_FOOD_CHOOSE_CART,listFoodChoose);
+                    i.putExtra(QuanLyConstants.INTENT_FOOD_CHOOSE_CART,bundle);
+                    startActivityForResult(i, QuanLyConstants.INTENT_CART_ACTIVITY);
+                }
             }
         });
 
@@ -102,7 +120,6 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
             adapter.addFragment(new MenuFragment(),name);
         }
         viewPager.setAdapter(adapter);
-        viewPager.setOffscreenPageLimit(1);
         tabLayout.setupWithViewPager(viewPager,true);
         tabLayout.addOnTabSelectedListener(FoodFragment.this);
     }

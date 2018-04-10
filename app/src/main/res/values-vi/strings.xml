@@ -24,6 +24,7 @@
     <string name="table_create">Thêm</string>
     <string name="table_delete">Xóa</string>
     <string name="table_error_delete_too_much">Bạn không thể xóa %d bàn bởi vì bạn chỉ có %d bàn</string>
+    <string name="table_error_input_letter">Chỉ được nhập số</string>
 
     <!--=================================Menu Drawer===================================================-->
     <string name="action_language">Ngôn Ngữ</string>

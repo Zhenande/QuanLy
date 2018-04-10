@@ -121,6 +121,7 @@ public class EmployeeFragment extends Fragment {
                                 if(position>1){
                                     Employee em = new Cook();
                                     em.setName(document.get(QuanLyConstants.EMPLOYEE_NAME).toString());
+                                    em.setContactnumber(document.get(QuanLyConstants.EMPLOYEE_CONTACT).toString());
                                     em.setPosition(position);
                                     listData.add(em);
                                     listEmployeeID.add(document.getId());

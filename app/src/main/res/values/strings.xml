@@ -24,6 +24,7 @@
     <string name="table_create">Create</string>
     <string name="table_delete">Delete</string>
     <string name="table_error_delete_too_much">Can not delete %d table because you just have %d table</string>
+    <string name="table_error_input_letter">Just input number</string>
 
     <!--=================================Menu Drawer===================================================-->
     <string name="action_language">Language</string>

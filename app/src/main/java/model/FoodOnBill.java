@@ -1,15 +1,16 @@
 package model;
 
+import java.io.Serializable;
+
 import abstractModel.FoodAbstract;
 
 /**
  * Created by LieuDucManh on 3/11/2018.
  */
 
-public class FoodOnBill extends FoodAbstract {
+public class FoodOnBill extends FoodAbstract implements Serializable{
 
     private int quantity;
-
 
     public FoodOnBill(String foodId, String foodName, int price, int quantity) {
         super(foodId, foodName, price);

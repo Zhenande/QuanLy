@@ -45,6 +45,7 @@ import constants.QuanLyConstants;
 import manhquan.khoaluan_quanly.FoodDetailActivity;
 import manhquan.khoaluan_quanly.R;
 import model.Food;
+import model.FoodOnBill;
 import util.GlideApp;
 import util.MoneyFormatter;
 
@@ -202,7 +203,13 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-
+                            View view = dialog.getView();
+                            EditText edQuantity = view.findViewById(R.id.choose_food_dialog_quantity);
+                            FoodOnBill foodChoose = new FoodOnBill();
+                            foodChoose.setFoodName(food.getFoodName());
+                            foodChoose.setQuantity(Integer.parseInt(edQuantity.getText().toString()));
+                            FoodFragment.addFoodChoose(foodChoose);
+                            Log.i(TAG,FoodFragment.listFoodChoose.size()+"");
                         }
                     })
                     .build();

@@ -188,22 +188,25 @@ public class MainActivity extends AppCompatActivity
                             View view = dialog.getView();
                             EditText edNumber = view.findViewById(R.id.create_table_number);
                             RadioButton rbCreate = view.findViewById(R.id.create_table_create_radio);
-                            int NumberTableCurrent = Integer.parseInt(getTableNumber());
-                            int NumberTableNeedChange = Integer.parseInt(edNumber.getText().toString());
+                            if(edNumber.getText().toString().matches("[0-9]*")) {
+                                int NumberTableCurrent = Integer.parseInt(getTableNumber());
+                                int NumberTableNeedChange = Integer.parseInt(edNumber.getText().toString());
 
-                            String restaurantID = getRestaurantID();
-                            if(rbCreate.isChecked()){
-                                createTable(NumberTableCurrent,NumberTableNeedChange,restaurantID);
+                                String restaurantID = getRestaurantID();
+                                if (rbCreate.isChecked()) {
+                                    createTable(NumberTableCurrent, NumberTableNeedChange, restaurantID);
+                                } else {
+                                    if (NumberTableCurrent < NumberTableNeedChange) {
+                                        Toast.makeText(view.getContext(),
+                                                getResources().getString(R.string.table_error_delete_too_much,
+                                                        new Object[]{NumberTableNeedChange, NumberTableCurrent}), Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        deleteTable(NumberTableCurrent, NumberTableNeedChange, restaurantID);
+                                    }
+                                }
                             }
                             else{
-                                if(NumberTableCurrent < NumberTableNeedChange){
-                                    Toast.makeText(view.getContext(),
-                                            getResources().getString(R.string.table_error_delete_too_much,
-                                            new Object[]{NumberTableNeedChange,NumberTableCurrent}),Toast.LENGTH_SHORT).show();
-                                }
-                                else{
-                                    deleteTable(NumberTableCurrent,NumberTableNeedChange,restaurantID);
-                                }
+                                Toast.makeText(view.getContext(),getResources().getString(R.string.table_error_input_letter),Toast.LENGTH_SHORT).show();
                             }
                         }
                     })
@@ -280,8 +283,6 @@ public class MainActivity extends AppCompatActivity
                         onBackPressed();
                     }
                 })
-                .positiveText(getResources().getString(R.string.main_agree))
-                .negativeText(getResources().getString(R.string.main_disagree))
                 .show();
     }
 

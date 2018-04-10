@@ -10,6 +10,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import abstractModel.Employee;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import manhquan.khoaluan_quanly.R;
 
 /**
@@ -49,10 +51,9 @@ public class EmployeeListViewAdapter extends BaseAdapter{
         EmployeeViewHolder holder;
 
         if(convertView == null){
+
             convertView = layoutInflater.inflate(R.layout.employee_list_item,null);
-            holder = new EmployeeViewHolder();
-            holder.txtName = convertView.findViewById(R.id.employee_list_txtName);
-            holder.txtPosition = convertView.findViewById(R.id.employee_list_txtPosition);
+            holder = new EmployeeViewHolder(convertView);
             convertView.setTag(holder);
         }
         else{
@@ -61,6 +62,7 @@ public class EmployeeListViewAdapter extends BaseAdapter{
 
         Employee employee = this.data.get(position);
         holder.txtName.setText(employee.getName());
+        holder.txtContact.setText(employee.getContactnumber());
         String textPosition;
         switch (employee.getPosition()){
             case 2: textPosition = context.getResources().getString(R.string.employee_Cook);
@@ -78,6 +80,14 @@ public class EmployeeListViewAdapter extends BaseAdapter{
 }
 
 class EmployeeViewHolder{
+    @BindView(R.id.employee_list_txtName)
     TextView txtName;
+    @BindView(R.id.employee_list_txtPosition)
     TextView txtPosition;
+    @BindView(R.id.employee_list_txtContact)
+    TextView txtContact;
+
+    public EmployeeViewHolder(View view) {
+        ButterKnife.bind(this,view);
+    }
 }
