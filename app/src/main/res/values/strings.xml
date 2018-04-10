@@ -61,6 +61,7 @@
     <string name="fobQuantity">Quantity</string>
     <string name="fobTotalPrice">Amount</string>
     <string name="fobTotal">Total</string>
+    <string name="fobID">#</string>
 
     <!--=================================Income Fragment================================================-->
     <string name="income_reportTime">Report Time: </string>
@@ -93,10 +94,8 @@
     <string name="employee_Cook">Cook</string>
     <string name="employee_Waiter">Waiter</string>
     <string name="employee_Cashier">Cashier</string>
+    <string name="employee_Contact">Contact Number</string>
 
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!--=================================Add Account Activity================================================-->
     <string name="add_account_EmployeeName">Name :</string>

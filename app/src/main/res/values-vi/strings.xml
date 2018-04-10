@@ -61,6 +61,7 @@
     <string name="fobQuantity">Số lượng</string>
     <string name="fobTotalPrice">Thành tiền</string>
     <string name="fobTotal">Tổng</string>
+    <string name="fobID">#</string>
 
     <!--=================================Income Fragment================================================-->
     <string name="income_reportTime">Báo cáo theo: </string>
@@ -93,6 +94,7 @@
     <string name="employee_Cook">Đầu bếp</string>
     <string name="employee_Waiter">Phục vụ</string>
     <string name="employee_Cashier">Thu ngân</string>
+    <string name="employee_Contact">Số điện thoại</string>
 
 
     <!-- TODO: Remove or change this placeholder text -->

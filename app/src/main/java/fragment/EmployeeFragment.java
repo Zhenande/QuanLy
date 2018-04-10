@@ -77,6 +77,10 @@ public class EmployeeFragment extends Fragment {
 
         showLoadingDialog();
         renderData();
+
+        ViewGroup myHeader = (ViewGroup)inflater.inflate(R.layout.employee_list_item, employeeListView,false);
+        employeeListView.addHeaderView(myHeader,null,false);
+
         employeeAdapter = new EmployeeListViewAdapter(view.getContext(),listData);
         employeeListView.setAdapter(employeeAdapter);
 

@@ -429,7 +429,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         File oldFile = new File(image.getPath());
         File newFile = new File(result.toString());
         if(oldFile.renameTo(newFile)){
-
+            Log.i(TAG,"Rename Success");
         }
         return result.toString();
     }
