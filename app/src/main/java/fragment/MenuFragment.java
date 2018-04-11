@@ -207,6 +207,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                             EditText edQuantity = view.findViewById(R.id.choose_food_dialog_quantity);
                             FoodOnBill foodChoose = new FoodOnBill();
                             foodChoose.setFoodName(food.getFoodName());
+                            foodChoose.setPrice(food.getPrice());
                             foodChoose.setQuantity(Integer.parseInt(edQuantity.getText().toString()));
                             FoodFragment.addFoodChoose(foodChoose);
                             Log.i(TAG,FoodFragment.listFoodChoose.size()+"");

@@ -11,7 +11,7 @@
         android:id="@+id/food_choose_stt"
         android:text="@string/fobID"
         style="@style/TextBlack"
-        android:layout_weight="1.6"
+        android:layout_weight="1.65"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -20,6 +20,8 @@
         android:id="@+id/food_choose_name"
         android:text="@string/food_detail_text_name"
         style="@style/TextBlack"
+        android:paddingStart="10dp"
+        android:paddingEnd="0dp"
         android:layout_marginStart="10dp"
         android:layout_weight="1"
         android:layout_width="match_parent"
@@ -29,6 +31,8 @@
         android:id="@+id/food_choose_price"
         android:text="@string/food_detail_text_price"
         style="@style/TextBlack"
+        android:paddingStart="10dp"
+        android:paddingEnd="0dp"
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -37,7 +41,10 @@
         android:id="@+id/food_choose_quantity"
         android:text="@string/fobQuantity"
         style="@style/TextBlack"
-        android:layout_width="wrap_content"
+        android:paddingStart="10dp"
+        android:paddingEnd="0dp"
+        android:layout_weight="1.45"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
 </LinearLayout>

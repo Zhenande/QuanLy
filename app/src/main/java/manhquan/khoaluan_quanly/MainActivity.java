@@ -5,11 +5,13 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseFirestore db;
     private MaterialDialog create_table_dialog;
     private NavigationView navigationView;
+    private boolean doubleBackToSignOutPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +141,21 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (doubleBackToSignOutPressedOnce) {
+                Intent i = new Intent(this,SignInActivity.class);
+                startActivity(i);
+            }
+
+            this.doubleBackToSignOutPressedOnce = true;
+            Toast.makeText(this, getResources().getString(R.string.sign_out_noti), Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToSignOutPressedOnce=false;
+                }
+            }, 2000);
         }
     }
 
@@ -278,9 +295,9 @@ public class MainActivity extends AppCompatActivity
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        //Intent i = new Intent(MainActivity.this, SignInActivity.class);
+                        Intent i = new Intent(MainActivity.this, SignInActivity.class);
                         mAuth.signOut();
-                        onBackPressed();
+                        startActivity(i);
                     }
                 })
                 .show();
@@ -425,4 +442,6 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences prefs = getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE, Activity.MODE_PRIVATE);
         return prefs.getString(langPref,"0");
     }
+
+
 }

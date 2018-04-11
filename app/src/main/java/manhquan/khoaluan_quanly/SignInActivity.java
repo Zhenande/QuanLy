@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -41,13 +42,14 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private FirebaseFirestore mStore;
     private int position;
     private MaterialDialog dialogLoading;
+    private boolean doubleBackToExitPressedOnce = false;
 
     // [START on_start_check_user]
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        mEmailField.setText("lieumanh96@gmail.com");
+        mEmailField.setText("tranvana@gmail.com");
         mPasswordField.setText("abcdef");
         updateUI(null);
     }
@@ -184,5 +186,24 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     public void closeLoadingDialog(){
         dialogLoading.dismiss();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            this.finishAffinity();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, getResources().getString(R.string.sign_in_exit_app_noti), Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 }

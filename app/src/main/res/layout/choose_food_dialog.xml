@@ -84,6 +84,9 @@
         <EditText
             android:id="@+id/choose_food_dialog_quantity"
             android:inputType="numberDecimal"
+            android:gravity="center"
+            android:enabled="false"
+            android:textColor="@drawable/edit_text_color"
             style="@style/FirebaseUI.TextInputEditText"
             android:layout_width="50dp"
             android:layout_height="wrap_content" />

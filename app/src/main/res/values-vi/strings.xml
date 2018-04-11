@@ -18,6 +18,7 @@
     <string name="cook">Đầu Bếp</string>
     <string name="waiter">Phục Vụ</string>
     <string name="cashier">Thu Ngân</string>
+    <string name="sign_out_noti">Nhấn back lần nữa để đăng xuất ứng dụng</string>
 
     <!--=================================Create Table Dialog==============================================-->
     <string name="content_dialog_create_table">Nhập số bàn: </string>
@@ -97,9 +98,6 @@
     <string name="employee_Contact">Số điện thoại</string>
 
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
     <!--=================================Add Account Activity================================================-->
     <string name="add_account_EmployeeName">Họ và tên :</string>
     <string name="add_account_EmployeeUsername">Tên tài khoản :</string>
@@ -116,6 +114,7 @@
     <!--=================================Sign In Activity================================================-->
     <string name="sign_in_faild_input">Email hoặc Password không đúng, vui lòng kiểm tra lại</string>
     <string name="sign_in_required">Bắt buộc</string>
+    <string name="sign_in_exit_app_noti">Bấm back lần nữa để thoát ứng dụng</string>
 
     <!--=================================Loading Dialog================================================-->
     <string name="loading_dialog_loading">Đang xử lý</string>
@@ -158,6 +157,10 @@
     <!--===============================Cart Activity=============================================-->
     <string name="cart_table">Bàn: </string>
     <string name="cart_cus_id">Khách hàng ID: </string>
-    <string name="card_hint_cus_id">Bạn có thể nhập Mã Khách Hàng or Số Điện Thoại or Email</string>
+    <string name="cart_hint_cus_id">Bạn có thể nhập Mã Khách Hàng or Số Điện Thoại or Email</string>
+    <string name="cart_button_order">Gọi Món</string>
+
+    <!--===============================Food Fragment=============================================-->
+    <string name="food_frag_error_no_food">Bạn chưa chọn món ăn nào cả.</string>
 
 </resources>

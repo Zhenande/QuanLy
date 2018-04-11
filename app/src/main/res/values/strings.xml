@@ -18,6 +18,7 @@
     <string name="cook">Cook</string>
     <string name="waiter">Waiter</string>
     <string name="cashier">Cashier</string>
+    <string name="sign_out_noti">Press back again to sign out app</string>
 
     <!--=================================Create Table Dialog==============================================-->
     <string name="content_dialog_create_table">Input number of table: </string>
@@ -114,6 +115,7 @@
     <!--=================================Sign In Activity================================================-->
     <string name="sign_in_faild_input">Email or Password is incorrect, please check again.</string>
     <string name="sign_in_required">Required</string>
+    <string name="sign_in_exit_app_noti">Press back again to exit app</string>
 
     <!--=================================Loading Dialog================================================-->
     <string name="loading_dialog_loading">Loading</string>
@@ -156,6 +158,10 @@
     <!--===============================Cart Activity=============================================-->
     <string name="cart_table">Table: </string>
     <string name="cart_cus_id">Customer ID: </string>
-    <string name="card_hint_cus_id">You can input Customer ID or Phone Number or Email</string>
+    <string name="cart_hint_cus_id">You can input Customer ID or Phone Number or Email</string>
+    <string name="cart_button_order">Order</string>
+
+    <!--===============================Food Fragment=============================================-->
+    <string name="food_frag_error_no_food">You have not choose any food</string>
 
 </resources>

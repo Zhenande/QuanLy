@@ -20,6 +20,7 @@ import butterknife.ButterKnife;
 import manhquan.khoaluan_quanly.CartActivity;
 import manhquan.khoaluan_quanly.R;
 import model.FoodOnBill;
+import util.MoneyFormatter;
 
 /**
  * Created by LieuDucManh on 4/10/2018.
@@ -69,7 +70,7 @@ public class FoodChooseListAdapter extends BaseAdapter {
         FoodOnBill fob = listData.get(position);
         holder.txtID.setText(position+1+"");
         holder.txtName.setText(fob.getFoodName());
-        holder.txtPrice.setText(fob.getPrice()+"");
+        holder.txtPrice.setText(MoneyFormatter.formatToMoney(fob.getPrice()+"") + " VNĐ");
         holder.txtQuantity.setText(fob.getQuantity()+"");
 
 
@@ -79,8 +80,8 @@ public class FoodChooseListAdapter extends BaseAdapter {
         holder.buttonSub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int quantity = finalFob.getQuantity();
-                if(quantity == 1){
+                int quantity = finalFob.getQuantity()-1;
+                if(quantity == 0){
                     new MaterialDialog.Builder(v.getContext())
                             .positiveText(v.getContext().getResources().getString(R.string.main_agree))
                             .negativeText(v.getContext().getResources().getString(R.string.main_disagree))
@@ -99,6 +100,7 @@ public class FoodChooseListAdapter extends BaseAdapter {
                 }
                 else{
                     finalHolder.txtQuantity.setText(quantity+"");
+                    listData.get(finalPos).setQuantity(quantity);
                 }
             }
         });
@@ -106,8 +108,9 @@ public class FoodChooseListAdapter extends BaseAdapter {
         holder.buttonSum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int quantity = finalFob.getQuantity();
+                int quantity = finalFob.getQuantity() + 1;
                 finalHolder.txtQuantity.setText(quantity+"");
+                listData.get(finalPos).setQuantity(quantity);
             }
         });
 

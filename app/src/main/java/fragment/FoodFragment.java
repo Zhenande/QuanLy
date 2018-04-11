@@ -68,7 +68,17 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
     }
 
     public synchronized static void addFoodChoose(FoodOnBill food){
-        listFoodChoose.add(food);
+        boolean flagAdd = true;
+        for(FoodOnBill fob : listFoodChoose){
+            if(fob.getFoodName().equals(food.getFoodName())){
+                fob.setQuantity(fob.getQuantity()+food.getQuantity());
+                flagAdd = false;
+                break;
+            }
+        }
+        if(flagAdd){
+            listFoodChoose.add(food);
+        }
     }
 
     @Override
@@ -98,14 +108,18 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
                     startActivityForResult(i, QuanLyConstants.FOOD_DETAIL);
                 }
                 else{
-                    Intent i = new Intent(getActivity().getApplicationContext(), CartActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable(QuanLyConstants.INTENT_FOOD_CHOOSE_CART,listFoodChoose);
-                    i.putExtra(QuanLyConstants.INTENT_FOOD_CHOOSE_CART,bundle);
-                    startActivityForResult(i, QuanLyConstants.INTENT_CART_ACTIVITY);
+                    if(listFoodChoose.size()>0){
+                        Intent i = new Intent(getActivity().getApplicationContext(), CartActivity.class);
+                        i.putExtra(QuanLyConstants.INTENT_FOOD_CHOOSE_CART, listFoodChoose);
+                        startActivityForResult(i, QuanLyConstants.INTENT_CART_ACTIVITY);
+                    }
+                    else{
+                        Toast.makeText(v.getContext(),getResources().getString(R.string.food_frag_error_no_food),Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
+
 
         return view;
     }

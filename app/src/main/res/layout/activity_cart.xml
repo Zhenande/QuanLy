@@ -9,9 +9,11 @@
     tools:context=".CartActivity">
 
     <LinearLayout
+        android:layout_weight="2.0"
         android:orientation="horizontal"
+        android:minHeight="30dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <TextView
             android:text="@string/cart_table"
@@ -20,9 +22,9 @@
             android:layout_height="wrap_content" />
 
         <Spinner
-            android:id="@+id/cart_tableNumber"
+            android:id="@+id/cart_spinner_tableNumber"
             android:layout_marginStart="10dp"
-            android:layout_width="wrap_content"
+            android:layout_width="80dp"
             android:layout_height="wrap_content">
 
         </Spinner>
@@ -30,10 +32,12 @@
     </LinearLayout>
 
     <LinearLayout
+        android:layout_weight="1.9"
         android:orientation="horizontal"
         android:layout_marginTop="10dp"
+        android:minHeight="30dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <TextView
             android:text="@string/cart_cus_id"
@@ -44,6 +48,7 @@
         <EditText
             android:id="@+id/cart_cus_id"
             style="@style/FirebaseUI.TextInputEditText"
+            android:hint="@string/cart_hint_cus_id"
             android:layout_marginStart="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -51,8 +56,18 @@
     </LinearLayout>
 
     <ListView
+        android:layout_weight="0.8"
         android:id="@+id/food_choose_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <Button
+        android:layout_weight="2"
+        android:layout_gravity="center"
+        android:id="@+id/food_choose_button_order"
+        style="@style/TextStyle"
+        android:text="@string/cart_button_order"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
 
 </LinearLayout>
