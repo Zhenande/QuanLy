@@ -44,7 +44,7 @@ public class QuanLyConstants {
 
     // Field of Order
     public static final String ORDER = "order";
-    public static final String ORDER_TABLE = "Table";
+    public static final String BILL_NUMBER = "BillNumber";
     public static final String ORDER_CASH_TOTAL = "CashTotal";
     public static final String ORDER_TIME = "Time";
     public static final String ORDER_DATE = "Date";
@@ -59,6 +59,11 @@ public class QuanLyConstants {
     // Field of Customer
     public static final String CUSTOMER = "customer";
     public static final String CUS_NAME = "Name";
+    public static final String CUS_CONTACT = "Contact";
+    public static final String CUS_ADDRESS = "Address";
+    public static final String CUS_CITY = "City";
+    public static final String CUS_DISTRICT = "District";
+    public static final String CUS_USERNAME = "Username";
 
     // Field of Restaurant
     public static final String RESTAURANT = "restaurant";

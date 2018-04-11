@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,14 +17,18 @@ import android.widget.ListView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,6 +44,7 @@ import model.TableModel;
 public class RestaurantFragment extends Fragment {
 
 
+    private static final String TAG = "RestaurantFragment";
     @BindView(R.id.list_view_table)
     public ListView listView;
     private ArrayList<TableModel> listData;
@@ -107,6 +113,7 @@ public class RestaurantFragment extends Fragment {
                             TableModel table = new TableModel();
                             table.setTableNumber(tableNumber);
                             table.setAvailable(tableAvailable);
+                            onChangeListener(document.getId());
                             listData.add(table);
                         }
                         gridListAdapter.clearList();
@@ -124,6 +131,41 @@ public class RestaurantFragment extends Fragment {
                     }
                 }
             });
+    }
+
+    private void onChangeListener(String docID) {
+
+        final DocumentReference docRef = db.collection(QuanLyConstants.TABLE).document(docID);
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
+                if(e!= null){
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+
+                String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
+                        ? "Local" : "Server";
+
+                if (snapshot != null && snapshot.exists()) {
+                    Map<String, Object> table = snapshot.getData();
+                    boolean flag = false;
+                    if("1".equals(table.get(QuanLyConstants.TABLE_ORDER_ID).toString())){
+                        flag = true;
+                    }
+                    String tableNumber = table.get(QuanLyConstants.TABLE_NUMBER).toString();
+                    for(int i = 0; i < listData.size(); i++){
+                        if(listData.get(i).getTableNumber().equals(tableNumber)){
+                            listData.get(i).setAvailable(flag);
+                            gridListAdapter.notifyDataSetChanged();
+                            break;
+                        }
+                    }
+                } else {
+                    Log.d(TAG, source + " data: null");
+                }
+            }
+        });
     }
 
     /*

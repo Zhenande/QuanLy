@@ -59,7 +59,7 @@ public class BillListAdapter extends BaseAdapter {
         }
 
         Bill bill = listBill.get(position);
-        holder.txtBillNumber.setText(bill.getId());
+        holder.txtBillNumber.setText(bill.getBillNumber());
         holder.txtTime.setText(bill.getTime());
         holder.txtCost.setText(bill.getCostTotal());
 

@@ -54,6 +54,8 @@ public class OrderDetailActivity extends AppCompatActivity {
     public TextView txtTotalCost;
     @BindView(R.id.order_detail_dateBook)
     public TextView txtDateBook;
+    @BindView(R.id.order_detail_number)
+    public TextView txtBillNumber;
     private ArrayList<FoodOnBill> listData;
     private ListFoodOnBillAdapter listFoodOnBillAdapter;
     private MaterialDialog dialogLoading;
@@ -75,11 +77,13 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         tableNumber = getIntent().getStringExtra(QuanLyConstants.TABLE_NUMBER);
         if(TextUtils.isEmpty(tableNumber)) {
+            // Open from BillFragment
             saveOrderID = getIntent().getStringExtra(QuanLyConstants.TABLE_ORDER_ID);
             processCheckOrder();
             displayOrderDetail();
         }
         else{
+            // Open from RestaurantFragment
             renderData();
         }
 
@@ -116,6 +120,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                             document.get(QuanLyConstants.ORDER_TIME)));
                     txtDateBook.setText(getResources().getString(R.string.dateBook,
                             document.get(QuanLyConstants.ORDER_DATE)));
+                    txtBillNumber.setText(getResources().getString(R.string.billNumber,document.get(QuanLyConstants.BILL_NUMBER).toString()));
                     String customerID = document.get(QuanLyConstants.CUSTOMER_ID).toString();
                     Log.i(TAG,document.getId());
                     renderCusName(customerID);
@@ -150,7 +155,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if(task.isSuccessful()){
                         for(DocumentSnapshot document : task.getResult()){
-                            if(document.get(QuanLyConstants.TABLE_NUMBER).equals(tableNumber)){
+                            if(document.get(QuanLyConstants.TABLE_NUMBER).toString().equals(tableNumber)){
                                 tableID = document.getId();
                                 renderCusInfo(document.get(QuanLyConstants.TABLE_ORDER_ID).toString());
                             }
@@ -182,7 +187,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                                     txtDateBook.setText(getResources().getString(R.string.dateBook,
                                             document.get(QuanLyConstants.ORDER_DATE)));
                                     String customerID = document.get(QuanLyConstants.CUSTOMER_ID).toString();
-                                    Log.i(TAG,document.getId());
+                                    txtBillNumber.setText(getResources().getString(R.string.billNumber,document.get(QuanLyConstants.BILL_NUMBER).toString()));
                                     saveOrderID = orderID;
                                     renderCusName(customerID);
                                     renderListFood(orderID);

@@ -34,8 +34,11 @@ import com.tsongkha.spinnerdatepicker.DatePicker;
 import com.tsongkha.spinnerdatepicker.DatePickerDialog;
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 
 import adapter.BillListAdapter;
 import butterknife.BindView;
@@ -70,6 +73,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
     private FirebaseFirestore db;
     private MaterialDialog dialogLoading;
     private ActionBar actionBar;
+    private SimpleDateFormat sdf_Date = new SimpleDateFormat("dd/MM/yyyy");
 
     public BillFragment() {
         // Required empty public constructor
@@ -108,7 +112,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
         buttonDate.setText(view.getResources().getString(R.string.full_date,new Object[]{cal.get(Calendar.DAY_OF_MONTH),
                                                             cal.get(Calendar.MONTH)+1,
                                                             cal.get(Calendar.YEAR)}));
-        renderData(buttonDate.getText().toString());
+        renderData(sdf_Date.format(cal.getTime()));
 
         return view;
     }
@@ -128,11 +132,18 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                         for(DocumentSnapshot document : task.getResult()){
                             Bill bill = new Bill();
                             bill.setId(document.getId());
+                            bill.setBillNumber(document.get(QuanLyConstants.BILL_NUMBER).toString());
                             bill.setTime(document.get(QuanLyConstants.ORDER_TIME).toString());
                             bill.setCostTotal(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
                             listData.add(bill);
                         }
                         closeLoadingDialog();
+                        Collections.sort(listData, new Comparator<Bill>() {
+                            @Override
+                            public int compare(Bill o1, Bill o2) {
+                                return o1.getBillNumber().compareTo(o2.getBillNumber());
+                            }
+                        });
                         listBillAdapter.notifyDataSetChanged();
                     }
                 }
@@ -168,7 +179,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                     dateChoose.get(Calendar.MONTH)+1,
                     dateChoose.get(Calendar.YEAR)});
             buttonDate.setText(dateText);
-            renderData(dateText);
+            renderData(sdf_Date.format(dateChoose.getTime()));
         }
     }
 

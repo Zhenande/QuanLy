@@ -51,6 +51,7 @@
     <string name="timeBook">Time: %s</string>
     <string name="dateBook">Date: %s</string>
     <string name="table">Table: %s</string>
+    <string name="billNumber">Bill Number: %s</string>
     <string name="totalCost">Total: %s</string>
     <string name="checkOut">Check Out</string>
     <string name="dialogCheckOut">Do you want to check out this order?</string>

@@ -21,17 +21,26 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SimpleTimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -43,6 +52,7 @@ import constants.QuanLyConstants;
 import fragment.FoodFragment;
 import model.FoodOnBill;
 import util.GlobalVariable;
+import util.MoneyFormatter;
 
 public class CartActivity extends AppCompatActivity implements  AdapterView.OnItemSelectedListener, View.OnClickListener {
 
@@ -62,7 +72,10 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
     private int posTable;
     private boolean flag = false;
     private final long DELAY = 1500;
-    private int lengthOfCus = 0;
+    private SimpleDateFormat sdf_Date = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat sdf_Time = new SimpleDateFormat("HH:mm");
+    private String restaurantID;
+    private MaterialDialog dialogLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +94,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
         listFoodChoose = FoodFragment.listFoodChoose;
 
         getTableAvailable();
+
 
         listViewAdapter = new FoodChooseListAdapter(this,listFoodChoose);
         ViewGroup header = (ViewGroup)getLayoutInflater().inflate(R.layout.food_choose_list_header,listViewFood,false);
@@ -117,13 +131,19 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
         });
     }
 
+    private String getBillNumberOrder() {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf_short_date = new SimpleDateFormat("ddMMhhmmss");
+        return sdf_short_date.format(cal.getTime());
+    }
+
     public static void removeFood(int position){
         listFoodChoose.remove(position);
         listViewAdapter.notifyDataSetChanged();
     }
 
     private void getTableAvailable(){
-        String restaurantID = getRestaurantID();
+        restaurantID = getRestaurantID();
         if(!TextUtils.isEmpty(GlobalVariable.tableChoose)){
             flag = true;
         }
@@ -194,13 +214,117 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
 
     @Override
     public void onClick(View v) {
-
+        int id = v.getId();
+        if(id == R.id.food_choose_button_order){
+            clickButtonOrder();
+        }
     }
 
-    @OnClick(R.id.food_choose_button_order)
     public void clickButtonOrder(){
+        // Reset data of 2 global variable
         GlobalVariable.tableCusID = "";
         GlobalVariable.tableChoose = "";
 
+        showLoadingDialog();
+        // First, Get the CustomerID through the PhoneNumber
+        // Because the PhoneNumber is Unique
+
+        db.collection(QuanLyConstants.CUSTOMER)
+            .whereEqualTo(QuanLyConstants.CUS_CONTACT, edCusID.getText().toString())
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for(DocumentSnapshot document : task.getResult()){
+                            Calendar cal = Calendar.getInstance();
+                            Map<String, Object> order = new HashMap<>();
+                            order.put(QuanLyConstants.ORDER_CASH_TOTAL, getCashTotal());
+                            order.put(QuanLyConstants.ORDER_CheckOut,false);
+                            order.put(QuanLyConstants.CUSTOMER_ID, document.getId());
+                            order.put(QuanLyConstants.ORDER_DATE, sdf_Date.format(cal.getTime()));
+                            order.put(QuanLyConstants.ORDER_TIME, sdf_Time.format(cal.getTime()));
+                            order.put(QuanLyConstants.RESTAURANT_ID, restaurantID);
+                            order.put(QuanLyConstants.BILL_NUMBER, getBillNumberOrder());
+                            createOrderDetail(order);
+                        }
+                    }
+                }
+            });
+
+    }
+
+    /*
+    * @author: ManhLD
+    * Add the food choose into subcollection FoodOnOrder in collection Order
+    * */
+    private void createOrderDetail(Map<String, Object> order) {
+        db.collection(QuanLyConstants.ORDER)
+            .add(order)
+            .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentReference> task) {
+                    DocumentReference document = task.getResult();
+                    for(FoodOnBill fob : listFoodChoose){
+                        Map<String, Object> food = new HashMap<>();
+                        food.put(QuanLyConstants.FOOD_NAME, fob.getFoodName());
+                        food.put(QuanLyConstants.FOOD_PRICE, fob.getPrice()+"");
+                        food.put(QuanLyConstants.FOOD_QUANTITY, fob.getQuantity()+"");
+                        document.collection(QuanLyConstants.FOOD_ON_ORDER)
+                                .document(fob.getFoodId())
+                                .set(food);
+                    }
+                    takingTable(document.getId());
+                    Toast.makeText(CartActivity.this, "Order Success", Toast.LENGTH_SHORT).show();
+                }
+            });
+    }
+
+    /*
+    * @author: ManhLD
+    * Set the value OrderID of table. So this table will not be available
+    * And the icon in restaurant
+    * */
+    private void takingTable(String orderID) {
+        final Map<String, Object> table = new HashMap<>();
+        table.put(QuanLyConstants.TABLE_ORDER_ID, orderID);
+        db.collection(QuanLyConstants.TABLE)
+            .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+            .whereEqualTo(QuanLyConstants.TABLE_NUMBER, spinnerTable.getSelectedItem().toString())
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for(DocumentSnapshot document : task.getResult()){
+                            DocumentReference docRef = db.collection(QuanLyConstants.TABLE)
+                                                            .document(document.getId());
+                            docRef.set(table, SetOptions.merge());
+                            closeLoadingDialog();
+                            onBackPressed();
+                        }
+                    }
+                }
+            });
+
+    }
+
+
+    private String getCashTotal() {
+        int cashTotal = 0;
+        for(FoodOnBill fob : listFoodChoose){
+            cashTotal += (fob.getPrice() * fob.getQuantity());
+        }
+        return MoneyFormatter.formatToMoney(cashTotal+"") + " VNĐ";
+    }
+
+    public void showLoadingDialog(){
+        dialogLoading = new MaterialDialog.Builder(this)
+                .customView(R.layout.loading_dialog,true)
+                .show();
+    }
+
+    public void closeLoadingDialog(){
+        dialogLoading.dismiss();
     }
 }

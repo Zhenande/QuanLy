@@ -51,6 +51,7 @@
     <string name="timeBook">Giờ: %s</string>
     <string name="dateBook">Ngày: %s</string>
     <string name="table">Bàn: %s</string>
+    <string name="billNumber">Mã hóa đơn: %s</string>
     <string name="totalCost">Tổng tiền: %s</string>
     <string name="checkOut">Thanh Toán</string>
     <string name="dialogCheckOut">Bạn muốn thanh toán hóa đơn này?</string>

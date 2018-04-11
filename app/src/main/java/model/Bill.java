@@ -9,6 +9,7 @@ public class Bill {
     private String id;
     private String time;
     private String costTotal;
+    private String billNumber;
 
     public Bill(String id, String time, String costTotal) {
         this.id = id;
@@ -17,6 +18,14 @@ public class Bill {
     }
 
     public Bill() {
+    }
+
+    public String getBillNumber() {
+        return billNumber;
+    }
+
+    public void setBillNumber(String billNumber) {
+        this.billNumber = billNumber;
     }
 
     public String getId() {

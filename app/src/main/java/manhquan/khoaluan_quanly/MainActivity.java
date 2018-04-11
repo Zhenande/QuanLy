@@ -3,13 +3,10 @@ package manhquan.khoaluan_quanly;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -18,17 +15,12 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +40,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,6 +54,7 @@ import fragment.RestaurantFragment;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = "MainActivity";
     private FirebaseAuth mAuth;
     private DrawerLayout drawer;
     @BindView(R.id.drawer_user_name)
@@ -83,7 +77,7 @@ public class MainActivity extends AppCompatActivity
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         drawer = findViewById(R.id.drawer_layout);
@@ -113,7 +107,6 @@ public class MainActivity extends AppCompatActivity
         FragmentManager fragmentManager = getFragmentManager();
         Fragment fragment = new RestaurantFragment();
         fragmentManager.beginTransaction().replace(R.id.main_app_framelayout,fragment).commit();
-
 
     }
 
@@ -270,7 +263,7 @@ public class MainActivity extends AppCompatActivity
         for(int i = numberTableCurrent+1; i <= NumberAfterChange; i++){
             Map<String, Object> table = new HashMap<>();
             table.put(QuanLyConstants.TABLE_NUMBER,i);
-            table.put(QuanLyConstants.TABLE_ORDER_ID,1);
+            table.put(QuanLyConstants.TABLE_ORDER_ID,"1");
             table.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
             db.collection(QuanLyConstants.TABLE)
                     .add(table)

@@ -142,6 +142,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                         if(task.isSuccessful()){
                             for(DocumentSnapshot document : task.getResult()){
                                 Food food = new Food();
+                                food.setFoodId(document.getId());
                                 food.setDescription(document.get(QuanLyConstants.FOOD_DESCRIPTION).toString());
                                 food.setFoodType(document.get(QuanLyConstants.FOOD_TYPE).toString());
                                 food.setImageResource(document.get(QuanLyConstants.FOOD_IMAGE_NAME).toString());
@@ -208,9 +209,9 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                             FoodOnBill foodChoose = new FoodOnBill();
                             foodChoose.setFoodName(food.getFoodName());
                             foodChoose.setPrice(food.getPrice());
+                            foodChoose.setFoodId(food.getFoodId());
                             foodChoose.setQuantity(Integer.parseInt(edQuantity.getText().toString()));
                             FoodFragment.addFoodChoose(foodChoose);
-                            Log.i(TAG,FoodFragment.listFoodChoose.size()+"");
                         }
                     })
                     .build();
