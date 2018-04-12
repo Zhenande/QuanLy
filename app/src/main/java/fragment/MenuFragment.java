@@ -2,6 +2,7 @@ package fragment;
 
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -67,9 +68,19 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
     private FirebaseFirestore db;
     private String foodType;
     private MaterialDialog dialogChoose;
+    private CallbackTmp call;
+
+    public interface CallbackTmp {
+        void onReturnData(FoodOnBill foodOnBill);
+    }
+
+    @SuppressLint("ValidFragment")
+    public MenuFragment(CallbackTmp call) {
+        this.call = call;
+        // Required empty public constructor
+    }
 
     public MenuFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -189,7 +200,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         final Food food = listData.get(position);
         int pos_res = getPosition();
-        if(pos_res == 1){
+        if(pos_res == 1 || pos_res == 2){
             Intent i = new Intent(this.view.getContext(), FoodDetailActivity.class);
             i.putExtra(QuanLyConstants.INTENT_FOOD_DETAIL_NAME,food.getFoodName());
             this.view.getContext().startActivity(i);
@@ -211,7 +222,8 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                             foodChoose.setPrice(food.getPrice());
                             foodChoose.setFoodId(food.getFoodId());
                             foodChoose.setQuantity(Integer.parseInt(edQuantity.getText().toString()));
-                            FoodFragment.addFoodChoose(foodChoose);
+
+                            call.onReturnData(foodChoose);
                         }
                     })
                     .build();

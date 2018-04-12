@@ -9,9 +9,8 @@
     tools:context=".CartActivity">
 
     <LinearLayout
-        android:layout_weight="2.0"
+        android:layout_weight="2.2"
         android:orientation="horizontal"
-        android:minHeight="30dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -32,34 +31,48 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_weight="1.9"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        android:minHeight="30dp"
+        android:layout_weight="0.7"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:text="@string/cart_cus_id"
-            style="@style/TextBlack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/cart_cus_id"
-            style="@style/FirebaseUI.TextInputEditText"
-            android:hint="@string/cart_hint_cus_id"
-            android:layout_marginStart="10dp"
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="@string/cart_cus_id"
+                style="@style/TextBlack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/cart_cus_id"
+                style="@style/FirebaseUI.TextInputEditText"
+                android:hint="@string/cart_hint_cus_id"
+                android:layout_marginStart="10dp"
+                android:minWidth="400dp"
+                android:textColor="@drawable/edit_text_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/cart_button_checkID"
+                android:text="@string/cart_button_checkID"
+                android:minWidth="80dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/food_choose_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
-
-    <ListView
-        android:layout_weight="0.8"
-        android:id="@+id/food_choose_list_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
     <Button
         android:layout_weight="2"

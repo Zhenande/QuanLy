@@ -1,6 +1,8 @@
 package manhquan.khoaluan_quanly;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Handler;
@@ -11,7 +13,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,12 +21,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -40,24 +39,19 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SimpleTimeZone;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import adapter.FoodChooseListAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import constants.QuanLyConstants;
-import fragment.FoodFragment;
 import model.FoodOnBill;
 import util.GlobalVariable;
 import util.MoneyFormatter;
 
-public class CartActivity extends AppCompatActivity implements  AdapterView.OnItemSelectedListener, View.OnClickListener {
+public class CartActivity extends AppCompatActivity implements  AdapterView.OnItemSelectedListener, View.OnClickListener, FoodChooseListAdapter.CallBackFood {
 
     private static final String TAG = "CartActivity";
-    public static ArrayList<FoodOnBill> listFoodChoose;
+    public ArrayList<FoodOnBill> listFoodChoose;
     @BindView(R.id.food_choose_list_view)
     public ListView listViewFood;
     @BindView(R.id.cart_spinner_tableNumber)
@@ -66,16 +60,21 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
     public EditText edCusID;
     @BindView(R.id.food_choose_button_order)
     public Button buttonOrder;
-    public static FoodChooseListAdapter listViewAdapter;
+    @BindView(R.id.cart_button_checkID)
+    public Button buttonCheckID;
+    public  FoodChooseListAdapter listViewAdapter;
     private ArrayList<String> listTable = new ArrayList<>();
     private FirebaseFirestore db;
     private int posTable;
     private boolean flag = false;
     private final long DELAY = 1500;
+    @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat sdf_Date = new SimpleDateFormat("dd/MM/yyyy");
+    @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat sdf_Time = new SimpleDateFormat("HH:mm");
     private String restaurantID;
     private MaterialDialog dialogLoading;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,17 +90,17 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
             edCusID.setText(GlobalVariable.tableCusID);
         }
 
-        listFoodChoose = FoodFragment.listFoodChoose;
-
         getTableAvailable();
 
+        listFoodChoose = (ArrayList<FoodOnBill>)getIntent().getSerializableExtra(QuanLyConstants.INTENT_FOOD_CHOOSE_CART);
 
-        listViewAdapter = new FoodChooseListAdapter(this,listFoodChoose);
+        listViewAdapter = new FoodChooseListAdapter(this,listFoodChoose,this);
         ViewGroup header = (ViewGroup)getLayoutInflater().inflate(R.layout.food_choose_list_header,listViewFood,false);
         listViewFood.addHeaderView(header);
 
         listViewFood.setAdapter(listViewAdapter);
         buttonOrder.setOnClickListener(this);
+        buttonCheckID.setOnClickListener(this);
 
         edCusID.addTextChangedListener(new TextWatcher() {
             @Override
@@ -131,15 +130,11 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
         });
     }
 
+    @SuppressLint("SimpleDateFormat")
     private String getBillNumberOrder() {
         Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf_short_date = new SimpleDateFormat("ddMMhhmmss");
+         SimpleDateFormat sdf_short_date = new SimpleDateFormat("ddMMhhmmss");
         return sdf_short_date.format(cal.getTime());
-    }
-
-    public static void removeFood(int position){
-        listFoodChoose.remove(position);
-        listViewAdapter.notifyDataSetChanged();
     }
 
     private void getTableAvailable(){
@@ -218,6 +213,34 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
         if(id == R.id.food_choose_button_order){
             clickButtonOrder();
         }
+        else if(id == R.id.cart_button_checkID){
+            checkID();
+        }
+    }
+
+    private void checkID() {
+        if(TextUtils.isEmpty(edCusID.getText().toString())){
+            edCusID.setError(getResources().getString(R.string.required));
+            edCusID.requestFocus();
+        }
+        else{
+            db.collection(QuanLyConstants.CUSTOMER)
+                    .whereEqualTo(QuanLyConstants.CUS_CONTACT,edCusID.getText().toString())
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if(task.isSuccessful()){
+                                for(DocumentSnapshot document : task.getResult()){
+                                    if(document.exists()){
+                                        edCusID.setEnabled(false);
+                                        buttonCheckID.setEnabled(false);
+                                    }
+                                }
+                            }
+                        }
+                    });
+        }
     }
 
     public void clickButtonOrder(){
@@ -290,19 +313,21 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
         table.put(QuanLyConstants.TABLE_ORDER_ID, orderID);
         db.collection(QuanLyConstants.TABLE)
             .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
-            .whereEqualTo(QuanLyConstants.TABLE_NUMBER, spinnerTable.getSelectedItem().toString())
             .get()
             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if(task.isSuccessful()){
                         for(DocumentSnapshot document : task.getResult()){
-                            DocumentReference docRef = db.collection(QuanLyConstants.TABLE)
-                                                            .document(document.getId());
-                            docRef.set(table, SetOptions.merge());
-                            closeLoadingDialog();
-                            onBackPressed();
+                            if(document.get(QuanLyConstants.TABLE_NUMBER).toString().equals(spinnerTable.getSelectedItem().toString())) {
+                                DocumentReference docRef = db.collection(QuanLyConstants.TABLE)
+                                        .document(document.getId());
+                                docRef.set(table, SetOptions.merge());
+                                break;
+                            }
                         }
+                        closeLoadingDialog();
+                        onBackPressed();
                     }
                 }
             });
@@ -320,11 +345,26 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
 
     public void showLoadingDialog(){
         dialogLoading = new MaterialDialog.Builder(this)
+                .backgroundColor(getResources().getColor(R.color.primary_dark))
                 .customView(R.layout.loading_dialog,true)
                 .show();
     }
 
     public void closeLoadingDialog(){
         dialogLoading.dismiss();
+    }
+
+    @Override
+    public void onFoodRemove(int position) {
+        listFoodChoose.remove(position);
+        listViewAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void finish() {
+        Intent dataBack = new Intent();
+        dataBack.putExtra(QuanLyConstants.INTENT_FOOD_CHOOSE_CART,listFoodChoose);
+        this.setResult(Activity.RESULT_OK,dataBack);
+        super.finish();
     }
 }

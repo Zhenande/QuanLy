@@ -9,8 +9,10 @@
 
     <LinearLayout
         android:orientation="horizontal"
+        android:layout_weight="1"
+        android:background="@color/white_greyish"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/choose_food_dialog_image"
@@ -46,23 +48,32 @@
 
     <TextView
         android:text="@string/food_detail_text_description"
+        android:layout_marginTop="20dp"
         android:layout_weight="1"
         style="@style/TextBlack"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
 
-    <TextView
-        android:id="@+id/choose_food_dialog_description"
-        style="@style/TextBlack"
-        android:layout_marginTop="10dp"
-        android:layout_weight="1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <ScrollView
+        android:layout_weight="0.75"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/choose_food_dialog_description"
+            style="@style/TextBlack"
+            android:layout_marginTop="10dp"
+            android:background="@color/white_greyish"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </ScrollView>
 
     <LinearLayout
         android:orientation="horizontal"
+        android:layout_weight="1.25"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <TextView
             android:text="@string/choose_food_dialog_quantity"
@@ -77,9 +88,9 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="5dp"
             android:src="@drawable/ic_sub"
-            android:scaleType="fitXY"
-            android:layout_width="20dp"
-            android:layout_height="20dp" />
+            android:scaleType="fitCenter"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
 
         <EditText
             android:id="@+id/choose_food_dialog_quantity"
@@ -96,10 +107,10 @@
             android:layout_gravity="center"
             android:background="@color/white"
             android:layout_marginStart="5dp"
-            android:scaleType="fitXY"
+            android:scaleType="fitCenter"
             android:src="@drawable/ic_add"
-            android:layout_width="20dp"
-            android:layout_height="20dp" />
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
 
     </LinearLayout>
 

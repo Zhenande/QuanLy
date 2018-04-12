@@ -30,11 +30,17 @@ public class FoodChooseListAdapter extends BaseAdapter {
     private ArrayList<FoodOnBill> listData;
     private Context context;
     private LayoutInflater inflater;
+    private CallBackFood cbf;
 
-    public FoodChooseListAdapter(Context context, ArrayList<FoodOnBill> listData) {
+    public interface CallBackFood{
+        void onFoodRemove(int position);
+    }
+
+    public FoodChooseListAdapter(Context context, ArrayList<FoodOnBill> listData, CallBackFood cbf) {
         this.listData = listData;
         this.context = context;
         inflater = LayoutInflater.from(context);
+        this.cbf = cbf;
     }
 
     @Override
@@ -92,7 +98,7 @@ public class FoodChooseListAdapter extends BaseAdapter {
                             .onPositive(new MaterialDialog.SingleButtonCallback() {
                                 @Override
                                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                    CartActivity.removeFood(finalPos);
+                                    cbf.onFoodRemove(finalPos);
                                 }
                             })
                             .build()

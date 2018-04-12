@@ -1,27 +1,21 @@
 package fragment;
 
 
-import android.app.ActionBar;
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import android.support.annotation.NonNull;
-import android.support.v4.view.GravityCompat;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -44,7 +38,6 @@ import adapter.BillListAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
-import manhquan.khoaluan_quanly.FoodDetailActivity;
 import manhquan.khoaluan_quanly.OrderDetailActivity;
 import manhquan.khoaluan_quanly.R;
 import model.Bill;
@@ -72,7 +65,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
     private View view;
     private FirebaseFirestore db;
     private MaterialDialog dialogLoading;
-    private ActionBar actionBar;
+    @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat sdf_Date = new SimpleDateFormat("dd/MM/yyyy");
 
     public BillFragment() {
@@ -164,8 +157,39 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
 
         }
         else if(id == R.id.bill_fragment_search){
-
+            doButtonSearch();
         }
+    }
+
+    private void doButtonSearch() {
+        showLoadingDialog();
+        final String inputBillNumber = edBillNumber.getText().toString();
+//        String date = inputBillNumber.substring(0,4);
+        String timeTest = inputBillNumber.substring(4,8);
+        String timeSearch = timeTest.substring(0,2) + ":" + timeTest.substring(2,4);
+        db.collection(QuanLyConstants.ORDER)
+            .whereEqualTo(QuanLyConstants.ORDER_TIME,timeSearch)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for(DocumentSnapshot document : task.getResult()){
+                            if(document.get(QuanLyConstants.BILL_NUMBER).toString().equals(inputBillNumber)){
+                                listData.clear();
+                                Bill bill = new Bill();
+                                bill.setId(document.getId());
+                                bill.setBillNumber(document.get(QuanLyConstants.BILL_NUMBER).toString());
+                                bill.setTime(document.get(QuanLyConstants.ORDER_TIME).toString());
+                                bill.setCostTotal(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
+                                listData.add(bill);
+                                listBillAdapter.notifyDataSetChanged();
+                                closeLoadingDialog();
+                            }
+                        }
+                    }
+                }
+            });
     }
 
     @Override
@@ -175,10 +199,9 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
         dateChoose.set(Calendar.MONTH, monthOfYear);
         dateChoose.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         if(checkCorrectDate(dateChoose)){
-            String dateText = view.getResources().getString(R.string.full_date,new Object[]{dateChoose.get(Calendar.DAY_OF_MONTH),
+            buttonDate.setText(view.getResources().getString(R.string.full_date,new Object[]{dateChoose.get(Calendar.DAY_OF_MONTH),
                     dateChoose.get(Calendar.MONTH)+1,
-                    dateChoose.get(Calendar.YEAR)});
-            buttonDate.setText(dateText);
+                    dateChoose.get(Calendar.YEAR)}));
             renderData(sdf_Date.format(dateChoose.getTime()));
         }
     }
@@ -210,9 +233,8 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        TextView txtBillNumber = view.findViewById(R.id.bill_list_bill_number);
         Intent i = new Intent(view.getContext(), OrderDetailActivity.class);
-        i.putExtra(QuanLyConstants.TABLE_ORDER_ID,txtBillNumber.getText().toString());
+        i.putExtra(QuanLyConstants.TABLE_ORDER_ID,listData.get(position-1).getId());
         startActivity(i);
     }
 }

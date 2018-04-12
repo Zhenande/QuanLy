@@ -1,6 +1,5 @@
 package model;
 
-import java.io.Serializable;
 
 import abstractModel.FoodAbstract;
 
@@ -8,7 +7,7 @@ import abstractModel.FoodAbstract;
  * Created by LieuDucManh on 3/11/2018.
  */
 
-public class FoodOnBill extends FoodAbstract implements Serializable{
+public class FoodOnBill extends FoodAbstract {
 
     private int quantity;
 

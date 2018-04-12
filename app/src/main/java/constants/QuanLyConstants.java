@@ -12,6 +12,7 @@ public class QuanLyConstants {
     public static final int FOOD_DETAIL = 5;
     public static final int CREATE_TABLE_ID = 6;
     public static final int INTENT_CART_ACTIVITY = 7;
+    public static final int REPORT_OUT_OF_FOOD = 8;
     public static final String INTENT_FOOD_CHOOSE_CART = "FoodChoose";
     public static final String INTENT_FOOD_DETAIL_NAME = "FoodName";
     public static final String INTENT_FOOD_DETAIL_FLAG = "FoodDetailFlag";
@@ -40,6 +41,7 @@ public class QuanLyConstants {
     public static final String FOOD_PRICE = "Price";
     public static final String FOOD_DESCRIPTION = "Description";
     public static final String FOOD_TYPE = "Type";
+    public static final String FOOD_AVAILABLE = "Available";
     public static final String FOOD_QUANTITY = "Quantity";
 
     // Field of Order
@@ -70,4 +72,5 @@ public class QuanLyConstants {
     public static final String RESTAURANT_NAME = "Name";
     public static final String RESTAURANT_FOOD_TYPE = "FoodType";
     public static final String FOOD_TYPE_NAME = "Name";
+
 }

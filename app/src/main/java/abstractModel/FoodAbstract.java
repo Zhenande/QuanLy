@@ -1,10 +1,12 @@
 package abstractModel;
 
+import java.io.Serializable;
+
 /**
  * Created by LieuDucManh on 3/11/2018.
  */
 
-public abstract class FoodAbstract{
+public abstract class FoodAbstract implements Serializable {
 
     private String foodId;
     private String foodName;

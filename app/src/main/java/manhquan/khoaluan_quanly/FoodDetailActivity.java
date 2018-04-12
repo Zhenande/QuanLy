@@ -75,9 +75,11 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     private MaterialDialog dialogLoading;
     private String imageName;
     private boolean createDone = false;
+    private boolean available = false;
     private FirebaseFirestore db;
     private String restaurantID;
     private ArrayList<String> listFoodType = new ArrayList<>();
+    private MenuItem item;
 
 
     @Override
@@ -150,7 +152,17 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                                 txtDescription.setText(document.get(QuanLyConstants.FOOD_DESCRIPTION).toString());
                                 txtType.setText(document.get(QuanLyConstants.FOOD_TYPE).toString());
                                 foodID = document.getId();
+                                available = (boolean)document.get(QuanLyConstants.FOOD_AVAILABLE);
                                 imageName = document.get(QuanLyConstants.FOOD_IMAGE_NAME).toString();
+                            }
+                            if(getPosition()==2){
+                                if(available){
+                                    // Food is ran out. set Food To False
+                                    item.setTitle(getResources().getString(R.string.food_detail_report_out_of_food));
+                                }
+                                else{
+                                    item.setTitle(getResources().getString(R.string.food_detail_report_enable_food));
+                                }
                             }
                             closeLoadingDialog();
                         }
@@ -247,8 +259,18 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        menu.clear();
         getMenuInflater().inflate(R.menu.detail, menu);
+        if(getPosition()==2){
+            item = menu.add(0,QuanLyConstants.REPORT_OUT_OF_FOOD,0,getResources().getString(R.string.action_create_table));
+        }
         return true;
+    }
+
+    public int getPosition(){
+        String langPref = QuanLyConstants.SHARED_POSITION;
+        SharedPreferences prefs = getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE, Activity.MODE_PRIVATE);
+        return prefs.getInt(langPref,0);
     }
 
     @Override
@@ -267,8 +289,23 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
             deleteFood();
             return true;
         }
+        if(id == QuanLyConstants.REPORT_OUT_OF_FOOD){
+            setOutOfFood();
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setOutOfFood() {
+        DocumentReference docRef = db.collection(QuanLyConstants.FOOD).document(foodID);
+        if(available){
+            docRef.update(QuanLyConstants.FOOD_AVAILABLE,false);
+        }
+        else{
+            docRef.update(QuanLyConstants.FOOD_AVAILABLE,true);
+        }
+
     }
 
     private void createButtonClick() {

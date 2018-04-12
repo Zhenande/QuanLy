@@ -4,6 +4,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="required">Required.</string>
+    <string name="string_done">Done</string>
 
     <!--=================================Main Activity===================================================-->
     <string name="main_language">Language</string>
@@ -141,6 +142,8 @@
     <string name="food_detail_button_galary_pick">Gallery</string>
     <string name="food_detail_button_camera">Camera</string>
     <string name="food_detail_content_delete">Do you want to delete this food?</string>
+    <string name="food_detail_report_out_of_food">Out Of Food</string>
+    <string name="food_detail_report_enable_food">Enable Food</string>
 
     <!--===============================Bill Fragment=============================================-->
     <string name="bill_fragment_date">Date: </string>
@@ -159,8 +162,9 @@
     <!--===============================Cart Activity=============================================-->
     <string name="cart_table">Table: </string>
     <string name="cart_cus_id">Customer ID: </string>
-    <string name="cart_hint_cus_id">You can input Customer ID or Phone Number or Email</string>
+    <string name="cart_hint_cus_id">Input Customer Phone Number</string>
     <string name="cart_button_order">Order</string>
+    <string name="cart_button_checkID">Check ID</string>
 
     <!--===============================Food Fragment=============================================-->
     <string name="food_frag_error_no_food">You have not choose any food</string>

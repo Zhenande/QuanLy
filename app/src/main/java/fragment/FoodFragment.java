@@ -35,14 +35,13 @@ import constants.QuanLyConstants;
 import manhquan.khoaluan_quanly.CartActivity;
 import manhquan.khoaluan_quanly.FoodDetailActivity;
 import manhquan.khoaluan_quanly.R;
-import model.Food;
 import model.FoodOnBill;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedListener {
+public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedListener, MenuFragment.CallbackTmp {
 
 
     @BindView(R.id.food_button_add)
@@ -58,27 +57,12 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
     private MaterialDialog dialogLoading;
     private View view;
     private FoodPagerAdapter adapter;
-    public volatile static ArrayList<FoodOnBill> listFoodChoose = new ArrayList<>();
-    private int positionEm;
+    public ArrayList<FoodOnBill> listFoodChoose = new ArrayList<>();
     private boolean flag = false;
 
 
     public FoodFragment() {
         // Required empty public constructor
-    }
-
-    public synchronized static void addFoodChoose(FoodOnBill food){
-        boolean flagAdd = true;
-        for(FoodOnBill fob : listFoodChoose){
-            if(fob.getFoodName().equals(food.getFoodName())){
-                fob.setQuantity(fob.getQuantity()+food.getQuantity());
-                flagAdd = false;
-                break;
-            }
-        }
-        if(flagAdd){
-            listFoodChoose.add(food);
-        }
     }
 
     @Override
@@ -94,8 +78,8 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
         showLoadingDialog();
         GetListFoodType();
 
-        positionEm = getPosition();
-        if(positionEm!=1){
+        int positionEm = getPosition();
+        if(positionEm !=1){
             buttonCreate.setImageResource(R.drawable.icon_cart);
             flag = true;
         }
@@ -131,7 +115,7 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
     private void setupViewPager(ViewPager viewPager) {
         adapter = new FoodPagerAdapter(getChildFragmentManager(),view.getContext());
         for(String name : listFoodType){
-            adapter.addFragment(new MenuFragment(),name);
+            adapter.addFragment(new MenuFragment(this),name);
         }
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager,true);
@@ -200,6 +184,10 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
             if(requestCode == QuanLyConstants.FOOD_DETAIL){
                 adapter.notifyDataSetChanged();
             }
+            if (requestCode == QuanLyConstants.INTENT_CART_ACTIVITY) {
+                listFoodChoose.clear();
+                listFoodChoose = (ArrayList<FoodOnBill>)data.getSerializableExtra(QuanLyConstants.INTENT_FOOD_CHOOSE_CART);
+            }
         }
     }
 
@@ -209,5 +197,19 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
         return prefs.getInt(langPref,0);
     }
 
+    @Override
+    public void onReturnData(FoodOnBill food) {
+        boolean flagAdd = true;
+        for(FoodOnBill fob : listFoodChoose){
+            if(fob.getFoodName().equals(food.getFoodName())){
+                fob.setQuantity(fob.getQuantity()+food.getQuantity());
+                flagAdd = false;
+                break;
+            }
+        }
+        if(flagAdd){
+            listFoodChoose.add(food);
+        }
+    }
 
 }
