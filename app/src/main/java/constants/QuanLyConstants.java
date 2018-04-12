@@ -56,6 +56,7 @@ public class QuanLyConstants {
     public static final String TABLE = "table";
     public static final String TABLE_NUMBER = "Number";
     public static final String TABLE_ORDER_ID = "OrderID";
+    public static final String TABLE_EMPLOYEE_ID = "EmployeeID";
 
 
     // Field of Customer

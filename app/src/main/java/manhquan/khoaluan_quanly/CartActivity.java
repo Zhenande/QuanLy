@@ -269,6 +269,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                             order.put(QuanLyConstants.ORDER_TIME, sdf_Time.format(cal.getTime()));
                             order.put(QuanLyConstants.RESTAURANT_ID, restaurantID);
                             order.put(QuanLyConstants.BILL_NUMBER, getBillNumberOrder());
+                            order.put(QuanLyConstants.TABLE_EMPLOYEE_ID, GlobalVariable.employeeID);
                             createOrderDetail(order);
                         }
                     }
@@ -276,6 +277,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
             });
 
     }
+
 
     /*
     * @author: ManhLD

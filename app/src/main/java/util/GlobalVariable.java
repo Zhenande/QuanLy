@@ -8,4 +8,5 @@ public class GlobalVariable {
 
     public static String tableChoose = "0";
     public static String tableCusID = "";
+    public static String employeeID = "";
 }

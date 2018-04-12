@@ -29,6 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import model.Restaurant;
+import util.GlobalVariable;
 
 public class SignInActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -141,6 +142,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                                         Intent i = new Intent(SignInActivity.this,MainActivity.class);
                                         i.putExtra(QuanLyConstants.EMPLOYEE_POSITION,position);
                                         i.putExtra(QuanLyConstants.EMPLOYEE_NAME,emName);
+                                        GlobalVariable.employeeID = document.getId();
                                         saveRestaurantID(document.get(QuanLyConstants.RESTAURANT_ID).toString());
                                         closeLoadingDialog();
                                         startActivity(i);
