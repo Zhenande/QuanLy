@@ -40,6 +40,7 @@
     <string name="nav_income">Doanh Thu</string>
     <string name="nav_account">Tài Khoản</string>
     <string name="nav_food">Món Ăn</string>
+    <string name="nav_order">Order</string>
 
     <!--=================================Restaurant Fragment==========================================-->
     <string name="tableNumber">Bàn </string>
@@ -57,6 +58,7 @@
     <string name="checkOut">Thanh Toán</string>
     <string name="dialogCheckOut">Bạn muốn thanh toán hóa đơn này?</string>
     <string name="checkOutDone">Thanh toán thành công</string>
+    <string name="customerNoName">Khách</string>
 
     <!--=================================Food On Bill List Item=========================================-->
     <string name="fobFoodName">Tên món</string>
@@ -164,6 +166,7 @@
     <string name="cart_hint_cus_id">Nhập số điện thoại khách hàng</string>
     <string name="cart_button_order">Gọi Món</string>
     <string name="cart_button_checkID">Kiểm Tra ID</string>
+    <string name="cart_dialog_warning_no_cusID">Customer ID trống. Có phải khách hàng không có tài khoản của ứng dụng?</string>
 
     <!--===============================Food Fragment=============================================-->
     <string name="food_frag_error_no_food">Bạn chưa chọn món ăn nào cả.</string>

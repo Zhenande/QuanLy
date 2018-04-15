@@ -3,6 +3,7 @@ package manhquan.khoaluan_quanly;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -15,11 +16,16 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,15 +39,21 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import adapter.NotificationAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
@@ -50,9 +62,13 @@ import fragment.EmployeeFragment;
 import fragment.FoodFragment;
 import fragment.IncomeFragment;
 import fragment.RestaurantFragment;
+import model.NotiContent;
+import model.Notification;
+import util.GlobalVariable;
+import util.NotificationTouchHelper;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, NotificationTouchHelper.CallBackRemoveItem {
 
     private static final String TAG = "MainActivity";
     private FirebaseAuth mAuth;
@@ -61,10 +77,16 @@ public class MainActivity extends AppCompatActivity
     public TextView txtDrawerUserName;
     @BindView(R.id.drawer_position)
     public TextView txtPosition;
+    @BindView(R.id.drawer_notification)
+    public ImageButton buttonNoti;
     private FirebaseFirestore db;
     private MaterialDialog create_table_dialog;
     private NavigationView navigationView;
     private boolean doubleBackToSignOutPressedOnce = false;
+    private MaterialDialog dialogChoose;
+    private NotificationAdapter adapter;
+    private List<Notification> listNotification = new ArrayList<>();
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +124,7 @@ public class MainActivity extends AppCompatActivity
             savePosition(position);
         }
         renderDrawerData(emName,position);
+        buttonNoti.setOnClickListener(this);
 
 
         FragmentManager fragmentManager = getFragmentManager();
@@ -209,7 +232,7 @@ public class MainActivity extends AppCompatActivity
                                     if (NumberTableCurrent < NumberTableNeedChange) {
                                         Toast.makeText(view.getContext(),
                                                 getResources().getString(R.string.table_error_delete_too_much,
-                                                        new Object[]{NumberTableNeedChange, NumberTableCurrent}), Toast.LENGTH_SHORT).show();
+                                                        NumberTableNeedChange, NumberTableCurrent), Toast.LENGTH_SHORT).show();
                                     } else {
                                         deleteTable(NumberTableCurrent, NumberTableNeedChange, restaurantID);
                                     }
@@ -222,13 +245,11 @@ public class MainActivity extends AppCompatActivity
                     })
                     .build();
             create_table_dialog.show();
-            //View viewDialog = create_table_dialog.getCustomView();
-
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void deleteTable(final int numberTableCurrent, int numberTableNeedChange, String restaurantID) {
+    private void deleteTable(final int numberTableCurrent, int numberTableNeedChange, final String restaurantID) {
         final int NumberAfterChange = numberTableCurrent - numberTableNeedChange;
         db.collection(QuanLyConstants.TABLE)
                 .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
@@ -238,15 +259,20 @@ public class MainActivity extends AppCompatActivity
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             for(DocumentSnapshot document : task.getResult()){
-                                int tableNum = Integer.parseInt(document.get(QuanLyConstants.TABLE_NUMBER).toString());
+                                final int tableNum = Integer.parseInt(document.get(QuanLyConstants.TABLE_NUMBER).toString());
+                                final String tableID = document.getId();
                                 if(tableNum <= numberTableCurrent && tableNum > NumberAfterChange){
                                     db.collection(QuanLyConstants.TABLE)
-                                            .document(document.getId())
+                                            .document(tableID)
                                             .delete()
                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
-
+                                                    db.collection(QuanLyConstants.COOK)
+                                                        .document(restaurantID)
+                                                        .collection(QuanLyConstants.TABLE)
+                                                        .document(tableID)
+                                                        .delete();
                                                 }
                                             });
                                 }
@@ -258,21 +284,32 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this,"Delete Done",Toast.LENGTH_SHORT).show();
     }
 
-    private void createTable(int numberTableCurrent, int numberTableNeedChange, String restaurantID) {
+    private void createTable(int numberTableCurrent, int numberTableNeedChange, final String restaurantID) {
         int NumberAfterChange = numberTableCurrent + numberTableNeedChange;
         for(int i = numberTableCurrent+1; i <= NumberAfterChange; i++){
             Map<String, Object> table = new HashMap<>();
-            table.put(QuanLyConstants.TABLE_NUMBER,i);
+            table.put(QuanLyConstants.TABLE_NUMBER,i+"");
             table.put(QuanLyConstants.TABLE_ORDER_ID,"1");
             table.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
+            final int num = i;
             db.collection(QuanLyConstants.TABLE)
                     .add(table)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
-
+                            String tableID = documentReference.getId();
+                            Map<String, Object> cook = new HashMap<>();
+                            cook.put(QuanLyConstants.TABLE_NUMBER, num);
+                            cook.put(QuanLyConstants.FOOD_NAME,"");
+                            cook.put(QuanLyConstants.ORDER_TIME,"99:99");
+                            db.collection(QuanLyConstants.COOK)
+                                .document(restaurantID)
+                                .collection(QuanLyConstants.TABLE)
+                                .document(tableID)
+                                .set(cook);
                         }
                     });
+
         }
         recreate();
         Toast.makeText(this,"Create Done",Toast.LENGTH_SHORT).show();
@@ -394,6 +431,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_bill:
                 fragment = new BillFragment();
                 break;
+            case R.id.nav_order:
+                fragment = new OrderFragment();
+                break;
             case R.id.nav_revenue:
                 fragment = new IncomeFragment();
                 break;
@@ -437,4 +477,207 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if(id == R.id.drawer_notification){
+            dialogChoose = new MaterialDialog.Builder(this)
+                    .customView(R.layout.notification_dialog, false)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+
+                        }
+                    })
+                    .build();
+            dialogChoose.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    clickOnItemListView(dialogChoose);
+                }
+            });
+
+            dialogChoose.show();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(adapter!=null){
+            adapter.onSaveInstanceState(outState);
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if(adapter!=null){
+            adapter.onRestoreInstanceState(savedInstanceState);
+        }
+    }
+
+    private void clickOnItemListView(final MaterialDialog dialogChoose) {
+        View view = dialogChoose.getView();
+        listNotification.clear();
+        recyclerView = view.findViewById(R.id.recyclerView_notification);
+        onChangeListener(GlobalVariable.employeeID);
+        db.collection(QuanLyConstants.NOTIFICATION)
+            .document(GlobalVariable.employeeID)
+            .collection(QuanLyConstants.TABLE)
+            .orderBy(QuanLyConstants.ORDER_TIME, Query.Direction.ASCENDING)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for(DocumentSnapshot document : task.getResult()){
+                            String[] content = document.get(QuanLyConstants.FOOD_NAME).toString().split(";");
+                            List<NotiContent> listNoti = new ArrayList<>();
+                            for(String aContent : content){
+                                listNoti.add(new NotiContent(aContent));
+                            }
+
+                            String time = document.get(QuanLyConstants.ORDER_TIME).toString();
+                            String title = document.get(QuanLyConstants.TABLE_NUMBER).toString();
+
+                            Notification notification = new Notification(title,listNoti);
+                            notification.setTime(time);
+                            listNotification.add(notification);
+                        }
+
+                        if(listNotification.size()==0){
+                            dialogChoose.dismiss();
+                            return;
+                        }
+
+                        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+
+                        adapter = new NotificationAdapter(MainActivity.this,listNotification);
+                        recyclerView.setLayoutManager(layoutManager);
+                        recyclerView.setAdapter(adapter);
+
+                        NotificationTouchHelper nth = new NotificationTouchHelper(adapter, MainActivity.this);
+                        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(nth);
+                        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+                    }
+                }
+            });
+
+    }
+
+    private void onChangeListener(String docID) {
+
+        final DocumentReference docRef = db.collection(QuanLyConstants.NOTIFICATION).document(docID);
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+
+                String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
+                        ? "Local" : "Server";
+
+                if (snapshot != null && snapshot.exists()) {
+
+                } else {
+                    Log.d(TAG, source + " data: null");
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onRemoveItem(int position, int parentPos) {
+        if(parentPos == -1){
+            removeTableFollow(position);
+        }
+        else{
+//            listNotification.get(parentPos).getItems().remove(position-parentPos-1);
+            removeFoodOfTable(position, parentPos);
+//            if(listNotification.get(parentPos).getItems().size()==0){
+//                listNotification.remove(parentPos);
+//            }
+        }
+    }
+
+    private void removeFoodOfTable(final int position, final int parentPos) {
+        db.collection(QuanLyConstants.NOTIFICATION)
+            .document(GlobalVariable.employeeID)
+            .collection(QuanLyConstants.TABLE)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for(DocumentSnapshot document : task.getResult()){
+                            Notification noti = listNotification.get(parentPos);
+                            String titleDoc = document.get(QuanLyConstants.TABLE_NUMBER).toString();
+                            if(noti.getTitle().equals(titleDoc)){
+                                String[] content = document.get(QuanLyConstants.FOOD_NAME).toString().split(";");
+                                int posRemove = position - parentPos-1;
+                                if(content.length==1){
+                                    document.getReference().delete();
+                                    adapter.notifyItemRangeRemoved(position - 1,2);
+                                    listNotification.remove(position-1);
+                                }
+                                else {
+                                    StringBuilder builder = new StringBuilder();
+                                    for (int i = 0; i < content.length; i++) {
+                                        if (i == posRemove) {
+                                            continue;
+                                        } else {
+                                            builder.append(content[i]);
+                                            builder.append(";");
+                                        }
+                                    }
+                                    document.getReference()
+                                            .update(QuanLyConstants.FOOD_NAME, builder.toString());
+                                    adapter.notifyItemRemoved(position);
+                                    listNotification.get(parentPos).getItems().remove(position-parentPos-1);
+                                }
+                                break;
+                            }
+                        }
+                        if(listNotification.size()==0){
+                            dialogChoose.dismiss();
+                        }
+                    }
+                }
+            });
+    }
+
+    private void removeTableFollow(final int parentPos) {
+        db.collection(QuanLyConstants.NOTIFICATION)
+            .document(GlobalVariable.employeeID)
+            .collection(QuanLyConstants.TABLE)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for(DocumentSnapshot document : task.getResult()){
+                            Notification noti = listNotification.get(parentPos);
+                            String titleDoc = document.get(QuanLyConstants.TABLE_NUMBER).toString();
+                            if(noti.getTitle().equals(titleDoc)){
+                                document.getReference().delete();
+                                int childCountGroup = adapter.getGroups().get(parentPos).getItemCount();
+                                while(adapter.getGroups().get(parentPos).getItemCount()!=0){
+                                    adapter.getGroups().get(parentPos).getItems().remove(0);
+                                }
+                                listNotification.remove(parentPos);
+                                adapter.notifyItemRangeRemoved(parentPos, childCountGroup+1);
+                                break;
+                            }
+                        }
+                        if(listNotification.size()==0){
+                            dialogChoose.dismiss();
+                        }
+                    }
+                }
+            });
+    }
 }

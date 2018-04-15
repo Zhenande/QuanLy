@@ -174,9 +174,9 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if(task.isSuccessful()){
+                        listData.clear();
                         for(DocumentSnapshot document : task.getResult()){
-                            if(document.get(QuanLyConstants.BILL_NUMBER).toString().equals(inputBillNumber)){
-                                listData.clear();
+                            if(document.get(QuanLyConstants.BILL_NUMBER).toString().contains(inputBillNumber)){
                                 Bill bill = new Bill();
                                 bill.setId(document.getId());
                                 bill.setBillNumber(document.get(QuanLyConstants.BILL_NUMBER).toString());

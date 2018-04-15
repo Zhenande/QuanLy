@@ -15,6 +15,11 @@
             android:title="@string/nav_bill" />
 
         <item
+            android:id="@+id/nav_order"
+            android:icon="@drawable/ic_bill"
+            android:title="@string/nav_order" />
+
+        <item
             android:id="@+id/nav_revenue"
             android:icon="@drawable/ic_revenue"
             android:title="@string/nav_income" />

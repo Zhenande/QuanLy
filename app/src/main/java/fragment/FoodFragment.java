@@ -136,7 +136,6 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
                             }
                             setupViewPager(viewPager);
                             closeLoadingDialog();
-                            Log.i(TAG, listFoodType.size()+"");
                         }
                     }
                 });

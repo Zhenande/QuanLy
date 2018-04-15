@@ -40,6 +40,7 @@
     <string name="nav_income">Revenue</string>
     <string name="nav_account">Account</string>
     <string name="nav_food">Food</string>
+    <string name="nav_order">Order</string>
 
     <!--=================================Restaurant Fragment==========================================-->
     <string name="tableNumber">Table </string>
@@ -57,6 +58,7 @@
     <string name="checkOut">Check Out</string>
     <string name="dialogCheckOut">Do you want to check out this order?</string>
     <string name="checkOutDone">Check out complete</string>
+    <string name="customerNoName">Customer</string>
 
     <!--=================================Food On Bill List Item=========================================-->
     <string name="fobFoodName">Food Name</string>
@@ -165,6 +167,7 @@
     <string name="cart_hint_cus_id">Input Customer Phone Number</string>
     <string name="cart_button_order">Order</string>
     <string name="cart_button_checkID">Check ID</string>
+    <string name="cart_dialog_warning_no_cusID">The Customer ID is empty. Does the customer does not have sign up for the app?</string>
 
     <!--===============================Food Fragment=============================================-->
     <string name="food_frag_error_no_food">You have not choose any food</string>

@@ -123,7 +123,12 @@ public class OrderDetailActivity extends AppCompatActivity {
                     txtBillNumber.setText(getResources().getString(R.string.billNumber,document.get(QuanLyConstants.BILL_NUMBER).toString()));
                     String customerID = document.get(QuanLyConstants.CUSTOMER_ID).toString();
                     Log.i(TAG,document.getId());
-                    renderCusName(customerID);
+                    if(!"1".equals(customerID)){
+                        renderCusName(customerID);
+                    }else{
+                        txtCusName.setText(getResources().getString(R.string.customerName,
+                                getResources().getString(R.string.customerNoName)));
+                    }
                     renderListFood(saveOrderID);
                 }
             });
@@ -189,7 +194,12 @@ public class OrderDetailActivity extends AppCompatActivity {
                                     String customerID = document.get(QuanLyConstants.CUSTOMER_ID).toString();
                                     txtBillNumber.setText(getResources().getString(R.string.billNumber,document.get(QuanLyConstants.BILL_NUMBER).toString()));
                                     saveOrderID = orderID;
-                                    renderCusName(customerID);
+                                    if(!"1".equals(customerID)) {
+                                        renderCusName(customerID);
+                                    }else{
+                                        txtCusName.setText(getResources().getString(R.string.customerName,
+                                                getResources().getString(R.string.customerNoName)));
+                                    }
                                     renderListFood(orderID);
                                 }
                             }

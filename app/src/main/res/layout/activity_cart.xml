@@ -75,11 +75,12 @@
     </LinearLayout>
 
     <Button
-        android:layout_weight="2"
+        android:layout_weight="2.2"
         android:layout_gravity="center"
         android:id="@+id/food_choose_button_order"
         style="@style/TextStyle"
         android:text="@string/cart_button_order"
+        android:minHeight="35dp"
         android:layout_width="wrap_content"
         android:layout_height="match_parent" />
 

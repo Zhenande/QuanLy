@@ -23,6 +23,7 @@ public class QuanLyConstants {
     public static final String SHARED_PERFERENCE = "CommonPrefs";
     public static final String SHARED_LANGUAGE = "Language";
     public static final String SHARED_POSITION = "Position";
+    public static final String NOTIFICATION = "notification";
 
 
     // Field of employee
@@ -73,5 +74,9 @@ public class QuanLyConstants {
     public static final String RESTAURANT_NAME = "Name";
     public static final String RESTAURANT_FOOD_TYPE = "FoodType";
     public static final String FOOD_TYPE_NAME = "Name";
+
+    // Field of Cook Notification
+    public static final String COOK = "cook";
+
 
 }

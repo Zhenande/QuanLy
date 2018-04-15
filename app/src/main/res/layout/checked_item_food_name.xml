@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_margin="5dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <CheckedTextView
+        android:id="@+id/checked_item_food_name"
+        style="@style/TextBlack"
+        android:textSize="24sp"
+        android:theme="@style/FirebaseUI.TextInputEditText"
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+        android:gravity="center"
+        android:layout_marginStart="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</FrameLayout>
