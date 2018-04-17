@@ -114,23 +114,70 @@ public class MainActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.nav_restaurant);
         navigationView.setNavigationItemSelectedListener(this);
+        int position = getIntent().getIntExtra(QuanLyConstants.EMPLOYEE_POSITION,0);
+        setRoleOfApp(position);
 
         View viewDrawerHeader = navigationView.getHeaderView(0);
         ButterKnife.bind(this,viewDrawerHeader);
 
-        int position = getIntent().getIntExtra(QuanLyConstants.EMPLOYEE_POSITION,0);
+
         String emName = getIntent().getStringExtra(QuanLyConstants.EMPLOYEE_NAME);
         if(getPosition() != position){
             savePosition(position);
+
         }
         renderDrawerData(emName,position);
-        buttonNoti.setOnClickListener(this);
 
 
         FragmentManager fragmentManager = getFragmentManager();
         Fragment fragment = new RestaurantFragment();
         fragmentManager.beginTransaction().replace(R.id.main_app_framelayout,fragment).commit();
 
+    }
+
+    private void setRoleOfApp(int position) {
+        switch (position){
+            case 1: // Manager
+                    setLayoutForManager();
+                    break;
+            case 2: // Cook
+                    setLayoutForCook();
+                    break;
+            case 3: // Waiter
+                    setLayoutForWaiter();
+                    buttonNoti.setOnClickListener(this);
+                    break;
+            case 4: // Cashier
+                    setLayoutForCashier();
+                    break;
+        }
+    }
+
+    private void setLayoutForCashier() {
+        navigationView.getMenu().removeItem(R.id.nav_order);
+        navigationView.getMenu().removeItem(R.id.nav_revenue);
+        navigationView.getMenu().removeItem(R.id.nav_account);
+    }
+
+    private void setLayoutForWaiter() {
+        navigationView.getMenu().removeItem(R.id.nav_restaurant);
+        navigationView.getMenu().removeItem(R.id.nav_bill);
+        navigationView.getMenu().removeItem(R.id.nav_order);
+        navigationView.getMenu().removeItem(R.id.nav_revenue);
+        navigationView.getMenu().removeItem(R.id.nav_account);
+    }
+
+    private void setLayoutForCook() {
+
+        navigationView.getMenu().removeItem(R.id.nav_restaurant);
+        navigationView.getMenu().removeItem(R.id.nav_bill);
+        navigationView.getMenu().removeItem(R.id.nav_account);
+        navigationView.getMenu().removeItem(R.id.nav_revenue);
+    }
+
+    private void setLayoutForManager() {
+        navigationView.getMenu().removeItem(R.id.nav_restaurant);
+        navigationView.getMenu().removeItem(R.id.nav_order);
     }
 
     private void renderDrawerData(String emName, int position){
@@ -582,6 +629,7 @@ public class MainActivity extends AppCompatActivity
                         ? "Local" : "Server";
 
                 if (snapshot != null && snapshot.exists()) {
+                    Map<String, Object> data = snapshot.getData();
 
                 } else {
                     Log.d(TAG, source + " data: null");

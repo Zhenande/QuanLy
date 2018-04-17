@@ -40,6 +40,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -79,6 +80,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
     private MaterialDialog dialogLoading;
     private StringBuilder nameFoodSendToCook = new StringBuilder();
     private String time;
+    private List<String> listFullTable = new ArrayList<>();
 
 
     @Override
@@ -142,6 +144,10 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
         return sdf_short_date.format(cal.getTime());
     }
 
+    /*
+    * @author: ManhLD
+    * It won't get table available, because customer can order several times. Not only one times.
+    * */
     private void getTableAvailable(){
         restaurantID = getRestaurantID();
         if(!TextUtils.isEmpty(GlobalVariable.tableChoose)){
@@ -159,6 +165,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                                 String tableNum = document.get(QuanLyConstants.TABLE_NUMBER).toString();
                                 listTable.add(tableNum);
                             }
+                            listFullTable.add(document.get(QuanLyConstants.TABLE_NUMBER).toString());
                         }
                         Collections.sort(listTable, new Comparator<String>() {
                             @Override
@@ -176,7 +183,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                         }
 
                         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(CartActivity.this,
-                                R.layout.spinner_item_text,listTable);
+                                R.layout.spinner_item_text,listFullTable);
 
                         spinnerAdapter.setDropDownViewResource(R.layout.spinner_item_text);
                         spinnerTable.setAdapter(spinnerAdapter);
@@ -216,11 +223,111 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
     public void onClick(View v) {
         int id = v.getId();
         if(id == R.id.food_choose_button_order){
-            clickButtonOrder();
+            if(checkTableAvailable()) {
+                // meaning table is free
+                clickButtonOrder();
+            }else{
+                // meaning table is having customer
+                callExtraFood();
+            }
         }
         else if(id == R.id.cart_button_checkID){
             checkID();
         }
+    }
+
+    private void callExtraFood() {
+        // Reset data of 2 global variable
+        GlobalVariable.tableCusID = "";
+        GlobalVariable.tableChoose = "";
+
+        showLoadingDialog();
+
+        db.collection(QuanLyConstants.TABLE)
+            .whereEqualTo(QuanLyConstants.TABLE_NUMBER, spinnerTable.getSelectedItem().toString())
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for(DocumentSnapshot document : task.getResult()){
+                            String orderID = document.get(QuanLyConstants.TABLE_ORDER_ID).toString();
+                            updateOrderInfor(orderID);
+                        }
+                    }
+                }
+            });
+    }
+
+    private void updateOrderInfor(String orderID) {
+        db.collection(QuanLyConstants.ORDER)
+            .document(orderID)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        final DocumentReference document = task.getResult().getReference();
+                        document.collection(QuanLyConstants.FOOD_ON_ORDER)
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if(task.isSuccessful()){
+                                            for(DocumentSnapshot document : task.getResult()){
+                                                FoodOnBill fob = new FoodOnBill();
+                                                fob.setFoodId(document.getId());
+                                                fob.setFoodName(document.get(QuanLyConstants.FOOD_NAME).toString());
+                                                fob.setQuantity(Integer.parseInt(document.get(QuanLyConstants.FOOD_QUANTITY).toString()));
+
+                                                for(FoodOnBill fob2 : listFoodChoose){
+                                                    if(fob2.getFoodName().equals(fob.getFoodName())){
+                                                        fob.setQuantity(fob.getQuantity() + fob2.getQuantity());
+                                                        DocumentReference docRef = document.getReference();
+                                                        docRef.update(QuanLyConstants.FOOD_QUANTITY, fob.getQuantity());
+                                                        nameFoodSendToCook.append(fob.getFoodName());
+                                                        nameFoodSendToCook.append(";");
+                                                        listFoodChoose.remove(fob2);
+                                                        break;
+                                                    }
+                                                }
+                                                if(listFoodChoose.size()==0){
+                                                    break;
+                                                }
+                                            }
+                                            if(listFoodChoose.size()>0){
+                                                for(FoodOnBill fob : listFoodChoose){
+                                                    Map<String, Object> food = new HashMap<>();
+                                                    food.put(QuanLyConstants.FOOD_NAME, fob.getFoodName());
+                                                    food.put(QuanLyConstants.FOOD_PRICE, fob.getPrice()+"");
+                                                    food.put(QuanLyConstants.FOOD_QUANTITY, fob.getQuantity()+"");
+                                                    nameFoodSendToCook.append(fob.getFoodName());
+                                                    nameFoodSendToCook.append(";");
+                                                    document.collection(QuanLyConstants.FOOD_ON_ORDER)
+                                                            .document(fob.getFoodId())
+                                                            .set(food);
+                                                }
+                                            }
+
+                                            closeLoadingDialog();
+                                            Toast.makeText(CartActivity.this, "Order Success", Toast.LENGTH_SHORT).show();
+                                            onBackPressed();
+                                        }
+                                    }
+                                });
+                    }
+                }
+            });
+    }
+
+    private boolean checkTableAvailable() {
+        boolean returnD = false;
+        for(int i = 0; i < listTable.size(); i++){
+            if(listTable.contains(spinnerTable.getSelectedItem().toString())){
+                returnD = true;
+            }
+        }
+        return returnD;
     }
 
     private void checkID() {

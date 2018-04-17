@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -237,6 +238,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void clickOnItemListView(MaterialDialog dialog, Food food) {
         View view = dialog.getView();
         ImageView imgFood = view.findViewById(R.id.choose_food_dialog_image);
@@ -246,6 +248,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         ImageButton buttonSub = view.findViewById(R.id.choose_food_dialog_sub);
         ImageButton buttonSum = view.findViewById(R.id.choose_food_dialog_sum);
         final EditText editText = view.findViewById(R.id.choose_food_dialog_quantity);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef = storageReference.child(QuanLyConstants.FOOD_PATH_IMAGE + food.getImageResource());
@@ -260,10 +263,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
             @Override
             public void onClick(View v) {
                 int quantity = Integer.parseInt(editText.getText().toString());
-                if(quantity==1){
-                    return;
-                }
-                else{
+                if(quantity > 1){
                     quantity--;
                     editText.setText(quantity+"");
                 }

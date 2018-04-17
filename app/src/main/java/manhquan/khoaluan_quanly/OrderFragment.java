@@ -11,11 +11,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -164,11 +162,13 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
             if(cf.getItemCount()>0){
                 List<FoodInside> listTemp = new ArrayList<>();
                 int kill = 0;
-                for(int j = 0; j < cf.getItemCount(); j++){
+                int numItem = cf.getItemCount();
+                // cf.getItemCount() will reduce after remove item
+                for(int j = 0; j < numItem; j++){
                     if(cf.isChildChecked(j)){
                         FoodInside fi = (FoodInside)listData.get(i).getItems().get(kill);
                         listTemp.add(fi);
-                        adapter.getGroups().get(i).getItems().remove(fi);
+                        adapter.getGroups().get(i).getItems().remove(kill);
                     }else{
                         kill++;
                     }

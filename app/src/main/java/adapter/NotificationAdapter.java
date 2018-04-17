@@ -22,7 +22,7 @@ import model.NotiContent;
 import util.NotificationTouchHelper;
 
 /**
- * Created by vpmn-os-quocnb on 4/13/2018.
+ * Created by LieuDucManh on 4/13/2018.
  */
 
 public class NotificationAdapter extends ExpandableRecyclerViewAdapter<TableViewHolder, FoodViewHolder> {

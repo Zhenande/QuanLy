@@ -78,9 +78,7 @@ public class GridListViewAdapter extends ListGridAdapter<TableModel, ViewHolder>
     @Override
     protected void onChildViewClicked(View clickedChildView, TableModel cardData, int eventId) {
         if(eventId == QuanLyConstants.IMAGE_VIEW_CLICK_ID){
-            Toast.makeText(getContext(),
-                    "Image click " + cardData.getTableNumber(), Toast.LENGTH_LONG)
-                    .show();
+            onCardClicked(cardData);
         }
     }
 
