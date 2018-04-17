@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,7 +33,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,6 +81,8 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         spinnerPosition.setAdapter(spinnerAdapter);
 
         RestaurantID = getRestaurantID();
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         documentID = getIntent().getStringExtra(QuanLyConstants.INTENT_DOCUMENT_ID);
         if(TextUtils.isEmpty(documentID)){

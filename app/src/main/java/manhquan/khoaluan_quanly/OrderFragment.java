@@ -126,7 +126,9 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        adapter.onSaveInstanceState(outState);
+        if(adapter!= null){
+            adapter.onSaveInstanceState(outState);
+        }
     }
 
     @Override

@@ -5,6 +5,7 @@ package fragment;
 import android.app.Fragment;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +17,34 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.tsongkha.spinnerdatepicker.DatePickerDialog;
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder;
 
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import constants.QuanLyConstants;
 import manhquan.khoaluan_quanly.R;
+import util.DayAxisValueFormatter;
+import util.MoneyFormatter;
 
 
 /**
@@ -54,7 +73,15 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     Button buttonMonth;
     @BindView(R.id.income_button_Year)
     Button buttonYear;
+    @BindView(R.id.income_button_Action)
+    Button buttonAction;
     private SpinnerDatePickerDialogBuilder dateSpinner;
+    private List<BarEntry> listBar = new ArrayList<>();
+    private FirebaseFirestore db;
+    private SimpleDateFormat sdf_full_date = new SimpleDateFormat("dd/MM/yyyy");
+    private BarData barData;
+    private BarDataSet barDataSet;
+    private MaterialDialog dialogLoading;
 
 
     public IncomeFragment() {
@@ -73,8 +100,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         dateSpinner = new SpinnerDatePickerDialogBuilder();
         ButterKnife.bind(this,view);
 
+        db = FirebaseFirestore.getInstance();
+
         chart = view.findViewById(R.id.income_chart);
-        testingChart();
 
         ArrayAdapter<CharSequence> adapterReportTime = ArrayAdapter.createFromResource(view.getContext(), R.array.income_spinner_reportTime,
                 android.R.layout.simple_spinner_item);
@@ -95,13 +123,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         buttonEndDate.setOnClickListener(IncomeFragment.this);
         buttonMonth.setOnClickListener(IncomeFragment.this);
         buttonYear.setOnClickListener(IncomeFragment.this);
+        buttonAction.setOnClickListener(IncomeFragment.this);
 
         return view;
     }
 
-    private void testingChart() {
-
-    }
 
     @Override
     public void onClick(View v) {
@@ -109,24 +135,115 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         dateSpinner.context(view.getContext())
                 .callback(this)
                 .defaultDate(cal.get(Calendar.YEAR),cal.get(Calendar.MONTH),cal.get(Calendar.DAY_OF_MONTH));
-        if(v.getId() == buttonStartDate.getId()){
+        int id = v.getId();
+        if(id == buttonStartDate.getId()){
             flag = true;
             dateSpinner.showTitle(true);
             dateSpinner.build().show();
         }
-        else if(v.getId() == buttonEndDate.getId()){
+        else if(id == buttonEndDate.getId()){
             flag = false;
             dateSpinner.showTitle(true);
             dateSpinner.build().show();
         }
-        else if(v.getId() == buttonMonth.getId()){
+        else if(id == buttonMonth.getId()){
             dateSpinner.showTitle(true);
             dateSpinner.build().show();
         }
-        else if(v.getId() == buttonYear.getId()){
+        else if(id == buttonYear.getId()){
             dateSpinner.showTitle(true);
             dateSpinner.build().show();
         }
+        else if(id == buttonAction.getId()){
+            createChart();
+        }
+    }
+
+    private void createChart() {
+        switch (spinnerKindOfChart.getSelectedItemPosition()){
+            case 0: drawChartRevenue();
+                    break;
+            case 1: drawChartOrder();
+                    break;
+            case 2: drawChartBoth();
+                    break;
+        }
+    }
+
+    private void drawChartRevenue() {
+        switch (spinnerReportTime.getSelectedItemPosition()){
+            case 0: drawChart0_0();
+                    break;
+            case 1:
+                    break;
+            case 2:
+                    break;
+        }
+    }
+
+    private void drawChart0_0() {
+        showLoadingDialog();
+        db.collection(QuanLyConstants.ORDER)
+//            .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+            .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonStartDate.getText())
+            //.whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonEndDate.getText())
+            .orderBy(QuanLyConstants.ORDER_DATE)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+//                        Calendar startDate = Calendar.getInstance();
+//                        startDate.set(Calendar.YEAR, Integer.parseInt(buttonStartDate.getText().toString().split("/")[2]));
+//                        startDate.set(Calendar.MONTH, Integer.parseInt(buttonStartDate.getText().toString().split("/")[1]));
+//                        startDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(buttonStartDate.getText().toString().split("/")[0]) );
+                        float counting = 1;
+                        String compareDate = buttonStartDate.getText().toString();
+                        ArrayList<String> xValue = new ArrayList<>();
+                        xValue.add(buttonStartDate.getText().toString());
+
+
+                        double income = 0;
+                        for(DocumentSnapshot document : task.getResult()){
+                            if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
+                                income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                            }
+                            else{
+                                listBar.add(new BarEntry(counting,(float)income));
+                                counting++;
+                                compareDate = increaseDate(compareDate);
+                                xValue.add(compareDate);
+                                income = Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                            }
+                        }
+                        barDataSet = new BarDataSet(listBar, "Testing");
+                        barData = new BarData(barDataSet);
+                        chart.setData(barData);
+                        chart.invalidate();
+                        closeLoadingDialog();
+                    }
+                }
+            });
+    }
+
+    private String increaseDate(String compareDate) {
+        char[] date = compareDate.toCharArray();
+        if(date[1] == '9'){
+            date[0]++;
+            date[1] = '0';
+        }
+        else{
+            date[1]++;
+        }
+        return date.toString();
+    }
+
+    private void drawChartOrder() {
+
+    }
+
+    private void drawChartBoth() {
+
     }
 
     /*
@@ -289,24 +406,32 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         switch (spinnerReportTime.getSelectedItemPosition()){
             case 0: if(checkCorrectDate(dateChoose)) {
                 if (flag) {
-                    //buttonStartDate.setText(dayOfMonth+"/"+(monthOfYear+1)+"/"+year);
-                    buttonStartDate.setText(view.getContext().getResources().getString(R.string.full_date,new Object[]{dayOfMonth,monthOfYear+1,year}));
+//                    buttonStartDate.setText(view.getContext().getResources().getString(R.string.full_date,new Object[]{dayOfMonth,monthOfYear+1,year}));
+                    buttonStartDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_full_date.format(dateChoose)+""));
                 } else {
-                    //buttonEndDate.setText(dayOfMonth+"/"+(monthOfYear+1)+"/"+year);
-                    buttonEndDate.setText(view.getContext().getResources().getString(R.string.full_date,new Object[]{dayOfMonth,monthOfYear+1,year}));
+//                    buttonEndDate.setText(view.getContext().getResources().getString(R.string.full_date,new Object[]{dayOfMonth,monthOfYear+1,year}));
+                    buttonEndDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_full_date.format(dateChoose)+""));
                 }
             }
                 break;
             case 1: if(checkCorrectMonth(dateChoose)){
-                //buttonMonth.setText((monthOfYear+1)+"/"+year);
                 buttonMonth.setText(view.getContext().getResources().getString(R.string.month_year_date,new Object[]{monthOfYear+1,year}));
                 }
                 break;
             case 2: if(checkCorrectYear(year)){
-                //buttonYear.setText(year + "");
                 buttonYear.setText(view.getContext().getResources().getString(R.string.year_date,new Object[]{year}));
                 }
                 break;
         }
+    }
+
+    public void showLoadingDialog(){
+        dialogLoading = new MaterialDialog.Builder(view.getContext())
+                .customView(R.layout.loading_dialog,true)
+                .show();
+    }
+
+    public void closeLoadingDialog(){
+        dialogLoading.dismiss();
     }
 }

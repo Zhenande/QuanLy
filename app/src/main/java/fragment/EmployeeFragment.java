@@ -97,7 +97,7 @@ public class EmployeeFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(getActivity().getApplicationContext(), EmployeeDetailActivity.class);
-                i.putExtra(QuanLyConstants.INTENT_DOCUMENT_ID,listEmployeeID.get(position));
+                i.putExtra(QuanLyConstants.INTENT_DOCUMENT_ID,listEmployeeID.get(position-1));
                 startActivityForResult(i, QuanLyConstants.DETAIL_EMPLOYEE);
             }
         });

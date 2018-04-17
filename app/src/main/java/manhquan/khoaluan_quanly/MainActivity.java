@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.drawer_notification)
     public ImageButton buttonNoti;
     private FirebaseFirestore db;
-    private MaterialDialog create_table_dialog;
     private NavigationView navigationView;
     private boolean doubleBackToSignOutPressedOnce = false;
     private MaterialDialog dialogChoose;
@@ -115,24 +114,18 @@ public class MainActivity extends AppCompatActivity
         navigationView.setCheckedItem(R.id.nav_restaurant);
         navigationView.setNavigationItemSelectedListener(this);
         int position = getIntent().getIntExtra(QuanLyConstants.EMPLOYEE_POSITION,0);
-        setRoleOfApp(position);
-
+        //setRoleOfApp(position);
         View viewDrawerHeader = navigationView.getHeaderView(0);
         ButterKnife.bind(this,viewDrawerHeader);
-
 
         String emName = getIntent().getStringExtra(QuanLyConstants.EMPLOYEE_NAME);
         if(getPosition() != position){
             savePosition(position);
-
         }
         renderDrawerData(emName,position);
 
 
-        FragmentManager fragmentManager = getFragmentManager();
-        Fragment fragment = new RestaurantFragment();
-        fragmentManager.beginTransaction().replace(R.id.main_app_framelayout,fragment).commit();
-
+        onNavigationItemSelected(navigationView.getMenu().getItem(0));
     }
 
     private void setRoleOfApp(int position) {
@@ -145,7 +138,6 @@ public class MainActivity extends AppCompatActivity
                     break;
             case 3: // Waiter
                     setLayoutForWaiter();
-                    buttonNoti.setOnClickListener(this);
                     break;
             case 4: // Cashier
                     setLayoutForCashier();
@@ -188,6 +180,7 @@ public class MainActivity extends AppCompatActivity
             case 2: pos = getResources().getString(R.string.cook);
                     break;
             case 3: pos = getResources().getString(R.string.waiter);
+                    buttonNoti.setOnClickListener(this);
                     break;
             case 4: pos = getResources().getString(R.string.cashier);
                     break;
@@ -255,20 +248,20 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
         if(id == QuanLyConstants.CREATE_TABLE_ID){
-            create_table_dialog = new MaterialDialog.Builder(this)
+            MaterialDialog create_table_dialog = new MaterialDialog.Builder(this)
                     .positiveText(getResources().getString(R.string.main_agree))
                     .negativeText(getResources().getString(R.string.main_disagree))
                     .positiveColor(getResources().getColor(R.color.primary_dark))
                     .negativeColor(getResources().getColor(R.color.black))
                     .title(getResources().getString(R.string.action_create_table))
-                    .customView(R.layout.create_table_dialog,true)
+                    .customView(R.layout.create_table_dialog, true)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                             View view = dialog.getView();
                             EditText edNumber = view.findViewById(R.id.create_table_number);
                             RadioButton rbCreate = view.findViewById(R.id.create_table_create_radio);
-                            if(edNumber.getText().toString().matches("[0-9]*")) {
+                            if (edNumber.getText().toString().matches("[0-9]*")) {
                                 int NumberTableCurrent = Integer.parseInt(getTableNumber());
                                 int NumberTableNeedChange = Integer.parseInt(edNumber.getText().toString());
 
@@ -284,9 +277,8 @@ public class MainActivity extends AppCompatActivity
                                         deleteTable(NumberTableCurrent, NumberTableNeedChange, restaurantID);
                                     }
                                 }
-                            }
-                            else{
-                                Toast.makeText(view.getContext(),getResources().getString(R.string.table_error_input_letter),Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(view.getContext(), getResources().getString(R.string.table_error_input_letter), Toast.LENGTH_SHORT).show();
                             }
                         }
                     })
@@ -675,9 +667,7 @@ public class MainActivity extends AppCompatActivity
                                 else {
                                     StringBuilder builder = new StringBuilder();
                                     for (int i = 0; i < content.length; i++) {
-                                        if (i == posRemove) {
-                                            continue;
-                                        } else {
+                                        if (i != posRemove) {
                                             builder.append(content[i]);
                                             builder.append(";");
                                         }

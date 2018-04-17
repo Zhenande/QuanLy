@@ -12,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,6 +82,9 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
             buttonCreate.setImageResource(R.drawable.icon_cart);
             flag = true;
         }
+        else if(positionEm == 2){
+            buttonCreate.setVisibility(View.GONE);
+        }
 
         buttonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,6 +125,7 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
     }
 
     private void GetListFoodType() {
+        listFoodType.clear();
         db.collection(QuanLyConstants.RESTAURANT)
                 .document(restaurantID)
                 .collection(QuanLyConstants.RESTAURANT_FOOD_TYPE)

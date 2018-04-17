@@ -1,6 +1,7 @@
 package manhquan.khoaluan_quanly;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -46,6 +47,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
+import fragment.FoodFragment;
 import util.GlideApp;
 
 public class FoodDetailActivity extends AppCompatActivity implements View.OnClickListener {
@@ -80,7 +82,6 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     private String restaurantID;
     private ArrayList<String> listFoodType = new ArrayList<>();
     private MenuItem item;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -508,4 +509,5 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         this.setResult(Activity.RESULT_OK, data);
         super.finish();
     }
+
 }

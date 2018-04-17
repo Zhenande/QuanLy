@@ -18,7 +18,7 @@ public abstract class FoodAbstract implements Serializable {
         this.price = price;
     }
 
-    public FoodAbstract() {
+    protected FoodAbstract() {
     }
 
     public String getFoodId() {

@@ -1,5 +1,6 @@
 package adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,11 +23,9 @@ public class BillListAdapter extends BaseAdapter {
 
     private ArrayList<Bill> listBill;
     private LayoutInflater layoutInflater;
-    private Context context;
 
     public BillListAdapter(Context context, ArrayList<Bill> listBill){
         this.listBill = listBill;
-        this.context = context;
         layoutInflater = LayoutInflater.from(context);
     }
 
@@ -45,6 +44,7 @@ public class BillListAdapter extends BaseAdapter {
         return position;
     }
 
+    @SuppressLint("InflateParams")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         BillHolder holder;
@@ -72,7 +72,7 @@ class BillHolder{
     @BindView(R.id.bill_list_time) TextView txtTime;
     @BindView(R.id.bill_list_cost) TextView txtCost;
 
-    public BillHolder(View view) {
+    BillHolder(View view) {
         ButterKnife.bind(this,view);
     }
 }
