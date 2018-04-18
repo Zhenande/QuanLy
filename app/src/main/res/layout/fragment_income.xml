@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -112,7 +112,7 @@
 
         <LinearLayout
             android:orientation="horizontal"
-            android:layout_marginVertical="15dp"
+            android:layout_marginTop="15dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -144,19 +144,14 @@
 
         </LinearLayout>
 
-        <ScrollView
+        <com.github.mikephil.charting.charts.CombinedChart
+            android:id="@+id/income_chart"
+            android:minHeight="400dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/income_chart"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-            </com.github.mikephil.charting.charts.BarChart>
-
-        </ScrollView>
+        </com.github.mikephil.charting.charts.CombinedChart>
 
     </LinearLayout>
 
-</FrameLayout>
+</ScrollView>

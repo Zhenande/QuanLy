@@ -18,7 +18,8 @@
         style="@style/FirebaseUI.TextInputEditText"
         android:inputType="numberDecimal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        tools:ignore="LabelFor" />
 
     <RadioGroup
         android:id="@+id/create_table_radio_group"

@@ -10,7 +10,7 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/employee_detail_txtEmployeeName"
@@ -22,8 +22,11 @@
         <EditText
             android:id="@+id/employee_detail_editEmployeeName"
             android:theme="@style/FirebaseUI.TextInputEditText"
+            android:labelFor="@+id/employee_detail_txtEmployeeName"
+            android:inputType="textPersonName"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:ignore="LabelFor,TextFields" />
 
         <TextView
             android:id="@+id/employee_detail_txtEmployeeUsername"
@@ -35,9 +38,11 @@
         <EditText
             android:id="@+id/employee_detail_editEmployeeUsername"
             android:theme="@style/FirebaseUI.TextInputEditText"
+            android:labelFor="@+id/employee_detail_txtEmployeeUsername"
             android:inputType="textEmailAddress"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:ignore="LabelFor" />
 
         <TextView
             android:id="@+id/employee_detail_txtEmployeePassword"
@@ -49,9 +54,11 @@
         <EditText
             android:id="@+id/employee_detail_editEmployeePassword"
             android:theme="@style/FirebaseUI.TextInputEditText"
+            android:labelFor="@+id/employee_detail_txtEmployeePassword"
             android:inputType="textPassword"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:ignore="LabelFor" />
 
         <TextView
             android:id="@+id/employee_detail_txtEmployeeContactNumber"
@@ -64,8 +71,10 @@
             android:id="@+id/employee_detail_editEmployeeContactNumber"
             android:theme="@style/FirebaseUI.TextInputEditText"
             android:inputType="phone"
+            android:labelFor="@+id/employee_detail_txtEmployeeContactNumber"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:ignore="LabelFor" />
 
         <TextView
             android:id="@+id/employee_detail_txtEmployeePosition"

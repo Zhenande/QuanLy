@@ -1,5 +1,6 @@
 package adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,6 +55,7 @@ public class ListFoodOnBillAdapter extends BaseAdapter {
         return position;
     }
 
+    @SuppressLint("InflateParams")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         FoodOnBillHolder holder;
@@ -69,7 +71,7 @@ public class ListFoodOnBillAdapter extends BaseAdapter {
         FoodOnBill foodOnBill = listData.get(position);
         holder.txtFoodName.setText(foodOnBill.getFoodName());
         holder.txtPrice.setText(MoneyFormatter.formatToMoney(foodOnBill.getPrice()+""));
-        holder.txtQuantity.setText(foodOnBill.getQuantity()+"");
+        holder.txtQuantity.setText(context.getResources().getString(R.string.normal_string,foodOnBill.getQuantity()));
         holder.txtTotalPrice.setText(MoneyFormatter.formatToMoney(foodOnBill.getPrice()*foodOnBill.getQuantity()+""));
 
         return convertView;

@@ -87,7 +87,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         documentID = getIntent().getStringExtra(QuanLyConstants.INTENT_DOCUMENT_ID);
         if(TextUtils.isEmpty(documentID)){
             // Create New Employee
-            buttonUpdate.setText(getResources().getString(R.string.button_create));
+            buttonUpdate.setText(getResources().getString(R.string.add_account_button_create));
         }
         else {
             // Update Employee
@@ -443,7 +443,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
     public void onClick(View v) {
         int id = v.getId();
         if(id == R.id.employee_detail_button_create){
-            if(buttonUpdate.getText().equals(getResources().getString(R.string.button_create))){
+            if(buttonUpdate.getText().equals(getResources().getString(R.string.add_account_button_create))){
                 if(validateForm()){
                     showLoadingDialog();
                     createAuthForEmployee();

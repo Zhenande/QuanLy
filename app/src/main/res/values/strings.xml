@@ -1,10 +1,13 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Restaurant Management</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="required">Required.</string>
     <string name="string_done">Done</string>
+    <string name="image_content_error">Error Image</string>
+    <string name="money_type">%s VNĐ</string>
+    <string name="normal_string">%d </string>
 
     <!--=================================Main Activity===================================================-->
     <string name="main_language">Language</string>
@@ -25,7 +28,7 @@
     <string name="content_dialog_create_table">Input number of table: </string>
     <string name="table_create">Create</string>
     <string name="table_delete">Delete</string>
-    <string name="table_error_delete_too_much">Can not delete %d table because you just have %d table</string>
+    <string name="table_error_delete_too_much" tools:ignore="PluralsCandidate">Can not delete %d table because you just have %d table</string>
     <string name="table_error_input_letter">Just input number</string>
 
     <!--=================================Menu Drawer===================================================-->
@@ -43,7 +46,7 @@
     <string name="nav_order">Order</string>
 
     <!--=================================Restaurant Fragment==========================================-->
-    <string name="tableNumber">Table </string>
+    <string name="tableNumber">Table %s</string>
     <string name="notification">Notification</string>
     <string name="noti_content">The table %s is not available</string>
 
@@ -113,7 +116,7 @@
         <item>Waiter</item>
         <item>Cashier</item>
     </string-array>
-    <string name="button_create">Create</string>
+    <string name="add_account_button_create">Create</string>
     <string name="title_activity_login">Sign in</string>
 
     <!--=================================Sign In Activity================================================-->

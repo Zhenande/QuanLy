@@ -5,6 +5,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="required">Bắt buộc.</string>
     <string name="string_done">Hoàn thành</string>
+    <string name="image_content_error">Lỗi hình ảnh</string>
 
     <!--=================================Main Activity===================================================-->
     <string name="main_language">Ngôn ngữ</string>
@@ -43,7 +44,7 @@
     <string name="nav_order">Order</string>
 
     <!--=================================Restaurant Fragment==========================================-->
-    <string name="tableNumber">Bàn </string>
+    <string name="tableNumber">Bàn %s</string>
     <string name="notification">Thông báo</string>
     <string name="noti_content">Bàn %s không có khách ngồi</string>
 
@@ -114,6 +115,7 @@
         <item>Thu ngân</item>
     </string-array>
     <string name="add_account_button_create">Tạo</string>
+    <string name="title_activity_login">Đăng Nhập</string>
 
     <!--=================================Sign In Activity================================================-->
     <string name="sign_in_faild_input">Email hoặc Password không đúng, vui lòng kiểm tra lại</string>

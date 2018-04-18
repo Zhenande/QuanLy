@@ -18,7 +18,8 @@
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:scaleType="fitXY"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_notifications" />
+        android:src="@drawable/ic_notifications"
+        android:contentDescription="@string/image_content_error" />
 
     <TextView
         android:id="@+id/drawer_user_name"

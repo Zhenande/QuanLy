@@ -1,5 +1,6 @@
 package adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -35,7 +36,7 @@ public class GridListViewAdapter extends ListGridAdapter<TableModel, ViewHolder>
 
     @Override
     protected Card<ViewHolder> getNewCard(int cardwidth) {
-        View cardView = getLayoutInflater().inflate(R.layout.table_list_item,null);
+        @SuppressLint("InflateParams") View cardView = getLayoutInflater().inflate(R.layout.table_list_item,null);
         cardView.setMinimumHeight(cardwidth);
 
         ViewHolder viewHolder = new ViewHolder(cardView);
@@ -51,7 +52,7 @@ public class GridListViewAdapter extends ListGridAdapter<TableModel, ViewHolder>
         }else{
             cardViewHolder.imgTable.setImageResource(R.drawable.ic_table_open);
         }
-        cardViewHolder.tableNumber.setText(getContext().getResources().getString(R.string.tableNumber) + " " + tModel.getTableNumber());
+        cardViewHolder.tableNumber.setText(getContext().getResources().getString(R.string.tableNumber , tModel.getTableNumber()));
     }
 
     @Override

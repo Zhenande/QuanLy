@@ -1,6 +1,7 @@
 package util;
 
 import com.github.mikephil.charting.charts.BarLineChartBase;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
@@ -15,7 +16,7 @@ public class DayAxisValueFormatter implements IAxisValueFormatter {
 
     private BarLineChartBase<?> chart;
 
-    public DayAxisValueFormatter(BarLineChartBase<?> chart) {
+    public DayAxisValueFormatter(CombinedChart chart) {
         this.chart = chart;
     }
 

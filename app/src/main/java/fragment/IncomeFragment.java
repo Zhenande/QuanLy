@@ -6,6 +6,8 @@ import android.app.Fragment;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,16 +21,22 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.CombinedData;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tsongkha.spinnerdatepicker.DatePickerDialog;
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder;
@@ -45,6 +53,8 @@ import constants.QuanLyConstants;
 import manhquan.khoaluan_quanly.R;
 import util.DayAxisValueFormatter;
 import util.MoneyFormatter;
+import util.MoneyAxisValueFormatter;
+import util.OrderAxisValueFormatter;
 
 
 /**
@@ -62,7 +72,10 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     public Spinner spinnerReportTime;
     @BindView(R.id.income_spinner_kindOfChart)
     public Spinner spinnerKindOfChart;
-    public BarChart chart;
+//    @BindView(R.id.income_chart)
+//    public BarChart chart;
+    @BindView(R.id.income_chart)
+    public CombinedChart chart_combined;
     @BindView(R.id.linear_report_date)
     LinearLayout dateLayout;
     @BindView(R.id.linear_report_month)
@@ -76,12 +89,10 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     @BindView(R.id.income_button_Action)
     Button buttonAction;
     private SpinnerDatePickerDialogBuilder dateSpinner;
-    private List<BarEntry> listBar = new ArrayList<>();
     private FirebaseFirestore db;
     private SimpleDateFormat sdf_full_date = new SimpleDateFormat("dd/MM/yyyy");
-    private BarData barData;
-    private BarDataSet barDataSet;
     private MaterialDialog dialogLoading;
+    private int dayOfYear = 1;
 
 
     public IncomeFragment() {
@@ -101,8 +112,6 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         ButterKnife.bind(this,view);
 
         db = FirebaseFirestore.getInstance();
-
-        chart = view.findViewById(R.id.income_chart);
 
         ArrayAdapter<CharSequence> adapterReportTime = ArrayAdapter.createFromResource(view.getContext(), R.array.income_spinner_reportTime,
                 android.R.layout.simple_spinner_item);
@@ -155,9 +164,13 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
             dateSpinner.build().show();
         }
         else if(id == buttonAction.getId()){
+            if(chart_combined.isShown()){
+                chart_combined.clear();
+            }
             createChart();
         }
     }
+
 
     private void createChart() {
         switch (spinnerKindOfChart.getSelectedItemPosition()){
@@ -181,49 +194,278 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         }
     }
 
+    private void drawChartOrder() {
+        switch (spinnerReportTime.getSelectedItemPosition()){
+            case 0: drawChart1_0();
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+        }
+    }
+
+    private void drawChartBoth() {
+        switch (spinnerReportTime.getSelectedItemPosition()){
+            case 0: drawChart2_0();
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+        }
+    }
+
     private void drawChart0_0() {
         showLoadingDialog();
         db.collection(QuanLyConstants.ORDER)
-//            .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+            //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
             .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonStartDate.getText())
-            //.whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonEndDate.getText())
+            .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonEndDate.getText())
             .orderBy(QuanLyConstants.ORDER_DATE)
             .get()
             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if(task.isSuccessful()){
-//                        Calendar startDate = Calendar.getInstance();
-//                        startDate.set(Calendar.YEAR, Integer.parseInt(buttonStartDate.getText().toString().split("/")[2]));
-//                        startDate.set(Calendar.MONTH, Integer.parseInt(buttonStartDate.getText().toString().split("/")[1]));
-//                        startDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(buttonStartDate.getText().toString().split("/")[0]) );
-                        float counting = 1;
+                        float counting = dayOfYear+1;
                         String compareDate = buttonStartDate.getText().toString();
-                        ArrayList<String> xValue = new ArrayList<>();
-                        xValue.add(buttonStartDate.getText().toString());
-
-
+                        List<BarEntry> listBar = new ArrayList<>();
                         double income = 0;
                         for(DocumentSnapshot document : task.getResult()){
-                            if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
-                                income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
-                            }
-                            else{
-                                listBar.add(new BarEntry(counting,(float)income));
-                                counting++;
-                                compareDate = increaseDate(compareDate);
-                                xValue.add(compareDate);
-                                income = Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
-                            }
+                            boolean flagBreak = true;
+                            do{
+                                if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
+                                    income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                    flagBreak = false;
+                                }
+                                else{
+                                    if(Double.compare(income,0)>0){
+                                        listBar.add(new BarEntry(counting, (float)income));
+                                        income = 0;
+                                    }
+                                    else{
+                                        // if the compareday is the day restaurant does not open
+                                        listBar.add(new BarEntry(counting, 0f));
+                                    }
+                                    compareDate = increaseDate(compareDate);
+                                    counting++;
+                                }
+                            }while (flagBreak);
                         }
-                        barDataSet = new BarDataSet(listBar, "Testing");
-                        barData = new BarData(barDataSet);
-                        chart.setData(barData);
-                        chart.invalidate();
+
+                        if(Double.compare(income,0) > 0){
+                            listBar.add(new BarEntry(counting, (float)income));
+                        }
+
+                        IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
+
+                        XAxis xAxis = chart_combined.getXAxis();
+                        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                        xAxis.setDrawGridLines(false);
+                        xAxis.setGranularity(1f);
+                        xAxis.setLabelCount(listBar.size()+1);
+                        xAxis.setValueFormatter(xAxisFormatter);
+
+                        IAxisValueFormatter yAxisFormatter = new MoneyAxisValueFormatter();
+
+                        YAxis leftAxis = chart_combined.getAxisLeft();
+                        leftAxis.setLabelCount(8, false);
+                        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                        leftAxis.setValueFormatter(yAxisFormatter);
+                        leftAxis.setSpaceTop(15f);
+                        leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                        BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                        BarData barData = new BarData(barDataSet);
+                        CombinedData combinedData = new CombinedData();
+                        combinedData.setData(barData);
+                        chart_combined.setData(combinedData);
+                        chart_combined.animateY(2000);
+                        chart_combined.invalidate();
                         closeLoadingDialog();
                     }
                 }
             });
+    }
+
+    private void drawChart1_0() {
+        showLoadingDialog();
+        db.collection(QuanLyConstants.ORDER)
+                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonStartDate.getText())
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonEndDate.getText())
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            float counting = dayOfYear+1;
+                            String compareDate = buttonStartDate.getText().toString();
+                            List<BarEntry> listBar = new ArrayList<>();
+                            int numberOrder = 0;
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                do{
+                                    if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
+                                        numberOrder++;
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        if(numberOrder > 0){
+                                            listBar.add(new BarEntry(counting, (float)numberOrder));
+                                            numberOrder = 0;
+                                        }
+                                        else{
+                                            // if the compareday is the day restaurant does not open
+                                            listBar.add(new BarEntry(counting, 0f));
+                                        }
+                                        compareDate = increaseDate(compareDate);
+                                        counting++;
+                                    }
+                                }while (flagBreak);
+                            }
+
+                            if(numberOrder > 0){
+                                listBar.add(new BarEntry(counting, (float)numberOrder));
+                            }
+
+                            IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size()+1);
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new OrderAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, "Order Number");
+                            BarData barData = new BarData(barDataSet);
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            chart_combined.setData(combinedData);
+                            chart_combined.animateY(2000);
+                            chart_combined.invalidate();
+                            closeLoadingDialog();
+                        }
+                    }
+                });
+    }
+
+    private void drawChart2_0() {
+        showLoadingDialog();
+        db.collection(QuanLyConstants.ORDER)
+                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonStartDate.getText())
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonEndDate.getText())
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            float counting = dayOfYear+1;
+                            String compareDate = buttonStartDate.getText().toString();
+
+                            int numberOrder = 0;
+                            double income = 0;
+                            List<BarEntry> listBar = new ArrayList<>();
+                            List<Entry> listLineEntry = new ArrayList<>();
+
+                            chart_combined.setDrawOrder(new CombinedChart.DrawOrder[]{
+                                    CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.LINE
+                            });
+
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                do{
+                                    if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
+                                        numberOrder++;
+                                        income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        if(numberOrder > 0){
+                                            listBar.add(new BarEntry(counting, (float)income));
+                                            listLineEntry.add(new Entry(counting, (float)numberOrder));
+                                            numberOrder = 0;
+                                            income = 0;
+                                        }
+                                        else{
+                                            // if the compareday is the day restaurant does not open
+                                            listBar.add(new BarEntry(counting, 0f));
+                                            listLineEntry.add(new Entry(counting, 0f));
+                                        }
+                                        compareDate = increaseDate(compareDate);
+                                        counting++;
+                                    }
+                                }while (flagBreak);
+                            }
+
+                            if(numberOrder > 0){
+                                listBar.add(new BarEntry(counting, (float)income));
+                                listLineEntry.add(new Entry(counting, (float) numberOrder));
+                            }
+
+                            IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size()+1);
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yLeftAxisFormatter = new MoneyAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yLeftAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+
+                            IAxisValueFormatter yRightAxisFormatter = new OrderAxisValueFormatter();
+
+                            YAxis rightAxis = chart_combined.getAxisRight();
+                            rightAxis.setLabelCount(8, false);
+                            rightAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            rightAxis.setValueFormatter(yRightAxisFormatter);
+                            rightAxis.setSpaceTop(15f);
+                            rightAxis.setAxisMinimum(0f);
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            barDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+                            BarData barData = new BarData(barDataSet);
+
+                            LineDataSet lineDataSet = new LineDataSet(listLineEntry, "Number Order");
+                            lineDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
+                            lineDataSet.setColor(view.getContext().getResources().getColor(R.color.yellow));
+                            LineData lineData = new LineData(lineDataSet);
+
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            combinedData.setData(lineData);
+
+                            chart_combined.setData(combinedData);
+                            chart_combined.animateY(2000);
+                            chart_combined.invalidate();
+
+                            closeLoadingDialog();
+                        }
+                    }
+                });
     }
 
     private String increaseDate(String compareDate) {
@@ -235,16 +477,14 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         else{
             date[1]++;
         }
-        return date.toString();
+        StringBuilder builder = new StringBuilder();
+        for(int i = 0; i < date.length; i++){
+            builder.append(date[i]);
+        }
+        return builder.toString();
     }
 
-    private void drawChartOrder() {
 
-    }
-
-    private void drawChartBoth() {
-
-    }
 
     /*
     * @author: ManhLD
@@ -326,17 +566,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * */
     private void initDateStartEnd(){
         Calendar currentDate = Calendar.getInstance();
-        String dateStart = "";
-        dateStart += "1/";
-        dateStart += currentDate.get(Calendar.MONTH)+1 + "/";
-        dateStart += currentDate.get(Calendar.YEAR);
-        buttonStartDate.setText(dateStart);
 
-        String dateEnd = "";
-        dateEnd += currentDate.get(Calendar.DAY_OF_MONTH) + "/";
-        dateEnd += currentDate.get(Calendar.MONTH)+1 + "/";
-        dateEnd += currentDate.get(Calendar.YEAR);
-        buttonEndDate.setText(dateEnd);
+        buttonEndDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_full_date.format(currentDate.getTime())));
+
+        currentDate.set(Calendar.DAY_OF_MONTH,1);
+        dayOfYear = currentDate.get(Calendar.DAY_OF_YEAR);
+        buttonStartDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_full_date.format(currentDate.getTime())));
     }
 
     /*
@@ -406,11 +641,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         switch (spinnerReportTime.getSelectedItemPosition()){
             case 0: if(checkCorrectDate(dateChoose)) {
                 if (flag) {
-//                    buttonStartDate.setText(view.getContext().getResources().getString(R.string.full_date,new Object[]{dayOfMonth,monthOfYear+1,year}));
-                    buttonStartDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_full_date.format(dateChoose)+""));
+                    buttonStartDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_full_date.format(dateChoose.getTime())));
                 } else {
-//                    buttonEndDate.setText(view.getContext().getResources().getString(R.string.full_date,new Object[]{dayOfMonth,monthOfYear+1,year}));
-                    buttonEndDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_full_date.format(dateChoose)+""));
+                    buttonEndDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_full_date.format(dateChoose.getTime())));
                 }
             }
                 break;

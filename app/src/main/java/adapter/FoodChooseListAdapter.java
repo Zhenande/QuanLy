@@ -1,5 +1,6 @@
 package adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -58,6 +59,7 @@ public class FoodChooseListAdapter extends BaseAdapter {
         return position;
     }
 
+    @SuppressLint("InflateParams")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -74,10 +76,10 @@ public class FoodChooseListAdapter extends BaseAdapter {
         }
 
         FoodOnBill fob = listData.get(position);
-        holder.txtID.setText(position+1+"");
+        holder.txtID.setText(context.getResources().getString(R.string.normal_string,position+1));
         holder.txtName.setText(fob.getFoodName());
-        holder.txtPrice.setText(MoneyFormatter.formatToMoney(fob.getPrice()+"") + " VNĐ");
-        holder.txtQuantity.setText(fob.getQuantity()+"");
+        holder.txtPrice.setText(context.getResources().getString(R.string.money_type,MoneyFormatter.formatToMoney(fob.getPrice()+"")));
+        holder.txtQuantity.setText(context.getResources().getString(R.string.normal_string, fob.getQuantity()));
 
 
         final FoodOnBill finalFob = fob;
@@ -105,7 +107,7 @@ public class FoodChooseListAdapter extends BaseAdapter {
                             .show();
                 }
                 else{
-                    finalHolder.txtQuantity.setText(quantity+"");
+                    finalHolder.txtQuantity.setText(context.getResources().getString(R.string.normal_string, quantity));
                     listData.get(finalPos).setQuantity(quantity);
                 }
             }
@@ -115,7 +117,7 @@ public class FoodChooseListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 int quantity = finalFob.getQuantity() + 1;
-                finalHolder.txtQuantity.setText(quantity+"");
+                finalHolder.txtQuantity.setText(context.getResources().getString(R.string.normal_string, quantity));
                 listData.get(finalPos).setQuantity(quantity);
             }
         });

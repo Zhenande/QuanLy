@@ -211,7 +211,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        GlobalVariable.tableChoose = listTable.get(position);
+        GlobalVariable.tableChoose = listFullTable.get(position);
     }
 
     @Override
@@ -505,6 +505,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                     onBackPressed();
                 }
             });
+        listFoodChoose.clear();
     }
 
 

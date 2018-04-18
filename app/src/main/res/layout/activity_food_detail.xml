@@ -3,7 +3,7 @@
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
-    android:paddingLeft="10dp"
+    android:paddingStart="10dp"
     android:paddingTop="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,7 +12,7 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -31,7 +31,8 @@
                 android:scaleType="fitXY"
                 android:layout_marginStart="100dp"
                 android:layout_width="150dp"
-                android:layout_height="150dp" />
+                android:layout_height="150dp"
+                android:contentDescription="@string/image_content_error" />
 
             <Button
                 android:id="@+id/food_detail_gallary_pick"
@@ -61,7 +62,9 @@
             android:id="@+id/food_detail_name"
             android:theme="@style/FirebaseUI.TextInputEditText"
             android:layout_width="250dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:ignore="LabelFor"
+            android:inputType="text" />
 
         <TextView
             android:text="@string/food_detail_text_price"
@@ -73,7 +76,9 @@
             android:id="@+id/food_detail_price"
             android:theme="@style/FirebaseUI.TextInputEditText"
             android:layout_width="250dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:ignore="LabelFor"
+            android:inputType="number" />
 
         <TextView
             android:text="@string/food_detail_text_description"
@@ -86,7 +91,9 @@
             android:minLines="10"
             android:theme="@style/FirebaseUI.TextInputEditText"
             android:layout_width="250dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:ignore="LabelFor"
+            android:inputType="text" />
 
         <TextView
             android:text="@string/food_detail_text_type"
@@ -98,7 +105,8 @@
             android:id="@+id/food_detail_food_type"
             android:theme="@style/FirebaseUI.TextInputEditText"
             android:layout_width="250dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:ignore="LabelFor" />
 
         <LinearLayout
             android:orientation="vertical"
@@ -107,7 +115,7 @@
 
             <Button
                 android:id="@+id/food_detail_button_add"
-                android:text="@string/button_create"
+                android:text="@string/add_account_button_create"
                 style="@style/TextStyle"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"

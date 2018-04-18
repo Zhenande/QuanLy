@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
@@ -38,6 +41,7 @@ import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import model.CookFood;
 import model.FoodInside;
+import util.GlobalVariable;
 
 
 /**
@@ -57,6 +61,7 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
     private FirebaseFirestore db;
     private String restaurantID;
     private MaterialDialog dialogLoading;
+    private static final String TAG = "OrderFragment";
 
     public OrderFragment() {
         // Required empty public constructor
@@ -100,6 +105,7 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                             }
                             String time = document.get(QuanLyConstants.ORDER_TIME).toString();
                             String employeeID = document.get(QuanLyConstants.TABLE_EMPLOYEE_ID).toString();
+                            onChangeListener(document.getId());
                             if(TextUtils.isEmpty(time)){
                                 time = "99:99";
                             }
@@ -121,6 +127,68 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                 }
             });
 
+    }
+
+    private void onChangeListener(String docID) {
+
+        final DocumentReference docRef = db.collection(QuanLyConstants.COOK)
+                                            .document(restaurantID)
+                                            .collection(QuanLyConstants.TABLE)
+                                            .document(docID);
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+
+                String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
+                        ? "Local" : "Server";
+
+                if (snapshot != null && snapshot.exists()) {
+                    Map<String, Object> order = snapshot.getData();
+                    if(!TextUtils.isEmpty(order.get(QuanLyConstants.FOOD_NAME).toString())){
+                        String conFood = order.get(QuanLyConstants.FOOD_NAME).toString();
+                        String[] content = conFood.split(";");
+                        List<FoodInside> listFoodName = new ArrayList<>();
+                        for (String aContent : content) {
+                            listFoodName.add(new FoodInside(aContent));
+                        }
+                        String time = order.get(QuanLyConstants.ORDER_TIME).toString();
+                        String employeeID = order.get(QuanLyConstants.TABLE_EMPLOYEE_ID).toString();
+                        String title = view.getContext().getResources().getString(R.string.table, order.get(QuanLyConstants.TABLE_NUMBER));
+                        for(CookFood cf : listData){
+                            if(cf.getTitle().equals(title)){
+                                listData.remove(cf);
+                                break;
+                            }
+                        }
+
+                        CookFood cookFood = new CookFood(title,listFoodName);
+                        cookFood.setTime(time);
+                        cookFood.setEmployeeID(employeeID);
+                        listData.add(cookFood);
+
+                        Collections.sort(listData, new Comparator<CookFood>() {
+                            @Override
+                            public int compare(CookFood o1, CookFood o2) {
+                                if(o1.getTime().compareTo(o2.getTime())==0){
+                                    return 1;
+                                }
+                                return o1.getTime().compareTo(o2.getTime());
+                            }
+                        });
+
+                        recyclerView.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                        adapter.onGroupCollapsed(0, 1000);
+                    }
+                } else {
+                    Log.d(TAG, source + " data: null");
+                }
+            }
+        });
     }
 
     @Override

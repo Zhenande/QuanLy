@@ -5,10 +5,9 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_weight="1"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <View
             android:layout_weight="1"
@@ -20,7 +19,8 @@
             android:src="@drawable/ic_table_open"
             android:scaleType="fitXY"
             android:layout_width="200dp"
-            android:layout_height="200dp" />
+            android:layout_height="200dp"
+            android:contentDescription="@string/image_content_error" />
 
         <View
             android:layout_weight="1"
@@ -31,12 +31,13 @@
     </LinearLayout>
 
     <TextView
+        android:layout_weight="1"
         android:id="@+id/table_list_number"
         android:text="@string/tableNumber"
         android:gravity="center"
         android:textColor="@color/jet"
         android:textSize="30sp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="0dp" />
 
 </LinearLayout>

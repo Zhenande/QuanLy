@@ -1,5 +1,6 @@
 package adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import android.view.LayoutInflater;
@@ -52,6 +53,7 @@ public class MenuFoodListAdapter extends BaseAdapter{
         return position;
     }
 
+    @SuppressLint("InflateParams")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -72,7 +74,7 @@ public class MenuFoodListAdapter extends BaseAdapter{
         GlideApp.with(context)
                 .load(imageRef)
                 .into(holder.foodImage);
-        holder.foodPrice.setText(MoneyFormatter.formatToMoney(food.getPrice()+"") + " VNĐ");
+        holder.foodPrice.setText(context.getResources().getString(R.string.money_type,MoneyFormatter.formatToMoney(food.getPrice()+"")));
         holder.foodName.setText(food.getFoodName());
 
         return convertView;

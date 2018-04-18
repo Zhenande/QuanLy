@@ -342,6 +342,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
             food.put(QuanLyConstants.FOOD_DESCRIPTION,txtDescription.getText().toString());
             food.put(QuanLyConstants.FOOD_TYPE,txtType.getText().toString().toLowerCase());
             food.put(QuanLyConstants.FOOD_IMAGE_NAME,imageName);
+            food.put(QuanLyConstants.FOOD_AVAILABLE, true);
             db.collection(QuanLyConstants.FOOD)
                     .add(food)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
