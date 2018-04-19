@@ -86,12 +86,19 @@
     <string-array name="income_spinner_reportTime">
         <item>Ngày</item>
         <item>Tháng</item>
+        <item>Quý</item>
         <item>Năm</item>
     </string-array>
     <string-array name="income_spinner_kindOfChart">
         <item>Doanh thu</item>
         <item>Hóa đơn</item>
         <item>Cả hai</item>
+    </string-array>
+    <string-array name="income_spinner_quarter">
+        <item>Q1</item>
+        <item>Q2</item>
+        <item>Q3</item>
+        <item>Q4</item>
     </string-array>
 
     <!--=================================Employee List Item================================================-->

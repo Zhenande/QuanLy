@@ -88,6 +88,7 @@
     <string-array name="income_spinner_reportTime">
         <item>Day</item>
         <item>Month</item>
+        <item>Quarter</item>
         <item>Year</item>
     </string-array>
     <string-array name="income_spinner_kindOfChart">
@@ -95,6 +96,13 @@
         <item>Order</item>
         <item>Both</item>
     </string-array>
+    <string-array name="income_spinner_quarter">
+        <item>Q1</item>
+        <item>Q2</item>
+        <item>Q3</item>
+        <item>Q4</item>
+    </string-array>
+    <string name="week">Week </string>
 
     <!--=================================Employee List Item================================================-->
     <string name="employee_Name">Employee Name</string>

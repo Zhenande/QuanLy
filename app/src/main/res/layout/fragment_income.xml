@@ -88,25 +88,58 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/linear_report_year"
+            android:id="@+id/linear_report_quarterYear"
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/income_Year"
-                android:textColor="@color/black"
-                android:text="@string/income_reportYear"
+            <LinearLayout
+                android:id="@+id/linear_report_quarter"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/income_button_Year"
-                android:layout_marginStart="33dp"
-                android:textColor="@color/white"
-                android:layout_width="270dp"
-                android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/income_pickQuarter"
+                    android:text="@string/income_reportQuarter"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Spinner
+                    android:id="@+id/income_spinner_quarter"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="-3dp"
+                    android:layout_marginLeft="4dp"
+                    android:minWidth="50dp"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linear_report_year"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/income_Year"
+                    android:textColor="@color/black"
+                    android:text="@string/income_reportYear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/income_button_Year"
+                    android:layout_marginStart="33dp"
+                    android:textColor="@color/white"
+                    android:layout_width="270dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -125,6 +158,7 @@
 
             <Spinner
                 android:id="@+id/income_spinner_kindOfChart"
+                android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5" />

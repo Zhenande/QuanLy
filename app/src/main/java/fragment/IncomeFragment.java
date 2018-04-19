@@ -2,12 +2,12 @@ package fragment;
 
 
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +20,6 @@ import android.widget.Toast;
 
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -32,7 +31,6 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -42,9 +40,11 @@ import com.tsongkha.spinnerdatepicker.DatePickerDialog;
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder;
 
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -54,7 +54,9 @@ import manhquan.khoaluan_quanly.R;
 import util.DayAxisValueFormatter;
 import util.MoneyFormatter;
 import util.MoneyAxisValueFormatter;
+import util.MonthAxisValueFormatter;
 import util.OrderAxisValueFormatter;
+import util.WeekAxisValueFormatter;
 
 
 /**
@@ -72,24 +74,29 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     public Spinner spinnerReportTime;
     @BindView(R.id.income_spinner_kindOfChart)
     public Spinner spinnerKindOfChart;
-//    @BindView(R.id.income_chart)
-//    public BarChart chart;
     @BindView(R.id.income_chart)
     public CombinedChart chart_combined;
     @BindView(R.id.linear_report_date)
     LinearLayout dateLayout;
     @BindView(R.id.linear_report_month)
     LinearLayout monthLayout;
+    @BindView(R.id.linear_report_quarter)
+    LinearLayout quarterLayout;
     @BindView(R.id.linear_report_year)
     LinearLayout yearLayout;
+    @BindView(R.id.linear_report_quarterYear)
+    LinearLayout quarterYearLayout;
     @BindView(R.id.income_button_Month)
     Button buttonMonth;
     @BindView(R.id.income_button_Year)
     Button buttonYear;
     @BindView(R.id.income_button_Action)
     Button buttonAction;
+    @BindView(R.id.income_spinner_quarter)
+    Spinner spinnerQuarter;
     private SpinnerDatePickerDialogBuilder dateSpinner;
     private FirebaseFirestore db;
+    @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat sdf_full_date = new SimpleDateFormat("dd/MM/yyyy");
     private MaterialDialog dialogLoading;
     private int dayOfYear = 1;
@@ -119,10 +126,15 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         ArrayAdapter<CharSequence> adapterKindOfChart = ArrayAdapter.createFromResource(view.getContext(), R.array.income_spinner_kindOfChart,
                 android.R.layout.simple_spinner_item);
 
+        ArrayAdapter<CharSequence> adapterQuarter = ArrayAdapter.createFromResource(view.getContext(), R.array.income_spinner_quarter,
+                android.R.layout.simple_spinner_item);
+
         adapterReportTime.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         adapterKindOfChart.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterQuarter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerReportTime.setAdapter(adapterReportTime);
         spinnerKindOfChart.setAdapter(adapterKindOfChart);
+        spinnerQuarter.setAdapter(adapterQuarter);
 
 
         initDateStartEnd();
@@ -140,26 +152,32 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
     @Override
     public void onClick(View v) {
-        Calendar cal = Calendar.getInstance();
         dateSpinner.context(view.getContext())
-                .callback(this)
-                .defaultDate(cal.get(Calendar.YEAR),cal.get(Calendar.MONTH),cal.get(Calendar.DAY_OF_MONTH));
+                .callback(this);
         int id = v.getId();
         if(id == buttonStartDate.getId()){
             flag = true;
+            String[] date = buttonStartDate.getText().toString().split("/");
+            dateSpinner.defaultDate(Integer.parseInt(date[2]),Integer.parseInt(date[1])-1,Integer.parseInt(date[0]));
             dateSpinner.showTitle(true);
             dateSpinner.build().show();
         }
         else if(id == buttonEndDate.getId()){
             flag = false;
+            String[] date = buttonEndDate.getText().toString().split("/");
+            dateSpinner.defaultDate(Integer.parseInt(date[2]),Integer.parseInt(date[1])-1,Integer.parseInt(date[0]));
             dateSpinner.showTitle(true);
             dateSpinner.build().show();
         }
         else if(id == buttonMonth.getId()){
+            String[] date = buttonMonth.getText().toString().split("/");
+            dateSpinner.defaultDate(Integer.parseInt(date[2]),Integer.parseInt(date[1])-1,Integer.parseInt(date[0]));
             dateSpinner.showTitle(true);
             dateSpinner.build().show();
         }
         else if(id == buttonYear.getId()){
+            String[] date = buttonYear.getText().toString().split("/");
+            dateSpinner.defaultDate(Integer.parseInt(date[2]),Integer.parseInt(date[1])-1,Integer.parseInt(date[0]));
             dateSpinner.showTitle(true);
             dateSpinner.build().show();
         }
@@ -187,9 +205,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         switch (spinnerReportTime.getSelectedItemPosition()){
             case 0: drawChart0_0();
                     break;
-            case 1:
+            case 1: drawChart0_1();
                     break;
-            case 2:
+            case 2: drawChart0_2();
+                    break;
+            case 3: drawChart0_3();
                     break;
         }
     }
@@ -198,9 +218,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         switch (spinnerReportTime.getSelectedItemPosition()){
             case 0: drawChart1_0();
                 break;
-            case 1:
+            case 1: drawChart1_1();
                 break;
-            case 2:
+            case 2: drawChart1_2();
+                break;
+            case 3: drawChart1_3();
                 break;
         }
     }
@@ -209,13 +231,19 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         switch (spinnerReportTime.getSelectedItemPosition()){
             case 0: drawChart2_0();
                 break;
-            case 1:
+            case 1: drawChart2_1();
                 break;
-            case 2:
+            case 2: drawChart2_2();
+                break;
+            case 3: drawChart2_3();
                 break;
         }
     }
 
+    /*
+    * @authot: ManhLD
+    * Draw chart Time: Date and Type: Income
+    * */
     private void drawChart0_0() {
         showLoadingDialog();
         db.collection(QuanLyConstants.ORDER)
@@ -281,6 +309,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                         CombinedData combinedData = new CombinedData();
                         combinedData.setData(barData);
                         chart_combined.setData(combinedData);
+                        chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()+0.5f);
+                        chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
                         chart_combined.animateY(2000);
                         chart_combined.invalidate();
                         closeLoadingDialog();
@@ -289,6 +319,339 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
             });
     }
 
+    /*
+    * @authot: ManhLD
+    * Draw chart Time: Month and Type: Income
+    * */
+    private void drawChart0_1() {
+        showLoadingDialog();
+        Calendar cal = Calendar.getInstance();
+        String[] monthC = buttonMonth.getText().toString().split("/");
+        cal.set(Calendar.MONTH, Integer.parseInt(monthC[0])-1);
+        cal.set(Calendar.YEAR, Integer.parseInt(monthC[1]));
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        final String startDate = sdf_full_date.format(cal.getTime());
+        final int dayOfMonth = getLastDateOfMonth(Integer.parseInt(monthC[0])-1,Integer.parseInt(monthC[1]));
+        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        String endDate = sdf_full_date.format(cal.getTime());
+        db.collection(QuanLyConstants.ORDER)
+                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            float counting = dayOfYear+1;
+                            String compareDate = startDate;
+                            List<BarEntry> listBar = new ArrayList<>();
+                            double income = 0;
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                do{
+                                    if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
+                                        income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        if(Double.compare(income,0)>0){
+                                            listBar.add(new BarEntry(counting, (float)income));
+                                            income = 0;
+                                        }
+                                        else{
+                                            // if the compareday is the day restaurant does not open
+                                            listBar.add(new BarEntry(counting, 0f));
+                                        }
+                                        compareDate = increaseDate(compareDate);
+                                        counting++;
+                                    }
+                                    if(Integer.parseInt(compareDate.split("/")[0]) > dayOfMonth){
+                                        break;
+                                    }
+                                }while (flagBreak);
+                            }
+
+                            if(Double.compare(income,0) > 0){
+                                listBar.add(new BarEntry(counting, (float)income));
+                            }
+
+                            // When the user choose the current
+                            // Ex: currentDate is 19/4/2018 but the user choose to create chart 4/2018
+                            // So i need to add the remaining date of the month.
+                            while (listBar.size() < dayOfMonth){
+                                listBar.add(new BarEntry(counting, 0f));
+                                counting++;
+                            }
+
+                            IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size()+1);
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new MoneyAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarData barData = new BarData(barDataSet);
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            chart_combined.setData(combinedData);
+                            chart_combined.animateY(2000);
+                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()+0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
+                            chart_combined.setDragEnabled(true);
+                            chart_combined.invalidate();
+                            closeLoadingDialog();
+                        }
+                    }
+                });
+    }
+
+    /*
+    * @authot: ManhLD
+    * Draw chart Time: Quarter and Type: Income
+    * */
+    private void drawChart0_2() {
+        showLoadingDialog();
+        Calendar cal = Calendar.getInstance();
+        int startMonth = (spinnerQuarter.getSelectedItemPosition()*3);
+        cal.set(Calendar.MONTH, startMonth);
+        cal.set(Calendar.YEAR, Integer.parseInt(buttonYear.getText().toString()));
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        final String startDate = sdf_full_date.format(cal.getTime());
+        final int dayOfMonth = getLastDateOfMonth(startMonth+2,Integer.parseInt(buttonYear.getText().toString()));
+        cal.set(Calendar.MONTH, startMonth+2);
+        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        String endDate = sdf_full_date.format(cal.getTime());
+        try {
+            Date text = sdf_full_date.parse("05/04/2018");
+            Date end = cal.getTime();
+            Log.i("INCOME", end.before(text) + "");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        final int maxDayQuarter = 13;
+        db.collection(QuanLyConstants.ORDER)
+                //.whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            float counting = 1;
+                            String[] getStartDate = startDate.split("/");
+                            Calendar compareDate = Calendar.getInstance();
+                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[0]));
+                            compareDate.set(Calendar.MONTH, Integer.parseInt(getStartDate[1])-1);
+                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[2]));
+                            compareDate.add(Calendar.DAY_OF_MONTH,7);
+                            List<BarEntry> listBar = new ArrayList<>();
+                            double income = 0;
+                            Log.i("INCOME", task.getResult().size() + "");
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                String[] orderDate = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
+                                Calendar cal = Calendar.getInstance();
+                                cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[0]));
+                                cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
+                                cal.set(Calendar.YEAR, Integer.parseInt(orderDate[2]));
+                                do{
+                                    if(cal.before(compareDate)){
+                                        income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        if(Double.compare(income,0)>0){
+                                            listBar.add(new BarEntry(counting, (float)income));
+                                            income = 0;
+                                        }
+                                        else{
+                                            // if the compareday is the day restaurant does not open
+                                            listBar.add(new BarEntry(counting, 0f));
+                                        }
+                                        compareDate.add(Calendar.DAY_OF_MONTH, 7);
+                                        counting++;
+                                    }
+                                }while (flagBreak && listBar.size() < maxDayQuarter );
+                                if(listBar.size() >= maxDayQuarter){
+                                    break;
+                                }
+                            }
+
+                            if(Double.compare(income,0) > 0){
+                                listBar.add(new BarEntry(counting, (float)income));
+                                counting++;
+                            }
+
+                            // When the user choose the current quarter
+                            // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
+                            // So i need to add the remaining date of the month.
+                            while (listBar.size() < maxDayQuarter){
+                                listBar.add(new BarEntry(counting, 0f));
+                                counting++;
+                            }
+
+                            IAxisValueFormatter xAxisFormatter = new WeekAxisValueFormatter();
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size()+1);
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new MoneyAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarData barData = new BarData(barDataSet);
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            chart_combined.setData(combinedData);
+                            chart_combined.animateY(2000);
+                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()-0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(counting-1.5f);
+                            chart_combined.setDragEnabled(true);
+                            chart_combined.invalidate();
+                            closeLoadingDialog();
+                        }
+                    }
+                });
+    }
+
+    /*
+    * @authot: ManhLD
+    * Draw chart Time: Year and Type: Income
+    * */
+    private void drawChart0_3() {
+        showLoadingDialog();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MONTH, 0);
+        cal.set(Calendar.YEAR, Integer.parseInt(buttonYear.getText().toString()));
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        final String startDate = sdf_full_date.format(cal.getTime());
+        cal.set(Calendar.MONTH, 11);
+        cal.set(Calendar.DAY_OF_MONTH, 31);
+        String endDate = sdf_full_date.format(cal.getTime());
+        final int maxMonth = 12;
+        db.collection(QuanLyConstants.ORDER)
+                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            float counting = 1;
+                            String[] getStartDate = startDate.split("/");
+                            Calendar compareDate = Calendar.getInstance();
+                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[0]));
+                            compareDate.set(Calendar.MONTH, Integer.parseInt(getStartDate[1])-1);
+                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[2]));
+                            compareDate.add(Calendar.MONTH,1);
+                            List<BarEntry> listBar = new ArrayList<>();
+                            double income = 0;
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                do{
+                                    String[] orderDate = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
+                                    Calendar cal = Calendar.getInstance();
+                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[0]));
+                                    cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
+                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[2]));
+                                    if(cal.before(compareDate)){
+                                        income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        if(Double.compare(income,0)>0){
+                                            listBar.add(new BarEntry(counting, (float)income));
+                                            income = 0;
+                                        }
+                                        else{
+                                            // if the compareday is the day restaurant does not open
+                                            listBar.add(new BarEntry(counting, 0f));
+                                        }
+                                        compareDate.add(Calendar.MONTH, 1);
+                                        counting++;
+                                    }
+                                }while (flagBreak);
+                            }
+
+                            listBar.add(new BarEntry(0,0));
+                            if(Double.compare(income,0) > 0){
+                                listBar.add(new BarEntry(counting, (float)income));
+                                counting++;
+                            }
+
+                            // When the user choose the current quarter
+                            // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
+                            // So i need to add the remaining date of the month.
+                            while (listBar.size() < maxMonth){
+                                listBar.add(new BarEntry(counting, 0f));
+                                counting++;
+                            }
+
+                            IAxisValueFormatter xAxisFormatter = new MonthAxisValueFormatter();
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size());
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new MoneyAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarData barData = new BarData(barDataSet);
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            chart_combined.setData(combinedData);
+                            chart_combined.animateY(2000);
+                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()+0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
+                            chart_combined.setDragEnabled(true);
+                            chart_combined.invalidate();
+                            closeLoadingDialog();
+                        }
+                    }
+                });
+    }
+
+    /*
+    * @authot: ManhLD
+    * Draw chart Time: Date and Type: Order
+    * */
     private void drawChart1_0() {
         showLoadingDialog();
         db.collection(QuanLyConstants.ORDER)
@@ -362,6 +725,324 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                 });
     }
 
+    /*
+    * @authot: ManhLD
+    * Draw chart Time: Month and Type: Order
+    * */
+    private void drawChart1_1() {
+        showLoadingDialog();
+        Calendar cal = Calendar.getInstance();
+        String[] monthC = buttonMonth.getText().toString().split("/");
+        cal.set(Calendar.MONTH, Integer.parseInt(monthC[0])-1);
+        cal.set(Calendar.YEAR, Integer.parseInt(monthC[1]));
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        final String startDate = sdf_full_date.format(cal.getTime());
+        final int dayOfMonth = getLastDateOfMonth(Integer.parseInt(monthC[0])-1,Integer.parseInt(monthC[1]));
+        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        String endDate = sdf_full_date.format(cal.getTime());
+        db.collection(QuanLyConstants.ORDER)
+                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            float counting = dayOfYear+1;
+                            String compareDate = startDate;
+                            List<BarEntry> listBar = new ArrayList<>();
+                            int orderNumber = 0;
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                do{
+                                    if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
+                                        orderNumber ++;
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        if(orderNumber > 0){
+                                            listBar.add(new BarEntry(counting, (float)orderNumber));
+                                            orderNumber = 0;
+                                        }
+                                        else{
+                                            // if the compareday is the day restaurant does not open
+                                            listBar.add(new BarEntry(counting, 0f));
+                                        }
+                                        compareDate = increaseDate(compareDate);
+                                        counting++;
+                                    }
+                                    if(Integer.parseInt(compareDate.split("/")[0]) > dayOfMonth){
+                                        break;
+                                    }
+                                }while (flagBreak);
+                            }
+
+                            if(orderNumber > 0){
+                                listBar.add(new BarEntry(counting, (float)orderNumber));
+                            }
+
+                            // When the user choose the current
+                            // Ex: currentDate is 19/4/2018 but the user choose to create chart 4/2018
+                            // So i need to add the remaining date of the month.
+                            while (listBar.size() < dayOfMonth){
+                                listBar.add(new BarEntry(counting, 0f));
+                                counting++;
+                            }
+
+                            IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size()+1);
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new MoneyAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarData barData = new BarData(barDataSet);
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            chart_combined.setData(combinedData);
+                            chart_combined.animateY(2000);
+                            chart_combined.setDragEnabled(true);
+                            chart_combined.invalidate();
+                            closeLoadingDialog();
+                        }
+                    }
+                });
+    }
+
+    /*
+    * @authot: ManhLD
+    * Draw chart Time: Quarter and Type: Number Order
+    * */
+    private void drawChart1_2() {
+        showLoadingDialog();
+        Calendar cal = Calendar.getInstance();
+        int startMonth = (spinnerQuarter.getSelectedItemPosition()*3);
+        cal.set(Calendar.MONTH, startMonth);
+        cal.set(Calendar.YEAR, Integer.parseInt(buttonYear.getText().toString()));
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        final String startDate = sdf_full_date.format(cal.getTime());
+        final int dayOfMonth = getLastDateOfMonth(startMonth+2,Integer.parseInt(buttonYear.getText().toString()));
+        cal.set(Calendar.MONTH, startMonth+2);
+        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        String endDate = sdf_full_date.format(cal.getTime());
+        final int maxDayQuarter = 14;
+        db.collection(QuanLyConstants.ORDER)
+                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            float counting = 1;
+                            String[] getStartDate = startDate.split("/");
+                            Calendar compareDate = Calendar.getInstance();
+                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[0]));
+                            compareDate.set(Calendar.MONTH, Integer.parseInt(getStartDate[1])-1);
+                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[2]));
+                            compareDate.add(Calendar.DAY_OF_MONTH,7);
+                            List<BarEntry> listBar = new ArrayList<>();
+                            int numberOrder = 0;
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                do{
+                                    String[] orderDate = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
+                                    Calendar cal = Calendar.getInstance();
+                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[0]));
+                                    cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
+                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[2]));
+                                    if(cal.before(compareDate)){
+                                        numberOrder++;
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        if(numberOrder>0){
+                                            listBar.add(new BarEntry(counting, (float)numberOrder));
+                                            numberOrder = 0;
+                                        }
+                                        else{
+                                            // if the compareday is the day restaurant does not open
+                                            listBar.add(new BarEntry(counting, 0f));
+                                        }
+                                        compareDate.add(Calendar.DAY_OF_MONTH, 7);
+                                        counting++;
+                                    }
+                                }while (flagBreak);
+                            }
+
+                            listBar.add(new BarEntry(0,0));
+                            if(numberOrder > 0){
+                                listBar.add(new BarEntry(counting, (float)numberOrder));
+                                counting++;
+                            }
+
+                            // When the user choose the current quarter
+                            // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
+                            // So i need to add the remaining date of the month.
+                            while (listBar.size() < maxDayQuarter){
+                                listBar.add(new BarEntry(counting, 0f));
+                                counting++;
+                            }
+
+                            IAxisValueFormatter xAxisFormatter = new WeekAxisValueFormatter();
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size()+1);
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new MoneyAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, "Number Order");
+                            BarData barData = new BarData(barDataSet);
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            chart_combined.setData(combinedData);
+                            chart_combined.animateY(2000);
+                            chart_combined.setDragEnabled(true);
+                            chart_combined.invalidate();
+                            closeLoadingDialog();
+                        }
+                    }
+                });
+    }
+
+    /*
+    * @authot: ManhLD
+    * Draw chart Time: Year and Type: Number Order
+    * */
+    private void drawChart1_3() {
+        showLoadingDialog();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MONTH, 0);
+        cal.set(Calendar.YEAR, Integer.parseInt(buttonYear.getText().toString()));
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        final String startDate = sdf_full_date.format(cal.getTime());
+        cal.set(Calendar.MONTH, 11);
+        cal.set(Calendar.DAY_OF_MONTH, 31);
+        String endDate = sdf_full_date.format(cal.getTime());
+        final int maxDayQuarter = 14;
+        db.collection(QuanLyConstants.ORDER)
+                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            float counting = 1;
+                            String[] getStartDate = startDate.split("/");
+                            Calendar compareDate = Calendar.getInstance();
+                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[0]));
+                            compareDate.set(Calendar.MONTH, Integer.parseInt(getStartDate[1])-1);
+                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[2]));
+                            compareDate.add(Calendar.MONTH,1);
+                            List<BarEntry> listBar = new ArrayList<>();
+                            int numberOrder = 0;
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                do{
+                                    String[] orderDate = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
+                                    Calendar cal = Calendar.getInstance();
+                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[0]));
+                                    cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
+                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[2]));
+                                    if(cal.before(compareDate)){
+                                        numberOrder ++;
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        if(numberOrder>0){
+                                            listBar.add(new BarEntry(counting, (float)numberOrder));
+                                            numberOrder = 0;
+                                        }
+                                        else{
+                                            // if the compareday is the day restaurant does not open
+                                            listBar.add(new BarEntry(counting, 0f));
+                                        }
+                                        compareDate.add(Calendar.MONTH, 1);
+                                        counting++;
+                                    }
+                                }while (flagBreak);
+                            }
+
+                            listBar.add(new BarEntry(0,0));
+                            if(numberOrder > 0){
+                                listBar.add(new BarEntry(counting, (float)numberOrder));
+                                counting++;
+                            }
+
+                            // When the user choose the current quarter
+                            // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
+                            // So i need to add the remaining date of the month.
+                            while (listBar.size() < maxDayQuarter){
+                                listBar.add(new BarEntry(counting, 0f));
+                                counting++;
+                            }
+
+                            IAxisValueFormatter xAxisFormatter = new MonthAxisValueFormatter();
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size()+1);
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new MoneyAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarData barData = new BarData(barDataSet);
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            chart_combined.setData(combinedData);
+                            chart_combined.animateY(2000);
+                            chart_combined.setDragEnabled(true);
+                            chart_combined.invalidate();
+                            closeLoadingDialog();
+                        }
+                    }
+                });
+    }
+
+    /*
+    * @authot: ManhLD
+    * Draw chart Time: Date and Type: Both
+    * */
     private void drawChart2_0() {
         showLoadingDialog();
         db.collection(QuanLyConstants.ORDER)
@@ -389,6 +1070,10 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             for(DocumentSnapshot document : task.getResult()){
                                 boolean flagBreak = true;
                                 do{
+                                    /*
+                                    * With the Order just got, i compare Order_Date with the StartDate that the user have choosen
+                                    * Just in case, the restaurant have day off, i must check that the day off have or not.
+                                    * */
                                     if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
                                         numberOrder++;
                                         income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
@@ -417,6 +1102,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 listLineEntry.add(new Entry(counting, (float) numberOrder));
                             }
 
+                            // Set value formatter for the x Axis
                             IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
 
                             XAxis xAxis = chart_combined.getXAxis();
@@ -426,6 +1112,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             xAxis.setLabelCount(listBar.size()+1);
                             xAxis.setValueFormatter(xAxisFormatter);
 
+                            // Set value formatter for the Left Axis
                             IAxisValueFormatter yLeftAxisFormatter = new MoneyAxisValueFormatter();
 
                             YAxis leftAxis = chart_combined.getAxisLeft();
@@ -433,9 +1120,263 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
                             leftAxis.setValueFormatter(yLeftAxisFormatter);
                             leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f);
+
+                            // Set value formatter for the Right Axis
+                            IAxisValueFormatter yRightAxisFormatter = new OrderAxisValueFormatter();
+
+                            YAxis rightAxis = chart_combined.getAxisRight();
+                            rightAxis.setLabelCount(8, false);
+                            rightAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            rightAxis.setValueFormatter(yRightAxisFormatter);
+                            rightAxis.setSpaceTop(15f);
+                            rightAxis.setAxisMinimum(0f);
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            barDataSet.setAxisDependency(YAxis.AxisDependency.LEFT); // set the listBar data to the Left Axis
+                            BarData barData = new BarData(barDataSet);
+
+                            LineDataSet lineDataSet = new LineDataSet(listLineEntry, "Number Order");
+                            lineDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT); // set the listLineEntry data to the Right Axis
+                            lineDataSet.setColor(view.getContext().getResources().getColor(R.color.yellow));
+                            LineData lineData = new LineData(lineDataSet);
+
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            combinedData.setData(lineData);
+
+                            chart_combined.setData(combinedData);
+                            chart_combined.animateY(2000);
+                            chart_combined.setDragEnabled(true);
+                            chart_combined.invalidate();
+                            closeLoadingDialog();
+                        }
+                    }
+                });
+    }
+
+    /*
+    * @authot: ManhLD
+    * Draw chart Time: Month and Type: Both
+    * */
+    private void drawChart2_1() {
+        showLoadingDialog();
+        Calendar cal = Calendar.getInstance();
+        String[] monthC = buttonMonth.getText().toString().split("/");
+        cal.set(Calendar.MONTH, Integer.parseInt(monthC[0])-1);
+        cal.set(Calendar.YEAR, Integer.parseInt(monthC[1]));
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        final String startDate = sdf_full_date.format(cal.getTime());
+        final int dayOfMonth = getLastDateOfMonth(Integer.parseInt(monthC[0])-1,Integer.parseInt(monthC[1]));
+        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        String endDate = sdf_full_date.format(cal.getTime());
+        db.collection(QuanLyConstants.ORDER)
+                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            float counting = dayOfYear+1;
+                            String compareDate = startDate;
+                            List<BarEntry> listBar = new ArrayList<>();
+                            List<Entry> listLineEntry = new ArrayList<>();
+                            int numberOrder = 0;
+                            double income = 0;
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                do{
+                                    if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
+                                        income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                        numberOrder++;
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        if(Double.compare(income,0)>0){
+                                            listBar.add(new BarEntry(counting, (float)income));
+                                            listLineEntry.add(new Entry(counting, (float)numberOrder));
+                                            income = 0;
+                                            numberOrder = 0;
+                                        }
+                                        else{
+                                            // if the compareday is the day restaurant does not open
+                                            listBar.add(new BarEntry(counting, 0f));
+                                            listLineEntry.add(new Entry(counting, 0f));
+                                        }
+                                        compareDate = increaseDate(compareDate);
+                                        counting++;
+                                    }
+                                    if(Integer.parseInt(compareDate.split("/")[0]) > dayOfMonth){
+                                        break;
+                                    }
+                                }while (flagBreak);
+                            }
+
+                            if(Double.compare(income,0) > 0){
+                                listBar.add(new BarEntry(counting, (float)income));
+                                listLineEntry.add(new Entry(counting, (float)numberOrder));
+                                counting++;
+                            }
+
+                            // When the user choose the current
+                            // Ex: currentDate is 19/4/2018 but the user choose to create chart 4/2018
+                            // So i need to add the remaining date of the month.
+                            while (listBar.size() < dayOfMonth){
+                                listBar.add(new BarEntry(counting, 0f));
+                                listLineEntry.add(new Entry(counting, 0f));
+                                counting++;
+                            }
+
+                            IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size()+1);
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new MoneyAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
                             leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
+                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            barDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+                            BarData barData = new BarData(barDataSet);
 
+                            LineDataSet lineDataSet = new LineDataSet(listLineEntry, "Order Number");
+                            lineDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
+                            lineDataSet.setColor(view.getContext().getResources().getColor(R.color.yellow));
+                            LineData lineData = new LineData(lineDataSet);
+
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            combinedData.setData(lineData);
+                            chart_combined.setData(combinedData);
+                            chart_combined.animateY(2000);
+                            chart_combined.setDragEnabled(true);
+                            chart_combined.invalidate();
+                            closeLoadingDialog();
+                        }
+                    }
+                });
+    }
+
+    /*
+    * @authot: ManhLD
+    * Draw chart Time: Quarter and Type: Income
+    * */
+    private void drawChart2_2() {
+        showLoadingDialog();
+        Calendar cal = Calendar.getInstance();
+        int startMonth = (spinnerQuarter.getSelectedItemPosition()*3);
+        cal.set(Calendar.MONTH, startMonth);
+        cal.set(Calendar.YEAR, Integer.parseInt(buttonYear.getText().toString()));
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        final String startDate = sdf_full_date.format(cal.getTime());
+        final int dayOfMonth = getLastDateOfMonth(startMonth+2,Integer.parseInt(buttonYear.getText().toString()));
+        cal.set(Calendar.MONTH, startMonth+2);
+        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        String endDate = sdf_full_date.format(cal.getTime());
+        final int maxDayQuarter = 14;
+        db.collection(QuanLyConstants.ORDER)
+                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            float counting = 1;
+                            String[] getStartDate = startDate.split("/");
+                            Calendar compareDate = Calendar.getInstance();
+                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[0]));
+                            compareDate.set(Calendar.MONTH, Integer.parseInt(getStartDate[1])-1);
+                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[2]));
+                            compareDate.add(Calendar.DAY_OF_MONTH,7);
+                            List<BarEntry> listBar = new ArrayList<>();
+                            List<Entry> listLineEntry = new ArrayList<>();
+
+                            listBar.add(new BarEntry(0,0));
+                            listLineEntry.add(new Entry(0,0));
+
+                            double income = 0;
+                            int numberOrder = 0;
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                do{
+                                    String[] orderDate = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
+                                    Calendar cal = Calendar.getInstance();
+                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[0]));
+                                    cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
+                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[2]));
+                                    if(cal.before(compareDate)){
+                                        income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                        numberOrder++;
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        if(Double.compare(income,0)>0){
+                                            listBar.add(new BarEntry(counting, (float)income));
+                                            listLineEntry.add(new Entry(counting, (float)numberOrder));
+                                            income = 0;
+                                            numberOrder = 0;
+                                        }
+                                        else{
+                                            // if the compareday is the day restaurant does not open
+                                            listBar.add(new BarEntry(counting, 0f));
+                                            //listLineEntry.add(new Entry(counting, 0f));
+                                        }
+                                        compareDate.add(Calendar.DAY_OF_MONTH, 7);
+                                        counting++;
+                                    }
+                                }while (flagBreak);
+                            }
+
+                            if(Double.compare(income,0) > 0){
+                                listBar.add(new BarEntry(counting, (float)income));
+                                listLineEntry.add(new Entry(counting, (float)numberOrder));
+                                counting++;
+                            }
+
+                            // When the user choose the current quarter
+                            // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
+                            // So i need to add the remaining date of the month.
+                            while (listBar.size() < maxDayQuarter){
+                                listBar.add(new BarEntry(counting, 0f));
+                                //listLineEntry.add(new Entry(counting, 0f));
+                                counting++;
+                            }
+
+                            IAxisValueFormatter xAxisFormatter = new WeekAxisValueFormatter();
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size()+1);
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new MoneyAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                            // Set value formatter for the Right Axis
                             IAxisValueFormatter yRightAxisFormatter = new OrderAxisValueFormatter();
 
                             YAxis rightAxis = chart_combined.getAxisRight();
@@ -460,14 +1401,145 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             chart_combined.setData(combinedData);
                             chart_combined.animateY(2000);
+                            chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
-
                             closeLoadingDialog();
                         }
                     }
                 });
     }
 
+    /*
+    * @authot: ManhLD
+    * Draw chart Time: Year and Type: Both
+    * */
+    private void drawChart2_3() {
+        showLoadingDialog();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MONTH, 0);
+        cal.set(Calendar.YEAR, Integer.parseInt(buttonYear.getText().toString()));
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        final String startDate = sdf_full_date.format(cal.getTime());
+        cal.set(Calendar.MONTH, 11);
+        cal.set(Calendar.DAY_OF_MONTH, 31);
+        String endDate = sdf_full_date.format(cal.getTime());
+        final int maxDayQuarter = 14;
+        db.collection(QuanLyConstants.ORDER)
+                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            float counting = 1;
+                            String[] getStartDate = startDate.split("/");
+                            Calendar compareDate = Calendar.getInstance();
+                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[0]));
+                            compareDate.set(Calendar.MONTH, Integer.parseInt(getStartDate[1])-1);
+                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[2]));
+                            compareDate.add(Calendar.MONTH,1);
+                            List<BarEntry> listBar = new ArrayList<>();
+                            List<Entry> listLineEntry = new ArrayList<>();
+
+                            listBar.add(new BarEntry(0,0));
+                            listLineEntry.add(new Entry(0,0));
+
+                            double income = 0;
+                            int numberOrder = 0;
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                do{
+                                    String[] orderDate = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
+                                    Calendar cal = Calendar.getInstance();
+                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[0]));
+                                    cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
+                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[2]));
+                                    if(cal.before(compareDate)){
+                                        income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                        numberOrder++;
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        if(Double.compare(income,0)>0){
+                                            listBar.add(new BarEntry(counting, (float)income));
+                                            listLineEntry.add(new Entry(counting, (float)numberOrder));
+                                            income = 0;
+                                            numberOrder = 0;
+                                        }
+                                        else{
+                                            // if the compareday is the day restaurant does not open
+                                            listBar.add(new BarEntry(counting, 0f));
+                                            listLineEntry.add(new Entry(counting, 0f));
+                                        }
+                                        compareDate.add(Calendar.MONTH, 1);
+                                        counting++;
+                                    }
+                                }while (flagBreak);
+                            }
+
+
+                            if(Double.compare(income,0) > 0){
+                                listBar.add(new BarEntry(counting, (float)income));
+                                listLineEntry.add(new Entry(counting, (float)numberOrder));
+                                counting++;
+                            }
+
+                            // When the user choose the current quarter
+                            // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
+                            // So i need to add the remaining date of the month.
+                            while (listBar.size() < maxDayQuarter){
+                                listBar.add(new BarEntry(counting, 0f));
+                                listLineEntry.add(new Entry(counting, 0f));
+                                counting++;
+                            }
+
+                            IAxisValueFormatter xAxisFormatter = new MonthAxisValueFormatter();
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size()+1);
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new MoneyAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            barDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+                            BarData barData = new BarData(barDataSet);
+
+                            LineDataSet lineDataSet = new LineDataSet(listLineEntry, "Number Order");
+                            lineDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
+                            lineDataSet.setColor(view.getContext().getResources().getColor(R.color.yellow));
+                            LineData lineData = new LineData(lineDataSet);
+
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            combinedData.setData(lineData);
+                            chart_combined.setData(combinedData);
+                            chart_combined.animateY(2000);
+                            chart_combined.setDragEnabled(true);
+                            chart_combined.invalidate();
+                            closeLoadingDialog();
+                        }
+                    }
+                });
+    }
+
+    /*
+    * @author: ManhLD
+    * Increase date by string 1 date
+    * */
     private String increaseDate(String compareDate) {
         char[] date = compareDate.toCharArray();
         if(date[1] == '9'){
@@ -478,8 +1550,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
             date[1]++;
         }
         StringBuilder builder = new StringBuilder();
-        for(int i = 0; i < date.length; i++){
-            builder.append(date[i]);
+        for (char aDate : date) {
+            builder.append(aDate);
         }
         return builder.toString();
     }
@@ -582,7 +1654,31 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         Calendar currentMonth = Calendar.getInstance();
         String curMonth = currentMonth.get(Calendar.MONTH)+1 + "/";
         curMonth += currentMonth.get(Calendar.YEAR);
+        currentMonth.set(Calendar.DAY_OF_MONTH,1);
+        dayOfYear = currentMonth.get(Calendar.DAY_OF_YEAR);
         buttonMonth.setText(curMonth);
+    }
+
+    private void initQuarter(){
+        Calendar currentQuarter = Calendar.getInstance();
+        String curYear = currentQuarter.get(Calendar.YEAR) + "";
+        switch (spinnerQuarter.getSelectedItemPosition()){
+            case 0: dayOfYear = 1;
+                    break;
+            case 1: currentQuarter.set(Calendar.MONTH, 3);
+                    currentQuarter.set(Calendar.DAY_OF_MONTH,1);
+                    dayOfYear = currentQuarter.get(Calendar.DAY_OF_YEAR);
+                    break;
+            case 2: currentQuarter.set(Calendar.MONTH, 6);
+                    currentQuarter.set(Calendar.DAY_OF_MONTH,1);
+                    dayOfYear = currentQuarter.get(Calendar.DAY_OF_YEAR);
+                    break;
+            case 3: currentQuarter.set(Calendar.MONTH, 9);
+                    currentQuarter.set(Calendar.DAY_OF_MONTH,1);
+                    dayOfYear = currentQuarter.get(Calendar.DAY_OF_YEAR);
+                    break;
+        }
+        buttonYear.setText(curYear);
     }
 
     /*
@@ -590,8 +1686,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * @purpose: Render the current Year to the Button
     * */
     private void initYear() {
-        Calendar currentMonth = Calendar.getInstance();
-        String curYear = currentMonth.get(Calendar.YEAR) + "";
+        Calendar currentYear = Calendar.getInstance();
+        String curYear = currentYear.get(Calendar.YEAR) + "";
+        dayOfYear = 1;
         buttonYear.setText(curYear);
     }
 
@@ -601,16 +1698,27 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         switch (position){
             case 0: dateLayout.setVisibility(View.VISIBLE);
                 monthLayout.setVisibility(View.GONE);
+                quarterYearLayout.setVisibility(View.GONE);
                 yearLayout.setVisibility(View.GONE);
                 initDateStartEnd();
                 break;
             case 1: dateLayout.setVisibility(View.GONE);
                 monthLayout.setVisibility(View.VISIBLE);
+                quarterYearLayout.setVisibility(View.GONE);
                 yearLayout.setVisibility(View.GONE);
                 initMonth();
                 break;
             case 2: dateLayout.setVisibility(View.GONE);
                 monthLayout.setVisibility(View.GONE);
+                quarterYearLayout.setVisibility(View.VISIBLE);
+                yearLayout.setVisibility(View.VISIBLE);
+                quarterLayout.setVisibility(View.VISIBLE);
+                initQuarter();
+                break;
+            case 3: dateLayout.setVisibility(View.GONE);
+                monthLayout.setVisibility(View.GONE);
+                quarterLayout.setVisibility(View.GONE);
+                quarterYearLayout.setVisibility(View.VISIBLE);
                 yearLayout.setVisibility(View.VISIBLE);
                 initYear();
                 break;
@@ -621,6 +1729,29 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    /*
+    * @author: ManhLD
+    * Use to get day of the month
+    * P/s: Month input 0-11 not 1-12. remember -1 when set the value month.
+    * */
+    private int getLastDateOfMonth(int month, int year) {
+        if (month == 1) {
+            boolean is29Feb = false;
+
+            if (year < 1582)
+                is29Feb = (year < 1 ? year + 1 : year) % 4 == 0;
+            else if (year > 1582)
+                is29Feb = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+
+            return is29Feb ? 29 : 28;
+        }
+
+        if (month == 3 || month == 5 || month == 8 || month == 10)
+            return 30;
+        else
+            return 31;
     }
 
 

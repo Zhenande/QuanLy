@@ -30,8 +30,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.ServerTimestamp;
 import com.google.firebase.firestore.SetOptions;
 
 import java.text.SimpleDateFormat;
@@ -39,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +84,8 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
     private StringBuilder nameFoodSendToCook = new StringBuilder();
     private String time;
     private List<String> listFullTable = new ArrayList<>();
+    @ServerTimestamp
+    private Date serverTime;
 
 
     @Override
