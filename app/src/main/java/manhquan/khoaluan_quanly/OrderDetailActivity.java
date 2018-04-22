@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -289,6 +290,25 @@ public class OrderDetailActivity extends AppCompatActivity {
                             closeLoadingDialog();
                             txtTotalCost.setText(getResources().getString(R.string.totalCost,
                                     MoneyFormatter.formatToMoney(totalCost+"") + " VNĐ"));
+                            listViewFoodOnBill.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    new MaterialDialog.Builder(OrderDetailActivity.this)
+                                            .positiveText(getResources().getString(R.string.main_agree))
+                                            .negativeText(getResources().getString(R.string.main_disagree))
+                                            .positiveColor(getResources().getColor(R.color.primary_dark))
+                                            .negativeColor(getResources().getColor(R.color.black))
+                                            .content(getResources().getString(R.string.dialogRemoveFood))
+                                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                                @Override
+                                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+
+                                                }
+                                            })
+                                            .build()
+                                            .show();
+                                }
+                            });
                             listFoodOnBillAdapter.notifyDataSetChanged();
                         }
                     }

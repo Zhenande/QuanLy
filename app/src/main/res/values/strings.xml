@@ -63,6 +63,7 @@
     <string name="dialogCheckOut">Do you want to check out this order?</string>
     <string name="checkOutDone">Check out complete</string>
     <string name="customerNoName">Customer</string>
+    <string name="dialogRemoveFood">Do you want to delete %s?</string>
 
     <!--=================================Food On Bill List Item=========================================-->
     <string name="fobFoodName">Food Name</string>

@@ -61,6 +61,7 @@
     <string name="dialogCheckOut">Bạn muốn thanh toán hóa đơn này?</string>
     <string name="checkOutDone">Thanh toán thành công</string>
     <string name="customerNoName">Khách</string>
+    <string name="dialogRemoveFood">Bạn có muốn xóa món %s?</string>
 
     <!--=================================Food On Bill List Item=========================================-->
     <string name="fobFoodName">Tên món</string>

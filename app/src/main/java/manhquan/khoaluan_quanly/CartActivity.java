@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +54,6 @@ import util.MoneyFormatter;
 
 public class CartActivity extends AppCompatActivity implements  AdapterView.OnItemSelectedListener, View.OnClickListener, FoodChooseListAdapter.CallBackFood {
 
-    private static final String TAG = "CartActivity";
     public ArrayList<FoodOnBill> listFoodChoose;
     @BindView(R.id.food_choose_list_view)
     public ListView listViewFood;
@@ -179,13 +177,14 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                             }
                             listFullTable.add(document.get(QuanLyConstants.TABLE_NUMBER).toString());
                         }
-                        Collections.sort(listTable, new Comparator<String>() {
+                        Collections.sort(listFullTable, new Comparator<String>() {
                             @Override
                             public int compare(String o1, String o2) {
                                 return o1.compareTo(o2);
                             }
                         });
 
+                        // Set table have choose before
                         if(flag){
                             for(int i = 0; i < listTable.size();i++){
                                 if(GlobalVariable.tableChoose.equals(listTable.get(i))){
@@ -533,10 +532,9 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                         DocumentSnapshot document = task.getResult();
                         DocumentReference docRef = document.getReference();
                         if(!TextUtils.isEmpty(document.get(QuanLyConstants.FOOD_NAME).toString())){
-                            StringBuilder builder = new StringBuilder();
-                            builder.append(document.get(QuanLyConstants.FOOD_NAME).toString());
-                            builder.append(nameFoodSendToCook.toString());
-                            cook.put(QuanLyConstants.FOOD_NAME, builder.toString());
+                            String builder = document.get(QuanLyConstants.FOOD_NAME).toString() +
+                                    nameFoodSendToCook.toString();
+                            cook.put(QuanLyConstants.FOOD_NAME, builder);
                             docRef.set(cook, SetOptions.merge());
                         }
                         else{
