@@ -6,7 +6,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import java.text.DecimalFormat;
 
 /**
- * Created by vpmn-os-quocnb on 4/18/2018.
+ * Created by LieuDucManh on 4/18/2018.
  */
 
 public class OrderAxisValueFormatter implements IAxisValueFormatter {

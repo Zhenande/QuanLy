@@ -4,7 +4,7 @@ import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 /**
- * Created by vpmn-os-quocnb on 4/19/2018.
+ * Created by LieuDucManh on 4/19/2018.
  */
 
 public class MonthAxisValueFormatter implements IAxisValueFormatter {

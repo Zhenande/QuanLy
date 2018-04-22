@@ -1,6 +1,7 @@
 package fragment;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
@@ -78,12 +79,12 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
         GetListFoodType();
 
         int positionEm = getPosition();
-        if(positionEm !=1){
+        if(positionEm == 2 || positionEm == 4){
+            buttonCreate.setVisibility(View.GONE);
+        }
+        else if(positionEm == 3){
             buttonCreate.setImageResource(R.drawable.icon_cart);
             flag = true;
-        }
-        else if(positionEm == 2){
-            buttonCreate.setVisibility(View.GONE);
         }
 
         buttonCreate.setOnClickListener(new View.OnClickListener() {
@@ -214,4 +215,7 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
         }
     }
 
+    public void refreshMenu(){
+        adapter.notifyDataSetChanged();
+    }
 }

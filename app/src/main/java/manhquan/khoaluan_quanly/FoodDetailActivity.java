@@ -43,6 +43,7 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -94,6 +95,9 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         ButterKnife.bind(this);
         GetListFoodType();
 
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
         mStorage = FirebaseStorage.getInstance().getReference();
 
         foodName = getIntent().getStringExtra(QuanLyConstants.INTENT_FOOD_DETAIL_NAME);
@@ -106,6 +110,8 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         buttonGallary.setOnClickListener(this);
         buttonCreate.setOnClickListener(this);
     }
+
+
 
     private void GetListFoodType() {
         db.collection(QuanLyConstants.RESTAURANT)
@@ -261,9 +267,11 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         menu.clear();
-        getMenuInflater().inflate(R.menu.detail, menu);
         if(getPosition()==2){
             item = menu.add(0,QuanLyConstants.REPORT_OUT_OF_FOOD,0,getResources().getString(R.string.action_create_table));
+        }
+        else{
+            getMenuInflater().inflate(R.menu.detail, menu);
         }
         return true;
     }
@@ -293,6 +301,9 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         if(id == QuanLyConstants.REPORT_OUT_OF_FOOD){
             setOutOfFood();
             return true;
+        }
+        if(id == android.R.id.home){
+            this.onBackPressed();
         }
 
         return super.onOptionsItemSelected(item);

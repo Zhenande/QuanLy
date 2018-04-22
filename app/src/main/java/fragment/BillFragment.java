@@ -66,7 +66,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
     private FirebaseFirestore db;
     private MaterialDialog dialogLoading;
     @SuppressLint("SimpleDateFormat")
-    private SimpleDateFormat sdf_Date = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat sdf_Date = new SimpleDateFormat("yyyy/MM/dd");
 
     public BillFragment() {
         // Required empty public constructor
@@ -101,10 +101,12 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
 
         listBill.setOnItemClickListener(this);
 
+
         Calendar cal = Calendar.getInstance();
-        buttonDate.setText(view.getResources().getString(R.string.full_date,new Object[]{cal.get(Calendar.DAY_OF_MONTH),
-                                                            cal.get(Calendar.MONTH)+1,
-                                                            cal.get(Calendar.YEAR)}));
+        buttonDate.setText(view.getResources().getString(R.string.full_date,
+                cal.get(Calendar.DAY_OF_MONTH),
+                        cal.get(Calendar.MONTH)+1,
+                        cal.get(Calendar.YEAR)));
         renderData(sdf_Date.format(cal.getTime()));
 
         return view;
@@ -149,6 +151,10 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
         int id = v.getId();
         if(id == R.id.bill_fragment_button_date){
             Calendar cal = Calendar.getInstance();
+            String[] selectedDay = buttonDate.getText().toString().split("/");
+            cal.set(Calendar.YEAR, Integer.parseInt(selectedDay[2]));
+            cal.set(Calendar.MONTH, Integer.parseInt(selectedDay[1])-1);
+            cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(selectedDay[0]));
             dateSpinner.context(view.getContext())
                     .callback(this)
                     .showTitle(true)
@@ -165,10 +171,15 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
         showLoadingDialog();
         final String inputBillNumber = edBillNumber.getText().toString();
 //        String date = inputBillNumber.substring(0,4);
-        String timeTest = inputBillNumber.substring(4,8);
-        String timeSearch = timeTest.substring(0,2) + ":" + timeTest.substring(2,4);
+//        String timeTest = inputBillNumber.substring(4,8);
+//        String timeSearch = timeTest.substring(0,2) + ":" + timeTest.substring(2,4);
+        if(inputBillNumber.length() < 4){
+            Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.bill_fragment_error_search), Toast.LENGTH_SHORT).show();
+            closeLoadingDialog();
+            return;
+        }
         db.collection(QuanLyConstants.ORDER)
-            .whereEqualTo(QuanLyConstants.ORDER_TIME,timeSearch)
+            .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_TIME,inputBillNumber)
             .get()
             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
@@ -199,9 +210,9 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
         dateChoose.set(Calendar.MONTH, monthOfYear);
         dateChoose.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         if(checkCorrectDate(dateChoose)){
-            buttonDate.setText(view.getResources().getString(R.string.full_date,new Object[]{dateChoose.get(Calendar.DAY_OF_MONTH),
+            buttonDate.setText(view.getResources().getString(R.string.full_date,dateChoose.get(Calendar.DAY_OF_MONTH),
                     dateChoose.get(Calendar.MONTH)+1,
-                    dateChoose.get(Calendar.YEAR)}));
+                    dateChoose.get(Calendar.YEAR)));
             renderData(sdf_Date.format(dateChoose.getTime()));
         }
     }

@@ -1,6 +1,7 @@
 package adapter;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,8 +17,10 @@ import com.thoughtbot.expandablerecyclerview.listeners.OnGroupClickListener;
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup;
 import com.thoughtbot.expandablerecyclerview.models.ExpandableListPosition;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import constants.QuanLyConstants;
 import manhquan.khoaluan_quanly.R;
 import model.FoodInside;
 import util.NotificationTouchHelper;
@@ -72,14 +75,13 @@ public class CookFoodAdapter extends CheckableChildRecyclerViewAdapter<TableView
         }
     }
 
-
 }
 
 class MultiCheckFoodViewHolder extends CheckableChildViewHolder{
 
     private CheckedTextView childCheckTextView;
 
-    public MultiCheckFoodViewHolder(View itemView) {
+    MultiCheckFoodViewHolder(View itemView) {
         super(itemView);
         childCheckTextView = itemView.findViewById(R.id.checked_item_food_name);
     }

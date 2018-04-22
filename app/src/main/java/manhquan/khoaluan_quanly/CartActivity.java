@@ -13,6 +13,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,14 +27,11 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.ServerTimestamp;
 import com.google.firebase.firestore.SetOptions;
 
 import java.text.SimpleDateFormat;
@@ -41,16 +39,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
+import java.util.Objects;
 
 import adapter.FoodChooseListAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
+import fragment.FoodFragment;
 import model.FoodOnBill;
 import util.GlobalVariable;
 import util.MoneyFormatter;
@@ -76,7 +74,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
     private boolean flag = false;
     private final long DELAY = 1500;
     @SuppressLint("SimpleDateFormat")
-    private SimpleDateFormat sdf_Date = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat sdf_Date = new SimpleDateFormat("yyyy/MM/dd");
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat sdf_Time = new SimpleDateFormat("HH:mm");
     private String restaurantID;
@@ -84,8 +82,6 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
     private StringBuilder nameFoodSendToCook = new StringBuilder();
     private String time;
     private List<String> listFullTable = new ArrayList<>();
-    @ServerTimestamp
-    private Date serverTime;
 
 
     @Override
@@ -101,6 +97,9 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
         if(!TextUtils.isEmpty(GlobalVariable.tableCusID)){
             edCusID.setText(GlobalVariable.tableCusID);
         }
+
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         getTableAvailable();
 
@@ -127,7 +126,6 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.i(TAG,"AfterTextChanged");
                 final String finalS = s.toString();
                 if(s.toString().length() > 9){
                     Handler handler = new Handler();
@@ -140,6 +138,15 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home: this.onBackPressed();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -264,7 +271,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
             });
     }
 
-    private void updateOrderInfor(String orderID) {
+    private void updateOrderInfor(final String orderID) {
         db.collection(QuanLyConstants.ORDER)
             .document(orderID)
             .get()
@@ -272,6 +279,8 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
+                        Calendar cal = Calendar.getInstance();
+                        time = sdf_Time.format(cal.getTime());
                         final DocumentReference document = task.getResult().getReference();
                         document.collection(QuanLyConstants.FOOD_ON_ORDER)
                                 .get()
@@ -279,6 +288,8 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                                     @Override
                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                         if(task.isSuccessful()){
+                                            // Check food have in order, if the food exist in order
+                                            // i will update the quantity of food
                                             for(DocumentSnapshot document : task.getResult()){
                                                 FoodOnBill fob = new FoodOnBill();
                                                 fob.setFoodId(document.getId());
@@ -314,12 +325,26 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                                                 }
                                             }
 
-                                            closeLoadingDialog();
-                                            Toast.makeText(CartActivity.this, "Order Success", Toast.LENGTH_SHORT).show();
-                                            onBackPressed();
+                                            UpdateFoodSendToCook(orderID);
                                         }
                                     }
                                 });
+                    }
+                }
+            });
+    }
+
+    private void UpdateFoodSendToCook(String orderID) {
+        db.collection(QuanLyConstants.TABLE)
+            .whereEqualTo(QuanLyConstants.TABLE_ORDER_ID, orderID)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for(DocumentSnapshot document : task.getResult()){
+                            sendFoodToCook(document.getId());
+                        }
                     }
                 }
             });
@@ -457,7 +482,6 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                     }
                     // document.getID = OrderID need to be set on table
                     takingTable(document.getId());
-                    Toast.makeText(CartActivity.this, "Order Success", Toast.LENGTH_SHORT).show();
                 }
             });
     }
@@ -494,20 +518,39 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
     }
 
     private void sendFoodToCook(String tableID) {
-        Map<String, Object> cook = new HashMap<>();
-        cook.put(QuanLyConstants.FOOD_NAME, nameFoodSendToCook.toString());
+        final Map<String, Object> cook = new HashMap<>();
         cook.put(QuanLyConstants.ORDER_TIME, time);
         cook.put(QuanLyConstants.TABLE_EMPLOYEE_ID, GlobalVariable.employeeID);
         db.collection(QuanLyConstants.COOK)
             .document(restaurantID)
             .collection(QuanLyConstants.TABLE)
             .document(tableID)
-            .update(cook)
-            .addOnCompleteListener(new OnCompleteListener<Void>() {
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    closeLoadingDialog();
-                    onBackPressed();
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        DocumentSnapshot document = task.getResult();
+                        DocumentReference docRef = document.getReference();
+                        if(!TextUtils.isEmpty(document.get(QuanLyConstants.FOOD_NAME).toString())){
+                            StringBuilder builder = new StringBuilder();
+                            builder.append(document.get(QuanLyConstants.FOOD_NAME).toString());
+                            builder.append(nameFoodSendToCook.toString());
+                            cook.put(QuanLyConstants.FOOD_NAME, builder.toString());
+                            docRef.set(cook, SetOptions.merge());
+                        }
+                        else{
+                            cook.put(QuanLyConstants.FOOD_NAME, nameFoodSendToCook.toString());
+                            docRef.set(cook, SetOptions.merge());
+                        }
+                        FoodFragment fragment = (FoodFragment) getFragmentManager().findFragmentById(R.id.main_app_framelayout);
+                        if(fragment != null){
+                            fragment.refreshMenu();
+                        }
+                        closeLoadingDialog();
+                        Toast.makeText(CartActivity.this, "Order Success", Toast.LENGTH_SHORT).show();
+                        onBackPressed();
+                    }
                 }
             });
         listFoodChoose.clear();

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -29,6 +30,7 @@ import com.google.firebase.firestore.SetOptions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,6 +77,9 @@ public class OrderDetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         db = FirebaseFirestore.getInstance();
 
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
         tableNumber = getIntent().getStringExtra(QuanLyConstants.TABLE_NUMBER);
         if(TextUtils.isEmpty(tableNumber)) {
             // Open from BillFragment
@@ -101,6 +106,15 @@ public class OrderDetailActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home: this.onBackPressed();
+                                    break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void processCheckOrder() {
         buttonCheckOut.setVisibility(View.GONE);
         txtTable.setVisibility(View.GONE);
@@ -118,8 +132,18 @@ public class OrderDetailActivity extends AppCompatActivity {
                             tableNumber));
                     txtTime.setText(getResources().getString(R.string.timeBook,
                             document.get(QuanLyConstants.ORDER_TIME)));
-                    txtDateBook.setText(getResources().getString(R.string.dateBook,
-                            document.get(QuanLyConstants.ORDER_DATE)));
+
+                    // Cast from yyyy/MM/dd to dd/MM/yyyy -- Start
+                    String[] temp = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
+                    StringBuilder builder = new StringBuilder();
+                    builder.append(temp[2]);
+                    builder.append("/");
+                    builder.append(temp[1]);
+                    builder.append("/");
+                    builder.append(temp[0]);
+                    // ------------------------------------- End
+
+                    txtDateBook.setText(getResources().getString(R.string.dateBook, builder.toString()));
                     txtBillNumber.setText(getResources().getString(R.string.billNumber,document.get(QuanLyConstants.BILL_NUMBER).toString()));
                     String customerID = document.get(QuanLyConstants.CUSTOMER_ID).toString();
                     Log.i(TAG,document.getId());
@@ -189,8 +213,18 @@ public class OrderDetailActivity extends AppCompatActivity {
                                             tableNumber));
                                     txtTime.setText(getResources().getString(R.string.timeBook,
                                             document.get(QuanLyConstants.ORDER_TIME)));
-                                    txtDateBook.setText(getResources().getString(R.string.dateBook,
-                                            document.get(QuanLyConstants.ORDER_DATE)));
+
+                                    // Cast from yyyy/MM/dd to dd/MM/yyyy -- Start
+                                    String[] temp = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
+                                    StringBuilder builder = new StringBuilder();
+                                    builder.append(temp[2]);
+                                    builder.append("/");
+                                    builder.append(temp[1]);
+                                    builder.append("/");
+                                    builder.append(temp[0]);
+                                    // ------------------------------------- End
+
+                                    txtDateBook.setText(getResources().getString(R.string.dateBook, builder.toString()));
                                     String customerID = document.get(QuanLyConstants.CUSTOMER_ID).toString();
                                     txtBillNumber.setText(getResources().getString(R.string.billNumber,document.get(QuanLyConstants.BILL_NUMBER).toString()));
                                     saveOrderID = orderID;

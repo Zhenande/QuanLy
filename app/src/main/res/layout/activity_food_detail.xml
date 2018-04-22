@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
     android:paddingStart="10dp"
+    android:paddingEnd="0dp"
     android:paddingTop="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -88,11 +89,12 @@
 
         <EditText
             android:id="@+id/food_detail_description"
-            android:minLines="10"
+            android:minLines="5"
             android:theme="@style/FirebaseUI.TextInputEditText"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             tools:ignore="LabelFor"
+            android:minHeight="100dp"
             android:inputType="text" />
 
         <TextView

@@ -52,6 +52,7 @@ import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import manhquan.khoaluan_quanly.R;
 import util.DayAxisValueFormatter;
+import util.DayUtil;
 import util.MoneyFormatter;
 import util.MoneyAxisValueFormatter;
 import util.MonthAxisValueFormatter;
@@ -97,7 +98,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     private SpinnerDatePickerDialogBuilder dateSpinner;
     private FirebaseFirestore db;
     @SuppressLint("SimpleDateFormat")
-    private SimpleDateFormat sdf_full_date = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat sdf_full_date = new SimpleDateFormat("yyyy/MM/dd");
+    @SuppressLint("SimpleDateFormat")
+    private SimpleDateFormat sdf_date_display = new SimpleDateFormat("dd/MM/yyyy");
     private MaterialDialog dialogLoading;
     private int dayOfYear = 1;
 
@@ -171,13 +174,13 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         }
         else if(id == buttonMonth.getId()){
             String[] date = buttonMonth.getText().toString().split("/");
-            dateSpinner.defaultDate(Integer.parseInt(date[2]),Integer.parseInt(date[1])-1,Integer.parseInt(date[0]));
+            dateSpinner.defaultDate(Integer.parseInt(date[1]),Integer.parseInt(date[1])-1,1);
             dateSpinner.showTitle(true);
             dateSpinner.build().show();
         }
         else if(id == buttonYear.getId()){
             String[] date = buttonYear.getText().toString().split("/");
-            dateSpinner.defaultDate(Integer.parseInt(date[2]),Integer.parseInt(date[1])-1,Integer.parseInt(date[0]));
+            dateSpinner.defaultDate(Integer.parseInt(date[0]),0,1);
             dateSpinner.showTitle(true);
             dateSpinner.build().show();
         }
@@ -248,8 +251,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         showLoadingDialog();
         db.collection(QuanLyConstants.ORDER)
             //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
-            .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonStartDate.getText())
-            .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonEndDate.getText())
+            .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString()))
+            .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonEndDate.getText().toString()))
             .orderBy(QuanLyConstants.ORDER_DATE)
             .get()
             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -257,7 +260,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if(task.isSuccessful()){
                         float counting = dayOfYear+1;
-                        String compareDate = buttonStartDate.getText().toString();
+                        String compareDate = DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString());
                         List<BarEntry> listBar = new ArrayList<>();
                         double income = 0;
                         for(DocumentSnapshot document : task.getResult()){
@@ -286,6 +289,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             listBar.add(new BarEntry(counting, (float)income));
                         }
 
+                        if(listBar.size()==0){
+                            Toast.makeText(view.getContext(), "The time you choose does not have any order. Please check again!", Toast.LENGTH_SHORT).show();
+                        }
                         IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
 
                         XAxis xAxis = chart_combined.getXAxis();
@@ -367,9 +373,6 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                         compareDate = increaseDate(compareDate);
                                         counting++;
                                     }
-                                    if(Integer.parseInt(compareDate.split("/")[0]) > dayOfMonth){
-                                        break;
-                                    }
                                 }while (flagBreak);
                             }
 
@@ -435,16 +438,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         cal.set(Calendar.MONTH, startMonth+2);
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         String endDate = sdf_full_date.format(cal.getTime());
-        try {
-            Date text = sdf_full_date.parse("05/04/2018");
-            Date end = cal.getTime();
-            Log.i("INCOME", end.before(text) + "");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
         final int maxDayQuarter = 13;
         db.collection(QuanLyConstants.ORDER)
-                //.whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
                 .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
                 .orderBy(QuanLyConstants.ORDER_DATE)
                 .get()
@@ -455,9 +451,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             float counting = 1;
                             String[] getStartDate = startDate.split("/");
                             Calendar compareDate = Calendar.getInstance();
-                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[0]));
+                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[2]));
                             compareDate.set(Calendar.MONTH, Integer.parseInt(getStartDate[1])-1);
-                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[2]));
+                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[0]));
                             compareDate.add(Calendar.DAY_OF_MONTH,7);
                             List<BarEntry> listBar = new ArrayList<>();
                             double income = 0;
@@ -466,9 +462,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 boolean flagBreak = true;
                                 String[] orderDate = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
                                 Calendar cal = Calendar.getInstance();
-                                cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[0]));
+                                cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[2]));
                                 cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
-                                cal.set(Calendar.YEAR, Integer.parseInt(orderDate[2]));
+                                cal.set(Calendar.YEAR, Integer.parseInt(orderDate[0]));
                                 do{
                                     if(cal.before(compareDate)){
                                         income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
@@ -486,10 +482,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                         compareDate.add(Calendar.DAY_OF_MONTH, 7);
                                         counting++;
                                     }
-                                }while (flagBreak && listBar.size() < maxDayQuarter );
-                                if(listBar.size() >= maxDayQuarter){
-                                    break;
-                                }
+                                }while (flagBreak);
                             }
 
                             if(Double.compare(income,0) > 0){
@@ -500,7 +493,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             // When the user choose the current quarter
                             // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
                             // So i need to add the remaining date of the month.
-                            while (listBar.size() < maxDayQuarter){
+                            while (listBar.size() <= maxDayQuarter){
                                 listBar.add(new BarEntry(counting, 0f));
                                 counting++;
                             }
@@ -567,9 +560,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             float counting = 1;
                             String[] getStartDate = startDate.split("/");
                             Calendar compareDate = Calendar.getInstance();
-                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[0]));
+                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[2]));
                             compareDate.set(Calendar.MONTH, Integer.parseInt(getStartDate[1])-1);
-                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[2]));
+                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[0]));
                             compareDate.add(Calendar.MONTH,1);
                             List<BarEntry> listBar = new ArrayList<>();
                             double income = 0;
@@ -578,9 +571,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 do{
                                     String[] orderDate = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
                                     Calendar cal = Calendar.getInstance();
-                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[0]));
+                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[2]));
                                     cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
-                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[2]));
+                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[0]));
                                     if(cal.before(compareDate)){
                                         income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
                                         flagBreak = false;
@@ -600,7 +593,6 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 }while (flagBreak);
                             }
 
-                            listBar.add(new BarEntry(0,0));
                             if(Double.compare(income,0) > 0){
                                 listBar.add(new BarEntry(counting, (float)income));
                                 counting++;
@@ -638,8 +630,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             combinedData.setData(barData);
                             chart_combined.setData(combinedData);
                             chart_combined.animateY(2000);
-                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()+0.5f);
-                            chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
+                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()-0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(counting-0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
                             closeLoadingDialog();
@@ -656,8 +648,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         showLoadingDialog();
         db.collection(QuanLyConstants.ORDER)
                 //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
-                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonStartDate.getText())
-                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonEndDate.getText())
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString()))
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonEndDate.getText().toString()))
                 .orderBy(QuanLyConstants.ORDER_DATE)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -665,7 +657,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             float counting = dayOfYear+1;
-                            String compareDate = buttonStartDate.getText().toString();
+                            String compareDate = DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString());
                             List<BarEntry> listBar = new ArrayList<>();
                             int numberOrder = 0;
                             for(DocumentSnapshot document : task.getResult()){
@@ -717,6 +709,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             CombinedData combinedData = new CombinedData();
                             combinedData.setData(barData);
                             chart_combined.setData(combinedData);
+                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()+0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
                             chart_combined.animateY(2000);
                             chart_combined.invalidate();
                             closeLoadingDialog();
@@ -773,9 +767,6 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                         compareDate = increaseDate(compareDate);
                                         counting++;
                                     }
-                                    if(Integer.parseInt(compareDate.split("/")[0]) > dayOfMonth){
-                                        break;
-                                    }
                                 }while (flagBreak);
                             }
 
@@ -815,6 +806,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             combinedData.setData(barData);
                             chart_combined.setData(combinedData);
                             chart_combined.animateY(2000);
+                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()+0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
                             closeLoadingDialog();
@@ -839,7 +832,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         cal.set(Calendar.MONTH, startMonth+2);
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         String endDate = sdf_full_date.format(cal.getTime());
-        final int maxDayQuarter = 14;
+        final int maxDayQuarter = 13;
         db.collection(QuanLyConstants.ORDER)
                 //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
@@ -853,9 +846,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             float counting = 1;
                             String[] getStartDate = startDate.split("/");
                             Calendar compareDate = Calendar.getInstance();
-                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[0]));
+                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[2]));
                             compareDate.set(Calendar.MONTH, Integer.parseInt(getStartDate[1])-1);
-                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[2]));
+                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[0]));
                             compareDate.add(Calendar.DAY_OF_MONTH,7);
                             List<BarEntry> listBar = new ArrayList<>();
                             int numberOrder = 0;
@@ -864,9 +857,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 do{
                                     String[] orderDate = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
                                     Calendar cal = Calendar.getInstance();
-                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[0]));
+                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[2]));
                                     cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
-                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[2]));
+                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[0]));
                                     if(cal.before(compareDate)){
                                         numberOrder++;
                                         flagBreak = false;
@@ -886,7 +879,6 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 }while (flagBreak);
                             }
 
-                            listBar.add(new BarEntry(0,0));
                             if(numberOrder > 0){
                                 listBar.add(new BarEntry(counting, (float)numberOrder));
                                 counting++;
@@ -924,6 +916,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             combinedData.setData(barData);
                             chart_combined.setData(combinedData);
                             chart_combined.animateY(2000);
+                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()-0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(counting-0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
                             closeLoadingDialog();
@@ -946,7 +940,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         cal.set(Calendar.MONTH, 11);
         cal.set(Calendar.DAY_OF_MONTH, 31);
         String endDate = sdf_full_date.format(cal.getTime());
-        final int maxDayQuarter = 14;
+        final int maxDayYear = 12;
         db.collection(QuanLyConstants.ORDER)
                 //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
@@ -960,9 +954,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             float counting = 1;
                             String[] getStartDate = startDate.split("/");
                             Calendar compareDate = Calendar.getInstance();
-                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[0]));
+                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[2]));
                             compareDate.set(Calendar.MONTH, Integer.parseInt(getStartDate[1])-1);
-                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[2]));
+                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[0]));
                             compareDate.add(Calendar.MONTH,1);
                             List<BarEntry> listBar = new ArrayList<>();
                             int numberOrder = 0;
@@ -971,9 +965,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 do{
                                     String[] orderDate = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
                                     Calendar cal = Calendar.getInstance();
-                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[0]));
+                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[2]));
                                     cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
-                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[2]));
+                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[0]));
                                     if(cal.before(compareDate)){
                                         numberOrder ++;
                                         flagBreak = false;
@@ -993,7 +987,6 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 }while (flagBreak);
                             }
 
-                            listBar.add(new BarEntry(0,0));
                             if(numberOrder > 0){
                                 listBar.add(new BarEntry(counting, (float)numberOrder));
                                 counting++;
@@ -1002,7 +995,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             // When the user choose the current quarter
                             // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
                             // So i need to add the remaining date of the month.
-                            while (listBar.size() < maxDayQuarter){
+                            while (listBar.size() < maxDayYear){
                                 listBar.add(new BarEntry(counting, 0f));
                                 counting++;
                             }
@@ -1031,6 +1024,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             combinedData.setData(barData);
                             chart_combined.setData(combinedData);
                             chart_combined.animateY(2000);
+                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()-0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(counting-0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
                             closeLoadingDialog();
@@ -1047,8 +1042,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         showLoadingDialog();
         db.collection(QuanLyConstants.ORDER)
                 //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
-                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonStartDate.getText())
-                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, buttonEndDate.getText())
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString()))
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonEndDate.getText().toString()))
                 .orderBy(QuanLyConstants.ORDER_DATE)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -1056,7 +1051,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             float counting = dayOfYear+1;
-                            String compareDate = buttonStartDate.getText().toString();
+                            String compareDate = DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString());
 
                             int numberOrder = 0;
                             double income = 0;
@@ -1089,7 +1084,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                         else{
                                             // if the compareday is the day restaurant does not open
                                             listBar.add(new BarEntry(counting, 0f));
-                                            listLineEntry.add(new Entry(counting, 0f));
+//                                            listLineEntry.add(new Entry(counting, 0f));
                                         }
                                         compareDate = increaseDate(compareDate);
                                         counting++;
@@ -1100,6 +1095,13 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             if(numberOrder > 0){
                                 listBar.add(new BarEntry(counting, (float)income));
                                 listLineEntry.add(new Entry(counting, (float) numberOrder));
+                            }
+
+                            if(listLineEntry.size()==0){
+                                listLineEntry.add(new Entry(0,0f));
+                            }
+                            if(listBar.size()==0){
+                                listBar.add(new BarEntry(0,0f));
                             }
 
                             // Set value formatter for the x Axis
@@ -1147,6 +1149,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             chart_combined.setData(combinedData);
                             chart_combined.animateY(2000);
+                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()+0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
                             closeLoadingDialog();
@@ -1204,13 +1208,10 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                         else{
                                             // if the compareday is the day restaurant does not open
                                             listBar.add(new BarEntry(counting, 0f));
-                                            listLineEntry.add(new Entry(counting, 0f));
+//                                            listLineEntry.add(new Entry(counting, 0f));
                                         }
                                         compareDate = increaseDate(compareDate);
                                         counting++;
-                                    }
-                                    if(Integer.parseInt(compareDate.split("/")[0]) > dayOfMonth){
-                                        break;
                                     }
                                 }while (flagBreak);
                             }
@@ -1226,8 +1227,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             // So i need to add the remaining date of the month.
                             while (listBar.size() < dayOfMonth){
                                 listBar.add(new BarEntry(counting, 0f));
-                                listLineEntry.add(new Entry(counting, 0f));
+//                                listLineEntry.add(new Entry(counting, 0f));
                                 counting++;
+                            }
+
+                            if(listLineEntry.size()==0){
+                                listLineEntry.add(new Entry(0,0f));
                             }
 
                             IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
@@ -1262,6 +1267,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             combinedData.setData(lineData);
                             chart_combined.setData(combinedData);
                             chart_combined.animateY(2000);
+                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()+0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
                             closeLoadingDialog();
@@ -1286,7 +1293,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         cal.set(Calendar.MONTH, startMonth+2);
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         String endDate = sdf_full_date.format(cal.getTime());
-        final int maxDayQuarter = 14;
+        final int maxDayQuarter = 13;
         db.collection(QuanLyConstants.ORDER)
                 //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
@@ -1300,15 +1307,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             float counting = 1;
                             String[] getStartDate = startDate.split("/");
                             Calendar compareDate = Calendar.getInstance();
-                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[0]));
+                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[2]));
                             compareDate.set(Calendar.MONTH, Integer.parseInt(getStartDate[1])-1);
-                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[2]));
+                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[0]));
                             compareDate.add(Calendar.DAY_OF_MONTH,7);
                             List<BarEntry> listBar = new ArrayList<>();
                             List<Entry> listLineEntry = new ArrayList<>();
-
-                            listBar.add(new BarEntry(0,0));
-                            listLineEntry.add(new Entry(0,0));
 
                             double income = 0;
                             int numberOrder = 0;
@@ -1317,9 +1321,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 do{
                                     String[] orderDate = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
                                     Calendar cal = Calendar.getInstance();
-                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[0]));
+                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[2]));
                                     cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
-                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[2]));
+                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[0]));
                                     if(cal.before(compareDate)){
                                         income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
                                         numberOrder++;
@@ -1335,7 +1339,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                         else{
                                             // if the compareday is the day restaurant does not open
                                             listBar.add(new BarEntry(counting, 0f));
-                                            //listLineEntry.add(new Entry(counting, 0f));
+//                                            listLineEntry.add(new Entry(counting, 0f));
                                         }
                                         compareDate.add(Calendar.DAY_OF_MONTH, 7);
                                         counting++;
@@ -1354,8 +1358,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             // So i need to add the remaining date of the month.
                             while (listBar.size() < maxDayQuarter){
                                 listBar.add(new BarEntry(counting, 0f));
-                                //listLineEntry.add(new Entry(counting, 0f));
+//                                listLineEntry.add(new Entry(counting, 0f));
                                 counting++;
+                            }
+
+                            if(listLineEntry.size()==0){
+                                listLineEntry.add(new Entry(0,0f));
                             }
 
                             IAxisValueFormatter xAxisFormatter = new WeekAxisValueFormatter();
@@ -1401,6 +1409,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             chart_combined.setData(combinedData);
                             chart_combined.animateY(2000);
+                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()-0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(counting-0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
                             closeLoadingDialog();
@@ -1423,7 +1433,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         cal.set(Calendar.MONTH, 11);
         cal.set(Calendar.DAY_OF_MONTH, 31);
         String endDate = sdf_full_date.format(cal.getTime());
-        final int maxDayQuarter = 14;
+        final int maxDayYear = 12;
         db.collection(QuanLyConstants.ORDER)
                 //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
@@ -1437,15 +1447,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             float counting = 1;
                             String[] getStartDate = startDate.split("/");
                             Calendar compareDate = Calendar.getInstance();
-                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[0]));
+                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[2]));
                             compareDate.set(Calendar.MONTH, Integer.parseInt(getStartDate[1])-1);
-                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[2]));
+                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[0]));
                             compareDate.add(Calendar.MONTH,1);
                             List<BarEntry> listBar = new ArrayList<>();
                             List<Entry> listLineEntry = new ArrayList<>();
-
-                            listBar.add(new BarEntry(0,0));
-                            listLineEntry.add(new Entry(0,0));
 
                             double income = 0;
                             int numberOrder = 0;
@@ -1454,9 +1461,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 do{
                                     String[] orderDate = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
                                     Calendar cal = Calendar.getInstance();
-                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[0]));
+                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[2]));
                                     cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
-                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[2]));
+                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[0]));
                                     if(cal.before(compareDate)){
                                         income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
                                         numberOrder++;
@@ -1472,7 +1479,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                         else{
                                             // if the compareday is the day restaurant does not open
                                             listBar.add(new BarEntry(counting, 0f));
-                                            listLineEntry.add(new Entry(counting, 0f));
+//                                            listLineEntry.add(new Entry(counting, 0f));
                                         }
                                         compareDate.add(Calendar.MONTH, 1);
                                         counting++;
@@ -1490,10 +1497,14 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             // When the user choose the current quarter
                             // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
                             // So i need to add the remaining date of the month.
-                            while (listBar.size() < maxDayQuarter){
+                            while (listBar.size() < maxDayYear){
                                 listBar.add(new BarEntry(counting, 0f));
-                                listLineEntry.add(new Entry(counting, 0f));
+//                                listLineEntry.add(new Entry(counting, 0f));
                                 counting++;
+                            }
+
+                            if(listLineEntry.size()==0){
+                                listLineEntry.add(new Entry(0,0f));
                             }
 
                             IAxisValueFormatter xAxisFormatter = new MonthAxisValueFormatter();
@@ -1528,6 +1539,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             combinedData.setData(lineData);
                             chart_combined.setData(combinedData);
                             chart_combined.animateY(2000);
+                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()-0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(counting-0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
                             closeLoadingDialog();
@@ -1542,12 +1555,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * */
     private String increaseDate(String compareDate) {
         char[] date = compareDate.toCharArray();
-        if(date[1] == '9'){
-            date[0]++;
-            date[1] = '0';
+        if(date[9] == '9'){
+            date[8]++;
+            date[9] = '0';
         }
         else{
-            date[1]++;
+            date[9]++;
         }
         StringBuilder builder = new StringBuilder();
         for (char aDate : date) {
@@ -1639,11 +1652,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     private void initDateStartEnd(){
         Calendar currentDate = Calendar.getInstance();
 
-        buttonEndDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_full_date.format(currentDate.getTime())));
+        buttonEndDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_date_display.format(currentDate.getTime())));
 
         currentDate.set(Calendar.DAY_OF_MONTH,1);
         dayOfYear = currentDate.get(Calendar.DAY_OF_YEAR);
-        buttonStartDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_full_date.format(currentDate.getTime())));
+        buttonStartDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_date_display.format(currentDate.getTime())));
     }
 
     /*
@@ -1772,18 +1785,18 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         switch (spinnerReportTime.getSelectedItemPosition()){
             case 0: if(checkCorrectDate(dateChoose)) {
                 if (flag) {
-                    buttonStartDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_full_date.format(dateChoose.getTime())));
+                    buttonStartDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_date_display.format(dateChoose.getTime())));
                 } else {
-                    buttonEndDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_full_date.format(dateChoose.getTime())));
+                    buttonEndDate.setText(view.getContext().getResources().getString(R.string.year_date,sdf_date_display.format(dateChoose.getTime())));
                 }
             }
                 break;
             case 1: if(checkCorrectMonth(dateChoose)){
-                buttonMonth.setText(view.getContext().getResources().getString(R.string.month_year_date,new Object[]{monthOfYear+1,year}));
+                buttonMonth.setText(view.getContext().getResources().getString(R.string.month_year_date,monthOfYear+1,year));
                 }
                 break;
             case 2: if(checkCorrectYear(year)){
-                buttonYear.setText(view.getContext().getResources().getString(R.string.year_date,new Object[]{year}));
+                buttonYear.setText(view.getContext().getResources().getString(R.string.year_date,year+""));
                 }
                 break;
         }

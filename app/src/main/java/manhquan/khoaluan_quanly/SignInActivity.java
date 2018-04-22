@@ -51,7 +51,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         mEmailField.setText("tranvana@gmail.com");
-        mPasswordField.setText("abcdef");
+        mPasswordField.setText("zhenande");
         updateUI(null);
     }
 // [END on_start_check_user]
@@ -96,6 +96,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(SignInActivity.this, getResources().getString(R.string.sign_in_faild_input),
                                     Toast.LENGTH_SHORT).show();
+                            closeLoadingDialog();
                             updateUI(null);
                         }
                     }
@@ -149,14 +150,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                                     }
                                 }
                             }
-                            else{
-                                Log.i(TAG, task.getException().getMessage());
-                                Toast.makeText(getApplicationContext(),"Task Failed",Toast.LENGTH_SHORT).show();
-                            }
                         }
                     });
-        } else {
-            //Toast.makeText(getApplicationContext(),"....",Toast.LENGTH_SHORT).show();
         }
     }
 

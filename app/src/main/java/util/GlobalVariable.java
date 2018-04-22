@@ -1,7 +1,7 @@
 package util;
 
 /**
- * Created by vpmn-os-quocnb on 4/11/2018.
+ * Created by LieuDucManh on 4/11/2018.
  */
 
 public class GlobalVariable {

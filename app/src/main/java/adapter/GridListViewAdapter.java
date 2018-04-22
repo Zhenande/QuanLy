@@ -3,7 +3,10 @@ package adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
+import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +40,20 @@ public class GridListViewAdapter extends ListGridAdapter<TableModel, ViewHolder>
     @Override
     protected Card<ViewHolder> getNewCard(int cardwidth) {
         @SuppressLint("InflateParams") View cardView = getLayoutInflater().inflate(R.layout.table_list_item,null);
+
+        // Use for resize image to fit devices resolution
+//        ImageView imageTable = cardView.findViewById(R.id.table_list_image);
+//        WindowManager wm = (WindowManager) cardView.getContext().getSystemService(Context.WINDOW_SERVICE);
+//        Point size = new Point();
+//        int width = imageTable.getLayoutParams().width;
+//        if(width == 200){
+//            wm.getDefaultDisplay().getRealSize(size);
+//            imageTable.getLayoutParams().width = size.x / 5;
+//            imageTable.getLayoutParams().height = size.y / 3;
+//            imageTable.requestLayout();
+//            Log.i("TESTING IMAGE", "x= " + size.x + " y= " + size.y);
+//        }
+
         cardView.setMinimumHeight(cardwidth);
 
         ViewHolder viewHolder = new ViewHolder(cardView);

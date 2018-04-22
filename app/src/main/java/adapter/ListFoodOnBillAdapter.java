@@ -7,20 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.birin.gridlistviewadapters.Card;
-import com.birin.gridlistviewadapters.ListGridAdapter;
-import com.birin.gridlistviewadapters.dataholders.CardDataHolder;
-import com.birin.gridlistviewadapters.utils.ChildViewsClickHandler;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import constants.QuanLyConstants;
 import manhquan.khoaluan_quanly.R;
-import model.Bill;
 import model.FoodOnBill;
 import util.MoneyFormatter;
 
@@ -30,7 +23,7 @@ import util.MoneyFormatter;
 
 public class ListFoodOnBillAdapter extends BaseAdapter {
 
-    private ArrayList<FoodOnBill> listData = new ArrayList<>();
+    private ArrayList<FoodOnBill> listData;
     private LayoutInflater layoutInflater;
     private Context context;
 
@@ -85,7 +78,7 @@ class FoodOnBillHolder{
     @BindView(R.id.food_on_bill_list_quantity) TextView txtQuantity;
     @BindView(R.id.food_on_bill_list_total_price) TextView txtTotalPrice;
 
-    public FoodOnBillHolder(View view) {
+    FoodOnBillHolder(View view) {
         ButterKnife.bind(this,view);
     }
 }

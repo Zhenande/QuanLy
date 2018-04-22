@@ -129,7 +129,6 @@ public class EmployeeFragment extends Fragment {
                                     em.setPosition(position);
                                     listData.add(em);
                                     listEmployeeID.add(document.getId());
-                                    Log.i("ListNumber", listData.size()+"");
                                 }
                             }
                             closeLoadingDialog();

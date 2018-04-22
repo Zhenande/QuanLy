@@ -4,7 +4,11 @@ package manhquan.khoaluan_quanly;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -29,6 +33,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -62,6 +67,7 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
     private String restaurantID;
     private MaterialDialog dialogLoading;
     private static final String TAG = "OrderFragment";
+    private boolean isFirst = true;
 
     public OrderFragment() {
         // Required empty public constructor
@@ -121,6 +127,7 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                         recyclerView.setLayoutManager(layoutManager);
                         recyclerView.setAdapter(adapter);
 
+                        isFirst = false;
                         closeLoadingDialog();
 
                     }
@@ -183,28 +190,25 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                         recyclerView.setAdapter(adapter);
                         adapter.notifyDataSetChanged();
                         adapter.onGroupCollapsed(0, 1000);
+
+                        // Play ringtone when new food arrive -- Start
+
+                        if(!isFirst){
+                            try {
+                                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                Ringtone r = RingtoneManager.getRingtone(view.getContext(), notification);
+                                r.play();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                        // ------------------------------------- End
                     }
                 } else {
                     Log.d(TAG, source + " data: null");
                 }
             }
         });
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if(adapter!= null){
-            adapter.onSaveInstanceState(outState);
-        }
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if(adapter!= null) {
-            adapter.onRestoreInstanceState(savedInstanceState);
-        }
     }
 
     /*

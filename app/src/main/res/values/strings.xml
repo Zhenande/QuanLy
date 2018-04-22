@@ -23,6 +23,7 @@
     <string name="waiter">Waiter</string>
     <string name="cashier">Cashier</string>
     <string name="sign_out_noti">Press back again to sign out app</string>
+    <string name="notification_error">There is no notifition</string>
 
     <!--=================================Create Table Dialog==============================================-->
     <string name="content_dialog_create_table">Input number of table: </string>
@@ -82,8 +83,8 @@
     <string name="income_reportMonth">Month: </string>
     <string name="income_reportQuarter">Quarter: </string>
     <string name="income_reportYear">Year: </string>
-    <string name="full_date">%s/%s/%s</string>
-    <string name="month_year_date">%s/%s</string>
+    <string name="full_date">%d/%d/%d</string>
+    <string name="month_year_date">%d/%d</string>
     <string name="year_date">%s</string>
     <string-array name="income_spinner_reportTime">
         <item>Day</item>
@@ -103,6 +104,7 @@
         <item>Q4</item>
     </string-array>
     <string name="week">Week </string>
+    <string name="income_chart_no_data_error">The time you choose does not have any order. Please check again!</string>
 
     <!--=================================Employee List Item================================================-->
     <string name="employee_Name">Employee Name</string>
@@ -162,6 +164,7 @@
     <string name="bill_fragment_date">Date: </string>
     <string name="bill_fragment_id">Bill number: </string>
     <string name="bill_fragment_search">Search</string>
+    <string name="bill_fragment_error_search">You must fill at least 4 first number of bill number to search</string>
 
     <!--===============================Bill List Item=============================================-->
     <string name="bill_list_id">Bill Number</string>

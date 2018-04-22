@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -86,6 +89,8 @@ public class MainActivity extends AppCompatActivity
     private NotificationAdapter adapter;
     private List<Notification> listNotification = new ArrayList<>();
     private RecyclerView recyclerView;
+    private boolean isDialogNotificationShowUp = false;
+    private boolean isFirst = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +102,7 @@ public class MainActivity extends AppCompatActivity
 
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        onChangeListener(GlobalVariable.employeeID);
 
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -114,7 +120,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setCheckedItem(R.id.nav_restaurant);
         navigationView.setNavigationItemSelectedListener(this);
         int position = getIntent().getIntExtra(QuanLyConstants.EMPLOYEE_POSITION,0);
-        //setRoleOfApp(position);
+        setRoleOfApp(position);
         View viewDrawerHeader = navigationView.getHeaderView(0);
         ButterKnife.bind(this,viewDrawerHeader);
 
@@ -124,9 +130,9 @@ public class MainActivity extends AppCompatActivity
         }
         renderDrawerData(emName,position);
 
-
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
     }
+
 
     private void setRoleOfApp(int position) {
         switch (position){
@@ -558,9 +564,13 @@ public class MainActivity extends AppCompatActivity
 
     private void clickOnItemListView(final MaterialDialog dialogChoose) {
         View view = dialogChoose.getView();
-        listNotification.clear();
+//        listNotification.clear();
+        if(listNotification.size()==0){
+            dialogChoose.dismiss();
+            Toast.makeText(this, getResources().getString(R.string.notification_error), Toast.LENGTH_SHORT).show();
+            return;
+        }
         recyclerView = view.findViewById(R.id.recyclerView_notification);
-        onChangeListener(GlobalVariable.employeeID);
         db.collection(QuanLyConstants.NOTIFICATION)
             .document(GlobalVariable.employeeID)
             .collection(QuanLyConstants.TABLE)
@@ -570,24 +580,21 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if(task.isSuccessful()){
-                        for(DocumentSnapshot document : task.getResult()){
-                            String[] content = document.get(QuanLyConstants.FOOD_NAME).toString().split(";");
-                            List<NotiContent> listNoti = new ArrayList<>();
-                            for(String aContent : content){
-                                listNoti.add(new NotiContent(aContent));
+                        if(listNotification.size() == 0) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                String[] content = document.get(QuanLyConstants.FOOD_NAME).toString().split(";");
+                                List<NotiContent> listNoti = new ArrayList<>();
+                                for (String aContent : content) {
+                                    listNoti.add(new NotiContent(aContent));
+                                }
+
+                                String time = document.get(QuanLyConstants.ORDER_TIME).toString();
+                                String title = document.get(QuanLyConstants.TABLE_NUMBER).toString();
+
+                                Notification notification = new Notification(title, listNoti);
+                                notification.setTime(time);
+                                listNotification.add(notification);
                             }
-
-                            String time = document.get(QuanLyConstants.ORDER_TIME).toString();
-                            String title = document.get(QuanLyConstants.TABLE_NUMBER).toString();
-
-                            Notification notification = new Notification(title,listNoti);
-                            notification.setTime(time);
-                            listNotification.add(notification);
-                        }
-
-                        if(listNotification.size()==0){
-                            dialogChoose.dismiss();
-                            return;
                         }
 
                         LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
@@ -600,6 +607,7 @@ public class MainActivity extends AppCompatActivity
                         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(nth);
                         itemTouchHelper.attachToRecyclerView(recyclerView);
 
+                        isDialogNotificationShowUp = true;
                     }
                 }
             });
@@ -607,27 +615,63 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void onChangeListener(String docID) {
+        db.collection(QuanLyConstants.NOTIFICATION)
+            .document(docID)
+            .collection(QuanLyConstants.TABLE)
+            .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                    if( e != null){
+                        Log.w(TAG, "Listen failed.", e);
+                        return;
+                    }
 
-        final DocumentReference docRef = db.collection(QuanLyConstants.NOTIFICATION).document(docID);
-        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
+                    String source = documentSnapshots != null && documentSnapshots.getMetadata().hasPendingWrites()
+                            ? "Local" : "Server";
+
+                    if(documentSnapshots != null && !documentSnapshots.isEmpty()){
+                        for(DocumentSnapshot document : documentSnapshots){
+
+                            List<NotiContent> listNoti = new ArrayList<>();
+                            String title = document.get(QuanLyConstants.TABLE_NUMBER).toString();
+                            for(int i = 0; i < listNotification.size(); i++){
+                                if(listNotification.get(i).getTitle().equals(title)){
+                                    listNotification.remove(i);
+                                    break;
+                                }
+                            }
+                            String[] content = document.get(QuanLyConstants.FOOD_NAME).toString().split(";");
+
+                            for (String aContent : content) {
+                                listNoti.add(new NotiContent(aContent));
+                            }
+                            String time = document.get(QuanLyConstants.ORDER_TIME).toString();
+
+                            Notification notification = new Notification(title, listNoti);
+                            notification.setTime(time);
+                            listNotification.add(notification);
+
+                            if(isDialogNotificationShowUp){
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        if(!isFirst){
+                            try {
+                                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                Ringtone r = RingtoneManager.getRingtone(MainActivity.this, notification);
+                                r.play();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                        isFirst = false;
+                    }else{
+                        Log.w(TAG, source + " data: null");
+                    }
                 }
+            });
 
-                String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
-                        ? "Local" : "Server";
-
-                if (snapshot != null && snapshot.exists()) {
-                    Map<String, Object> data = snapshot.getData();
-
-                } else {
-                    Log.d(TAG, source + " data: null");
-                }
-            }
-        });
     }
 
     @Override

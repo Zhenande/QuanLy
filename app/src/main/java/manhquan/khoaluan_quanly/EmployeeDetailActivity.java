@@ -35,6 +35,7 @@ import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -72,6 +73,9 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
 
         ButterKnife.bind(this);
         db = FirebaseFirestore.getInstance();
+
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         spinnerPosition = findViewById(R.id.employee_detail_spinnerEmployeePosition);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(getApplicationContext(),R.array.add_account_spinner_Position
@@ -127,6 +131,10 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             return true;
         }
 
+        if(id == android.R.id.home) {
+            this.onBackPressed();
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -150,6 +158,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
                                                 ,Toast.LENGTH_SHORT).show();
                                         closeLoadingDialog();
                                         onBackPressed();
+                                        flag = true;
                                     }
                                 });
                     }
@@ -180,7 +189,6 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
                                     spinnerPosition.setSelection(Integer.parseInt(document.get(QuanLyConstants.EMPLOYEE_POSITION).toString())-2);
                                     closeEditText();
                                     closeLoadingDialog();
-                                    flag = true;
                                 }
                             }
                         }
@@ -444,6 +452,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         int id = v.getId();
         if(id == R.id.employee_detail_button_create){
             if(buttonUpdate.getText().equals(getResources().getString(R.string.add_account_button_create))){
+                // meaning create new employee
                 if(validateForm()){
                     showLoadingDialog();
                     createAuthForEmployee();
@@ -464,6 +473,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
                         ,Toast.LENGTH_SHORT).show();
                 closeLoadingDialog();
                 closeEditText();
+                flag = true;
             }
         }
     }
