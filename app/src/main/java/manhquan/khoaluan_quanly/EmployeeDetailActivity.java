@@ -198,6 +198,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
 
     public void showLoadingDialog(){
         dialogLoading = new MaterialDialog.Builder(this)
+                .backgroundColor(getResources().getColor(R.color.primary_dark))
                 .customView(R.layout.loading_dialog,true)
                 .show();
     }

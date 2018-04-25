@@ -106,6 +106,7 @@
     </string-array>
     <string name="week">Week </string>
     <string name="income_chart_no_data_error">The time you choose does not have any order. Please check again!</string>
+    <string name="income_time_date_error">Date start and Date end can not over 31 days</string>
 
     <!--=================================Employee List Item================================================-->
     <string name="employee_Name">Employee Name</string>

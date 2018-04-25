@@ -33,8 +33,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -201,10 +203,17 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
 
                         if(flag){
                             spinnerTable.setSelection(posTable);
+                            if(!listTable.contains(listFullTable.get(posTable))){
+                                edCusID.setEnabled(false);
+                            }
+                        }
+                        else{
+                            if(!listTable.contains(listFullTable.get(0))){
+                                edCusID.setEnabled(false);
+                            }
                         }
 
                         spinnerTable.setOnItemSelectedListener(CartActivity.this);
-
                     }
                 }
             });
@@ -222,6 +231,11 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if(!listTable.contains(listFullTable.get(position))){
+            edCusID.setEnabled(false);
+        }else{
+            edCusID.setEnabled(true);
+        }
         GlobalVariable.tableChoose = listFullTable.get(position);
     }
 
@@ -295,12 +309,15 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                                                 fob.setFoodName(document.get(QuanLyConstants.FOOD_NAME).toString());
                                                 fob.setQuantity(Integer.parseInt(document.get(QuanLyConstants.FOOD_QUANTITY).toString()));
 
+                                                // fob2 meaning new food need send to cook
                                                 for(FoodOnBill fob2 : listFoodChoose){
                                                     if(fob2.getFoodName().equals(fob.getFoodName())){
                                                         fob.setQuantity(fob.getQuantity() + fob2.getQuantity());
                                                         DocumentReference docRef = document.getReference();
                                                         docRef.update(QuanLyConstants.FOOD_QUANTITY, fob.getQuantity());
                                                         nameFoodSendToCook.append(fob.getFoodName());
+                                                        nameFoodSendToCook.append("    SL: ");
+                                                        nameFoodSendToCook.append(fob2.getQuantity());
                                                         nameFoodSendToCook.append(";");
                                                         listFoodChoose.remove(fob2);
                                                         break;
@@ -317,7 +334,10 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                                                     food.put(QuanLyConstants.FOOD_PRICE, fob.getPrice()+"");
                                                     food.put(QuanLyConstants.FOOD_QUANTITY, fob.getQuantity()+"");
                                                     nameFoodSendToCook.append(fob.getFoodName());
+                                                    nameFoodSendToCook.append("    SL: ");
+                                                    nameFoodSendToCook.append(fob.getQuantity());
                                                     nameFoodSendToCook.append(";");
+
                                                     document.collection(QuanLyConstants.FOOD_ON_ORDER)
                                                             .document(fob.getFoodId())
                                                             .set(food);
@@ -474,6 +494,8 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                         food.put(QuanLyConstants.FOOD_PRICE, fob.getPrice()+"");
                         food.put(QuanLyConstants.FOOD_QUANTITY, fob.getQuantity()+"");
                         nameFoodSendToCook.append(fob.getFoodName());
+                        nameFoodSendToCook.append("    SL: ");
+                        nameFoodSendToCook.append(fob.getQuantity());
                         nameFoodSendToCook.append(";");
                         document.collection(QuanLyConstants.FOOD_ON_ORDER)
                                 .document(fob.getFoodId())
@@ -532,9 +554,37 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                         DocumentSnapshot document = task.getResult();
                         DocumentReference docRef = document.getReference();
                         if(!TextUtils.isEmpty(document.get(QuanLyConstants.FOOD_NAME).toString())){
-                            String builder = document.get(QuanLyConstants.FOOD_NAME).toString() +
-                                    nameFoodSendToCook.toString();
-                            cook.put(QuanLyConstants.FOOD_NAME, builder);
+                            /// Get the currrent food and quantity of them that not done cooking
+                            /// Check the customer call for another food that have pending on cooking
+                            /// If have, we just increase quantity of them
+                            String[] currentFood = document.get(QuanLyConstants.FOOD_NAME).toString().split(";");
+                            String[] updateFood = nameFoodSendToCook.toString().split(";");
+                            ArrayList<String> listUpdateFood = new ArrayList<>();
+                            listUpdateFood.addAll(Arrays.asList(updateFood));
+                            for(int i = 0; i < currentFood.length ; i++){
+                                String[] curFoodName = currentFood[i].split(": ");
+                                for(int j = 0 ; j < listUpdateFood.size() ; j++){
+                                    String[] updFoodName = listUpdateFood.get(j).split(": ");
+                                    if(curFoodName[0].equals(updFoodName[0])){
+                                        int newQuantity = Integer.parseInt(curFoodName[1]) + Integer.parseInt(updFoodName[1]);
+                                        currentFood[i] = updFoodName[0] + ": " + newQuantity;
+                                        listUpdateFood.remove(j);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            StringBuilder foodSend = new StringBuilder();
+                            for(String s : currentFood){
+                                foodSend.append(s);
+                                foodSend.append(";");
+                            }
+                            for(String s : listUpdateFood){
+                                foodSend.append(s);
+                                foodSend.append(";");
+                            }
+
+                            cook.put(QuanLyConstants.FOOD_NAME, foodSend.toString());
                             docRef.set(cook, SetOptions.merge());
                         }
                         else{

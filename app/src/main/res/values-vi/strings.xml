@@ -104,6 +104,7 @@
     </string-array>
     <string name="week">Tuần </string>
     <string name="income_chart_no_data_error">Khoảng thời gian bạn chọn không có hóa đơn nào. Vui lòng kiểm tra lại!</string>
+    <string name="income_time_date_error">Ngày bắt đầu và ngày kết thúc không được cách nhau quá 31 ngày.</string>
 
     <!--=================================Employee List Item================================================-->
     <string name="employee_Name">Tên nhân viên</string>

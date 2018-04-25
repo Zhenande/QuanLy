@@ -91,6 +91,9 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private boolean isDialogNotificationShowUp = false;
     private boolean isFirst = true;
+    private int position;
+    private String emName;
+    private MaterialDialog dialogLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,22 +122,22 @@ public class MainActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.nav_restaurant);
         navigationView.setNavigationItemSelectedListener(this);
-        int position = getIntent().getIntExtra(QuanLyConstants.EMPLOYEE_POSITION,0);
-        setRoleOfApp(position);
+        position = getIntent().getIntExtra(QuanLyConstants.EMPLOYEE_POSITION,0);
+        setRoleOfApp();
         View viewDrawerHeader = navigationView.getHeaderView(0);
         ButterKnife.bind(this,viewDrawerHeader);
 
-        String emName = getIntent().getStringExtra(QuanLyConstants.EMPLOYEE_NAME);
+        emName = getIntent().getStringExtra(QuanLyConstants.EMPLOYEE_NAME);
         if(getPosition() != position){
-            savePosition(position);
+            savePosition();
         }
-        renderDrawerData(emName,position);
+        renderDrawerData();
+
 
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
     }
 
-
-    private void setRoleOfApp(int position) {
+    private void setRoleOfApp() {
         switch (position){
             case 1: // Manager
                     setLayoutForManager();
@@ -178,7 +181,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.getMenu().removeItem(R.id.nav_order);
     }
 
-    private void renderDrawerData(String emName, int position){
+    private void renderDrawerData(){
         String pos;
         switch (position){
             case 1: pos = getResources().getString(R.string.manager);
@@ -408,7 +411,11 @@ public class MainActivity extends AppCompatActivity
                             changeLanguage(locale.toString());
                         }
                         getResources().updateConfiguration(config, getResources().getDisplayMetrics());
-                        recreate();
+                        Intent i = new Intent(MainActivity.this,MainActivity.class);
+                        i.putExtra(QuanLyConstants.EMPLOYEE_POSITION,position);
+                        i.putExtra(QuanLyConstants.EMPLOYEE_NAME,emName);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(i);
                         return true;
                     }
                 })
@@ -445,7 +452,7 @@ public class MainActivity extends AppCompatActivity
         editor.apply();
     }
 
-    public void savePosition(int position){
+    public void savePosition(){
         String positionPref = QuanLyConstants.SHARED_POSITION;
         SharedPreferences prefs = getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE,
                 Activity.MODE_PRIVATE);
@@ -562,8 +569,20 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public void showLoadingDialog(){
+        dialogLoading = new MaterialDialog.Builder(this)
+                .backgroundColor(getResources().getColor(R.color.primary_dark))
+                .customView(R.layout.loading_dialog,true)
+                .show();
+    }
+
+    public void closeLoadingDialog(){
+        dialogLoading.dismiss();
+    }
+
     private void clickOnItemListView(final MaterialDialog dialogChoose) {
         View view = dialogChoose.getView();
+        showLoadingDialog();
 //        listNotification.clear();
         if(listNotification.size()==0){
             dialogChoose.dismiss();
@@ -583,9 +602,10 @@ public class MainActivity extends AppCompatActivity
                         if(listNotification.size() == 0) {
                             for (DocumentSnapshot document : task.getResult()) {
                                 String[] content = document.get(QuanLyConstants.FOOD_NAME).toString().split(";");
+                                String[] quantity = document.get(QuanLyConstants.FOOD_QUANTITY).toString().split(";");
                                 List<NotiContent> listNoti = new ArrayList<>();
-                                for (String aContent : content) {
-                                    listNoti.add(new NotiContent(aContent));
+                                for (int i = 0; i < content.length; i++) {
+                                    listNoti.add(new NotiContent(content[i] + "    SL: " + quantity[i]));
                                 }
 
                                 String time = document.get(QuanLyConstants.ORDER_TIME).toString();
@@ -606,7 +626,7 @@ public class MainActivity extends AppCompatActivity
                         NotificationTouchHelper nth = new NotificationTouchHelper(adapter, MainActivity.this);
                         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(nth);
                         itemTouchHelper.attachToRecyclerView(recyclerView);
-
+                        closeLoadingDialog();
                         isDialogNotificationShowUp = true;
                     }
                 }

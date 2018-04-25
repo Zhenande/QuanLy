@@ -101,7 +101,12 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         listView.setAdapter(listFoodAdapter);
         listView.setOnItemClickListener(this);
 
-        renderData();
+        if(getPosition()==3) {
+            renderData();
+        }
+        else{
+            renderData_Cook_Manager();
+        }
 
         return view;
     }
@@ -142,6 +147,41 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
      * @purpose: Get the collection of the food had in the restaurant.
      * */
     public void renderData() {
+        listData.clear();
+        showLoadingDialog();
+        db.collection(QuanLyConstants.FOOD)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.FOOD_TYPE, foodType)
+                .whereEqualTo(QuanLyConstants.FOOD_AVAILABLE, true)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for(DocumentSnapshot document : task.getResult()){
+                                Food food = new Food();
+                                food.setFoodId(document.getId());
+                                food.setDescription(document.get(QuanLyConstants.FOOD_DESCRIPTION).toString());
+                                food.setFoodType(document.get(QuanLyConstants.FOOD_TYPE).toString());
+                                food.setImageResource(document.get(QuanLyConstants.FOOD_IMAGE_NAME).toString());
+                                food.setFoodName(document.get(QuanLyConstants.FOOD_NAME).toString());
+                                food.setPrice(Integer.parseInt(document.get(QuanLyConstants.FOOD_PRICE).toString()));
+                                listData.add(food);
+                                onChangeListener(document.getId());
+                            }
+                            listFoodAdapter.notifyDataSetChanged();
+                            closeLoadingDialog();
+                        }
+                    }
+                });
+
+    }
+
+    /*
+     * @author: ManhLD
+     * @purpose: Get the collection of the food had in the restaurant.
+     * */
+    public void renderData_Cook_Manager() {
         listData.clear();
         showLoadingDialog();
         db.collection(QuanLyConstants.FOOD)
@@ -235,6 +275,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                 }
             });
             dialogChoose.show();
+            dialogChoose.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         }
     }
 
@@ -277,5 +318,6 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
             }
         });
     }
+
 
 }

@@ -105,8 +105,8 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                             String[] content = document.get(QuanLyConstants.FOOD_NAME).toString().split(";");
                             List<FoodInside> listFoodName = new ArrayList<>();
                             if(!content[0].equals("")){
-                                for (String aContent : content) {
-                                    listFoodName.add(new FoodInside(aContent));
+                                for (int i = 0; i < content.length; i++) {
+                                    listFoodName.add(new FoodInside(content[i]));
                                 }
                             }
                             String time = document.get(QuanLyConstants.ORDER_TIME).toString();
@@ -156,11 +156,12 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                 if (snapshot != null && snapshot.exists()) {
                     Map<String, Object> order = snapshot.getData();
                     if(!TextUtils.isEmpty(order.get(QuanLyConstants.FOOD_NAME).toString())){
-                        String conFood = order.get(QuanLyConstants.FOOD_NAME).toString();
-                        String[] content = conFood.split(";");
+                        String[] content = snapshot.get(QuanLyConstants.FOOD_NAME).toString().split(";");
                         List<FoodInside> listFoodName = new ArrayList<>();
-                        for (String aContent : content) {
-                            listFoodName.add(new FoodInside(aContent));
+                        if(!content[0].equals("")){
+                            for (int i = 0; i < content.length; i++) {
+                                listFoodName.add(new FoodInside(content[i]));
+                            }
                         }
                         String time = order.get(QuanLyConstants.ORDER_TIME).toString();
                         String employeeID = order.get(QuanLyConstants.TABLE_EMPLOYEE_ID).toString();
@@ -318,9 +319,33 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                             if(task.isSuccessful()){
                                 for(DocumentSnapshot document : task.getResult()){
                                     if(document.exists()){
-                                        String curentFoodName = document.get(QuanLyConstants.FOOD_NAME).toString();
+                                        String[] curentFoodName = document.get(QuanLyConstants.FOOD_NAME).toString().split(";");
+                                        String[] updFoodName = finalNoti.get(QuanLyConstants.FOOD_NAME).toString().split(";");
+                                        ArrayList<String> listFoodUpdate = new ArrayList<>();
+                                        listFoodUpdate.addAll(Arrays.asList(updFoodName));
+                                        for(int i = 0; i < curentFoodName.length; i++){
+                                            String[] curFoodName = curentFoodName[i].split(": ");
+                                            for(int j = 0; j < listFoodUpdate.size() ; j++){
+                                                String[] upFoodName = listFoodUpdate.get(j).split(": ");
+                                                if(curFoodName[0].equals(upFoodName[0])){
+                                                    int curQuantity = Integer.parseInt(curFoodName[1]);
+                                                    int updQuantity = Integer.parseInt(upFoodName[1]);
+                                                    curentFoodName[i] = curFoodName[0] + ": " + (curQuantity + updQuantity);
+                                                    listFoodUpdate.remove(j);
+                                                }
+                                            }
+                                        }
+                                        StringBuilder foodSend = new StringBuilder();
+                                        for(String s : curentFoodName){
+                                            foodSend.append(s);
+                                            foodSend.append(";");
+                                        }
+                                        for(String s : listFoodUpdate){
+                                            foodSend.append(s);
+                                            foodSend.append(";");
+                                        }
                                         document.getReference()
-                                                .update(QuanLyConstants.FOOD_NAME,curentFoodName + finalNoti.get(QuanLyConstants.FOOD_NAME));
+                                                .update(QuanLyConstants.FOOD_NAME,foodSend.toString());
                                     }
                                 }
                                 //Use when the collection Notification of employee does not have table

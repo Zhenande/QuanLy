@@ -185,13 +185,63 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
             dateSpinner.build().show();
         }
         else if(id == buttonAction.getId()){
-            if(chart_combined.isShown()){
-                chart_combined.clear();
+            if(checkDateChart()){
+                if(chart_combined.isShown()){
+                    chart_combined.clear();
+                }
+                createChart();
             }
-            createChart();
         }
     }
 
+    /*
+    * @author: ManhLD
+    * Can not create chart have day more than 31
+    * */
+    private boolean checkDateChart() {
+        try {
+            Date startDate = sdf_date_display.parse(buttonStartDate.getText().toString());
+            Date endDate = sdf_date_display.parse(buttonEndDate.getText().toString());
+            Calendar calStart = Calendar.getInstance();
+            calStart.setTime(startDate);
+            int dayAdd = getDaysForMonth(calStart.get(Calendar.MONTH),calStart.get(Calendar.YEAR));
+            calStart.add(Calendar.DAY_OF_MONTH, dayAdd);
+            Calendar calEnd = Calendar.getInstance();
+            calEnd.setTime(endDate);
+            if(calStart.before(calEnd)){
+                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_time_date_error), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    /*
+    * @author: ManhLD
+    * Use to get the days of the month
+    * */
+    private int getDaysForMonth(int month, int year) {
+
+        // month is 0-based
+
+        if (month == 1) {
+            boolean is29Feb = false;
+
+            if (year < 1582)
+                is29Feb = (year < 1 ? year + 1 : year) % 4 == 0;
+            else if (year > 1582)
+                is29Feb = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+
+            return is29Feb ? 29 : 28;
+        }
+
+        if (month == 3 || month == 5 || month == 8 || month == 10)
+            return 30;
+        else
+            return 31;
+    }
 
     private void createChart() {
         switch (spinnerKindOfChart.getSelectedItemPosition()){
@@ -1585,6 +1635,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         }
         String[] date;
         if(flag){
+            // Date start have just selected
             date = buttonEndDate.getText().toString().split("/");
             Calendar dateCheck = Calendar.getInstance();
             dateCheck.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date[0]));
@@ -1606,6 +1657,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                 return false;
             }
         }
+
         return true;
     }
 

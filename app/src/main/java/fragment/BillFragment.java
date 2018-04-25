@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -61,12 +62,14 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
 
     private BillListAdapter listBillAdapter;
     private ArrayList<Bill> listData;
+    private ArrayList<Bill> listShow = new ArrayList<>();
     private SpinnerDatePickerDialogBuilder dateSpinner;
     private View view;
     private FirebaseFirestore db;
     private MaterialDialog dialogLoading;
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat sdf_Date = new SimpleDateFormat("yyyy/MM/dd");
+    private boolean flag_loading;
 
     public BillFragment() {
         // Required empty public constructor
@@ -96,7 +99,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
         //Create header for list bill -- End
 
         listData = new ArrayList<>();
-        listBillAdapter = new BillListAdapter(view.getContext(),listData);
+        listBillAdapter = new BillListAdapter(view.getContext(),listShow);
         listBill.setAdapter(listBillAdapter);
 
         listBill.setOnItemClickListener(this);
@@ -109,6 +112,23 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                         cal.get(Calendar.YEAR)));
         renderData(sdf_Date.format(cal.getTime()));
 
+        listBill.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if(firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount != 0){
+                    if(!flag_loading && listData.size() > 0){
+                        flag_loading = true;
+                        getMoreItems();
+                    }
+                }
+            }
+        });
+
         return view;
     }
 
@@ -116,6 +136,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
     private void renderData(String date) {
         showLoadingDialog();
         listData.clear();
+        listShow.clear();
         db.collection(QuanLyConstants.ORDER)
             .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
             .whereEqualTo(QuanLyConstants.ORDER_DATE, date)
@@ -139,7 +160,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                                 return o1.getBillNumber().compareTo(o2.getBillNumber());
                             }
                         });
-                        listBillAdapter.notifyDataSetChanged();
+                        getMoreItems();
                     }
                 }
             });
@@ -186,6 +207,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if(task.isSuccessful()){
                         listData.clear();
+                        listShow.clear();
                         for(DocumentSnapshot document : task.getResult()){
                             if(document.get(QuanLyConstants.BILL_NUMBER).toString().contains(inputBillNumber)){
                                 Bill bill = new Bill();
@@ -194,7 +216,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                                 bill.setTime(document.get(QuanLyConstants.ORDER_TIME).toString());
                                 bill.setCostTotal(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
                                 listData.add(bill);
-                                listBillAdapter.notifyDataSetChanged();
+                                getMoreItems();
                                 closeLoadingDialog();
                             }
                         }
@@ -234,6 +256,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
 
     public void showLoadingDialog(){
         dialogLoading = new MaterialDialog.Builder(view.getContext())
+                .backgroundColor(getResources().getColor(R.color.primary_dark))
                 .customView(R.layout.loading_dialog,true)
                 .show();
     }
@@ -247,5 +270,22 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
         Intent i = new Intent(view.getContext(), OrderDetailActivity.class);
         i.putExtra(QuanLyConstants.TABLE_ORDER_ID,listData.get(position-1).getId());
         startActivity(i);
+    }
+
+    private void getMoreItems(){
+        if(!dialogLoading.isShowing()){
+            showLoadingDialog();
+        }
+        int count = 0;
+        while(count < 10 && listData.size() > 0){
+            listShow.add(listData.get(0));
+            listData.remove(0);
+            count++;
+        }
+        if(dialogLoading.isShowing()){
+            closeLoadingDialog();
+        }
+        flag_loading = false;
+        listBillAdapter.notifyDataSetChanged();
     }
 }
