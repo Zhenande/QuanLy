@@ -341,6 +341,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                         if(listBar.size()==0){
                             Toast.makeText(view.getContext(), "The time you choose does not have any order. Please check again!", Toast.LENGTH_SHORT).show();
+                            return;
                         }
                         IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
 

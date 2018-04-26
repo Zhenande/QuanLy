@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -67,6 +68,10 @@ public class OrderDetailActivity extends AppCompatActivity {
     private String tableID;
     private String saveOrderID;
     private String TAG = "OrderDetailActivity";
+    private String restaurantID;
+    private String employeeID;
+    private int flag_cook = -1;
+    private int flag_waiter = -1;
 
 
     @Override
@@ -93,7 +98,7 @@ public class OrderDetailActivity extends AppCompatActivity {
             renderData();
         }
 
-
+        restaurantID = getRestaurantID();
         listData = new ArrayList<>();
 
 
@@ -178,7 +183,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     public void renderData(){
         showLoadingDialog();
         db.collection(QuanLyConstants.TABLE)
-            .whereEqualTo(QuanLyConstants.RESTAURANT_ID,getRestaurantID())
+            .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
             .get()
             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
@@ -191,6 +196,12 @@ public class OrderDetailActivity extends AppCompatActivity {
                             }
                         }
                     }
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.i(TAG,e.getMessage());
                 }
             });
     }
@@ -225,6 +236,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                                     builder.append(temp[0]);
                                     // ------------------------------------- End
 
+                                    employeeID = document.get(QuanLyConstants.TABLE_EMPLOYEE_ID).toString();
                                     txtDateBook.setText(getResources().getString(R.string.dateBook, builder.toString()));
                                     String customerID = document.get(QuanLyConstants.CUSTOMER_ID).toString();
                                     txtBillNumber.setText(getResources().getString(R.string.billNumber,document.get(QuanLyConstants.BILL_NUMBER).toString()));
@@ -326,22 +338,80 @@ public class OrderDetailActivity extends AppCompatActivity {
             .onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                    Map<String, Object> table = new HashMap<>();
-                    table.put(QuanLyConstants.TABLE_ORDER_ID,"1");
-                    db.collection(QuanLyConstants.TABLE)
-                            .document(tableID)
-                            .set(table, SetOptions.merge());
-                    Map<String, Object> order = new HashMap<>();
-                    order.put(QuanLyConstants.ORDER_CheckOut,true);
-                    db.collection(QuanLyConstants.ORDER)
-                            .document(saveOrderID)
-                            .set(order, SetOptions.merge());
-                    Toast.makeText(getApplicationContext(),getResources().getString(R.string.checkOutDone),Toast.LENGTH_SHORT).show();
-                    onBackPressed();
+                    if(validServiceFood()){
+                        Log.i(TAG, "I'm inside");
+//                        Map<String, Object> table = new HashMap<>();
+//                        table.put(QuanLyConstants.TABLE_ORDER_ID,"1");
+//                        db.collection(QuanLyConstants.TABLE)
+//                                .document(tableID)
+//                                .set(table, SetOptions.merge());
+//                        Map<String, Object> order = new HashMap<>();
+//                        order.put(QuanLyConstants.ORDER_CheckOut,true);
+//                        db.collection(QuanLyConstants.ORDER)
+//                                .document(saveOrderID)
+//                                .set(order, SetOptions.merge());
+//                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.checkOutDone),Toast.LENGTH_SHORT).show();
+//                        onBackPressed();
+                    }
                 }
             })
             .build()
             .show();
+    }
+
+    private boolean validServiceFood() {
+        db.collection(QuanLyConstants.COOK)
+            .document(restaurantID)
+            .collection(QuanLyConstants.TABLE)
+            .document(tableID)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        DocumentSnapshot document = task.getResult();
+                        String foodRemain = document.get(QuanLyConstants.FOOD_NAME).toString();
+                        if(!TextUtils.isEmpty(foodRemain)){
+                            flag_cook = 0; // meaning still have food does not service
+                        }
+                        else{
+                            flag_cook = 1; // Everything good
+                        }
+                    }
+                }
+            });
+        db.collection(QuanLyConstants.NOTIFICATION)
+            .document(employeeID)
+            .collection(QuanLyConstants.TABLE)
+            .document(tableID)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        DocumentSnapshot document = task.getResult();
+                        String foodRemain = document.get(QuanLyConstants.FOOD_NAME).toString();
+                        if(!TextUtils.isEmpty(foodRemain)){
+                            flag_waiter = 0; // meaning still have food does not service
+                        }
+                        else{
+                            flag_waiter = 1; // Everything good
+                        }
+                    }
+                }
+            });
+        do{
+            if(flag_cook == 0){
+                Toast.makeText(this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            if(flag_waiter == 0){
+                Toast.makeText(this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }while (flag_cook == -1 && flag_waiter == -1);
+
+        return true;
     }
 
     public String getRestaurantID(){

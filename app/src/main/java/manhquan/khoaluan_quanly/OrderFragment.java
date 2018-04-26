@@ -129,7 +129,6 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
 
                         isFirst = false;
                         closeLoadingDialog();
-
                     }
                 }
             });

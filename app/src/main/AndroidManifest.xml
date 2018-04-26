@@ -30,16 +30,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".OrderDetailActivity"
-            android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".MainActivity"
-            android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".EmployeeDetailActivity"
-            android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".FoodDetailActivity"
-            android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".CartActivity"
-            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".OrderDetailActivity" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".EmployeeDetailActivity" />
+        <activity android:name=".FoodDetailActivity" />
 
         <!--
              Set color used with incoming notification messages. This is used when no color is set for the incoming
@@ -49,7 +43,7 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
 
-
+        <activity android:name=".CartActivity"></activity>
     </application>
 
 </manifest>

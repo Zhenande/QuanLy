@@ -64,6 +64,7 @@
     <string name="checkOutDone">Check out complete</string>
     <string name="customerNoName">Customer</string>
     <string name="dialogRemoveFood">Do you want to delete %s?</string>
+    <string name="error_still_food_need_service">There is some food still not service</string>
 
     <!--=================================Food On Bill List Item=========================================-->
     <string name="fobFoodName">Food Name</string>
