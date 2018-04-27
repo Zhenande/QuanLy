@@ -1,0 +1,107 @@
+{
+  "project_info": {
+    "project_number": "128152780040",
+    "firebase_url": "https://restaurantmanagement-f42e7.firebaseio.com",
+    "project_id": "restaurantmanagement-f42e7",
+    "storage_bucket": "restaurantmanagement-f42e7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:128152780040:android:71c775d25c7a532f",
+        "android_client_info": {
+          "package_name": "com.example.abc.khoaluan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "128152780040-hheesfpecsk174dkqvt4qsj8l36s5ra8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.abc.khoaluan",
+            "certificate_hash": "cd98f6fd36bb3740ec1ea3c4bd0732fe79975a44"
+          }
+        },
+        {
+          "client_id": "128152780040-kp14v9h29rs3efq6u2c2rjj71tkepibf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.abc.khoaluan",
+            "certificate_hash": "4ab632276e7569d746cf0f98f64adf2f6c7eb953"
+          }
+        },
+        {
+          "client_id": "128152780040-ltso9f00284s9c4bbvj0oft3o9djf5cv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4XReMTBjTW8GBoQ_3BK8cidCohBEMPLY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "128152780040-ltso9f00284s9c4bbvj0oft3o9djf5cv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:128152780040:android:3c7a89bbeadb06d7",
+        "android_client_info": {
+          "package_name": "manhquan.khoaluan.quanly"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "128152780040-q206dmpv2ua5s5gia6eebdhd2mvs854n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "manhquan.khoaluan.quanly",
+            "certificate_hash": "4ab632276e7569d746cf0f98f64adf2f6c7eb953"
+          }
+        },
+        {
+          "client_id": "128152780040-ltso9f00284s9c4bbvj0oft3o9djf5cv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4XReMTBjTW8GBoQ_3BK8cidCohBEMPLY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "128152780040-ltso9f00284s9c4bbvj0oft3o9djf5cv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

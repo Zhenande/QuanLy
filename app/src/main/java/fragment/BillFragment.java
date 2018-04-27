@@ -268,7 +268,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent i = new Intent(view.getContext(), OrderDetailActivity.class);
-        i.putExtra(QuanLyConstants.TABLE_ORDER_ID,listData.get(position-1).getId());
+        i.putExtra(QuanLyConstants.TABLE_ORDER_ID,listShow.get(position-1).getId());
         startActivity(i);
     }
 

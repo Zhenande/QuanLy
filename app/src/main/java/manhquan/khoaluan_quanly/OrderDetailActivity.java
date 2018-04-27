@@ -86,6 +86,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        restaurantID = getRestaurantID();
         tableNumber = getIntent().getStringExtra(QuanLyConstants.TABLE_NUMBER);
         if(TextUtils.isEmpty(tableNumber)) {
             // Open from BillFragment
@@ -98,7 +99,6 @@ public class OrderDetailActivity extends AppCompatActivity {
             renderData();
         }
 
-        restaurantID = getRestaurantID();
         listData = new ArrayList<>();
 
 
@@ -338,20 +338,24 @@ public class OrderDetailActivity extends AppCompatActivity {
             .onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                    if(validServiceFood()){
+                    if(true){ // validServiceFood() - beta
                         Log.i(TAG, "I'm inside");
-//                        Map<String, Object> table = new HashMap<>();
-//                        table.put(QuanLyConstants.TABLE_ORDER_ID,"1");
-//                        db.collection(QuanLyConstants.TABLE)
-//                                .document(tableID)
-//                                .set(table, SetOptions.merge());
-//                        Map<String, Object> order = new HashMap<>();
-//                        order.put(QuanLyConstants.ORDER_CheckOut,true);
-//                        db.collection(QuanLyConstants.ORDER)
-//                                .document(saveOrderID)
-//                                .set(order, SetOptions.merge());
-//                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.checkOutDone),Toast.LENGTH_SHORT).show();
-//                        onBackPressed();
+                        Map<String, Object> table = new HashMap<>();
+                        table.put(QuanLyConstants.TABLE_ORDER_ID,"1");
+                        db.collection(QuanLyConstants.TABLE)
+                                .document(tableID)
+                                .set(table, SetOptions.merge());
+                        Map<String, Object> order = new HashMap<>();
+                        order.put(QuanLyConstants.ORDER_CheckOut,true);
+                        db.collection(QuanLyConstants.ORDER)
+                                .document(saveOrderID)
+                                .set(order, SetOptions.merge());
+                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.checkOutDone),Toast.LENGTH_SHORT).show();
+                        onBackPressed();
+                    }
+                    else{
+                        Log.i(TAG, "Food not valid");
+                        dialog.dismiss();
                     }
                 }
             })
