@@ -22,6 +22,7 @@
     <string name="cashier">Thu Ngân</string>
     <string name="sign_out_noti">Nhấn back lần nữa để đăng xuất ứng dụng</string>
     <string name="notification_error">Hiện tại thì không có thông báo nào</string>
+    <string name="delete_table_has_customer_error">Không thể xóa bàn đang có khách hàng</string>
 
     <!--=================================Create Table Dialog==============================================-->
     <string name="content_dialog_create_table">Nhập số bàn: </string>

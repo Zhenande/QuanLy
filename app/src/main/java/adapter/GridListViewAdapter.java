@@ -65,8 +65,10 @@ public class GridListViewAdapter extends ListGridAdapter<TableModel, ViewHolder>
     protected void setCardView(CardDataHolder<TableModel> cardDataHolder, ViewHolder cardViewHolder) {
         TableModel tModel = cardDataHolder.getData();
         if(!tModel.isAvailable()){
+            // table has customer
             cardViewHolder.imgTable.setImageResource(R.drawable.ic_table_close);
         }else{
+            // table free
             cardViewHolder.imgTable.setImageResource(R.drawable.ic_table_open);
         }
         cardViewHolder.tableNumber.setText(getContext().getResources().getString(R.string.tableNumber , tModel.getTableNumber()));

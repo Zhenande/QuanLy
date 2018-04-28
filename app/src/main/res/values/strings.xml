@@ -24,6 +24,7 @@
     <string name="cashier">Cashier</string>
     <string name="sign_out_noti">Press back again to sign out app</string>
     <string name="notification_error">There is no notifition</string>
+    <string name="delete_table_has_customer_error">Can not delete table is having customer</string>
 
     <!--=================================Create Table Dialog==============================================-->
     <string name="content_dialog_create_table">Input number of table: </string>

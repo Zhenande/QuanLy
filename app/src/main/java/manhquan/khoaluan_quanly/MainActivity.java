@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +57,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import adapter.GridListViewAdapter;
 import adapter.NotificationAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -256,111 +258,8 @@ public class MainActivity extends AppCompatActivity
             }
             return true;
         }
-        if(id == QuanLyConstants.CREATE_TABLE_ID){
-            MaterialDialog create_table_dialog = new MaterialDialog.Builder(this)
-                    .positiveText(getResources().getString(R.string.main_agree))
-                    .negativeText(getResources().getString(R.string.main_disagree))
-                    .positiveColor(getResources().getColor(R.color.primary_dark))
-                    .negativeColor(getResources().getColor(R.color.black))
-                    .title(getResources().getString(R.string.action_create_table))
-                    .customView(R.layout.create_table_dialog, true)
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            View view = dialog.getView();
-                            EditText edNumber = view.findViewById(R.id.create_table_number);
-                            RadioButton rbCreate = view.findViewById(R.id.create_table_create_radio);
-                            if (edNumber.getText().toString().matches("[0-9]*")) {
-                                int NumberTableCurrent = Integer.parseInt(getTableNumber());
-                                int NumberTableNeedChange = Integer.parseInt(edNumber.getText().toString());
 
-                                String restaurantID = getRestaurantID();
-                                if (rbCreate.isChecked()) {
-                                    createTable(NumberTableCurrent, NumberTableNeedChange, restaurantID);
-                                } else {
-                                    if (NumberTableCurrent < NumberTableNeedChange) {
-                                        Toast.makeText(view.getContext(),
-                                                getResources().getString(R.string.table_error_delete_too_much,
-                                                        NumberTableNeedChange, NumberTableCurrent), Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        deleteTable(NumberTableCurrent, NumberTableNeedChange, restaurantID);
-                                    }
-                                }
-                            } else {
-                                Toast.makeText(view.getContext(), getResources().getString(R.string.table_error_input_letter), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    })
-                    .build();
-            create_table_dialog.show();
-        }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void deleteTable(final int numberTableCurrent, int numberTableNeedChange, final String restaurantID) {
-        final int NumberAfterChange = numberTableCurrent - numberTableNeedChange;
-        db.collection(QuanLyConstants.TABLE)
-                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            for(DocumentSnapshot document : task.getResult()){
-                                final int tableNum = Integer.parseInt(document.get(QuanLyConstants.TABLE_NUMBER).toString());
-                                final String tableID = document.getId();
-                                if(tableNum <= numberTableCurrent && tableNum > NumberAfterChange){
-                                    db.collection(QuanLyConstants.TABLE)
-                                            .document(tableID)
-                                            .delete()
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    db.collection(QuanLyConstants.COOK)
-                                                        .document(restaurantID)
-                                                        .collection(QuanLyConstants.TABLE)
-                                                        .document(tableID)
-                                                        .delete();
-                                                }
-                                            });
-                                }
-                            }
-                            recreate();
-                        }
-                    }
-                });
-        Toast.makeText(this,"Delete Done",Toast.LENGTH_SHORT).show();
-    }
-
-    private void createTable(int numberTableCurrent, int numberTableNeedChange, final String restaurantID) {
-        int NumberAfterChange = numberTableCurrent + numberTableNeedChange;
-        for(int i = numberTableCurrent+1; i <= NumberAfterChange; i++){
-            Map<String, Object> table = new HashMap<>();
-            table.put(QuanLyConstants.TABLE_NUMBER,i+"");
-            table.put(QuanLyConstants.TABLE_ORDER_ID,"1");
-            table.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
-            final int num = i;
-            db.collection(QuanLyConstants.TABLE)
-                    .add(table)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            String tableID = documentReference.getId();
-                            Map<String, Object> cook = new HashMap<>();
-                            cook.put(QuanLyConstants.TABLE_NUMBER, num);
-                            cook.put(QuanLyConstants.FOOD_NAME,"");
-                            cook.put(QuanLyConstants.ORDER_TIME,"99:99");
-                            db.collection(QuanLyConstants.COOK)
-                                .document(restaurantID)
-                                .collection(QuanLyConstants.TABLE)
-                                .document(tableID)
-                                .set(cook);
-                        }
-                    });
-
-        }
-        recreate();
-        Toast.makeText(this,"Create Done",Toast.LENGTH_SHORT).show();
     }
 
     private void SignOut() {

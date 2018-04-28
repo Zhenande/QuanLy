@@ -3,6 +3,7 @@ package manhquan.khoaluan_quanly;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -304,17 +306,25 @@ public class OrderDetailActivity extends AppCompatActivity {
                                     MoneyFormatter.formatToMoney(totalCost+"") + " VNĐ"));
                             listViewFoodOnBill.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                                    final FoodOnBill fob = listData.get(position-1);
                                     new MaterialDialog.Builder(OrderDetailActivity.this)
                                             .positiveText(getResources().getString(R.string.main_agree))
                                             .negativeText(getResources().getString(R.string.main_disagree))
                                             .positiveColor(getResources().getColor(R.color.primary_dark))
                                             .negativeColor(getResources().getColor(R.color.black))
-                                            .content(getResources().getString(R.string.dialogRemoveFood))
+                                            .content(getResources().getString(R.string.dialogRemoveFood, fob.getFoodName()))
                                             .onPositive(new MaterialDialog.SingleButtonCallback() {
                                                 @Override
                                                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-
+                                                    int amountFood = fob.getQuantity() * fob.getPrice();
+                                                    int cashTotal = Integer.parseInt(MoneyFormatter.backToString(txtTotalCost.getText().toString()));
+                                                    txtTotalCost.setText(getResources().getString(R.string.totalCost,
+                                                            MoneyFormatter.formatToMoney(cashTotal-amountFood+"") + " VNĐ"));
+                                                    listData.remove(position-1);
+                                                    listFoodOnBillAdapter.notifyDataSetChanged();
+                                                    View view = getViewByPosition(position-1,listViewFoodOnBill);
+                                                    view.setBackgroundColor(getResources().getColor(R.color.white));
                                                 }
                                             })
                                             .build()
@@ -338,32 +348,14 @@ public class OrderDetailActivity extends AppCompatActivity {
             .onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                    if(true){ // validServiceFood() - beta
-                        Log.i(TAG, "I'm inside");
-                        Map<String, Object> table = new HashMap<>();
-                        table.put(QuanLyConstants.TABLE_ORDER_ID,"1");
-                        db.collection(QuanLyConstants.TABLE)
-                                .document(tableID)
-                                .set(table, SetOptions.merge());
-                        Map<String, Object> order = new HashMap<>();
-                        order.put(QuanLyConstants.ORDER_CheckOut,true);
-                        db.collection(QuanLyConstants.ORDER)
-                                .document(saveOrderID)
-                                .set(order, SetOptions.merge());
-                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.checkOutDone),Toast.LENGTH_SHORT).show();
-                        onBackPressed();
-                    }
-                    else{
-                        Log.i(TAG, "Food not valid");
-                        dialog.dismiss();
-                    }
+                    validServiceFood();
                 }
             })
             .build()
             .show();
     }
 
-    private boolean validServiceFood() {
+    private void validServiceFood() {
         db.collection(QuanLyConstants.COOK)
             .document(restaurantID)
             .collection(QuanLyConstants.TABLE)
@@ -374,48 +366,150 @@ public class OrderDetailActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
                         DocumentSnapshot document = task.getResult();
-                        String foodRemain = document.get(QuanLyConstants.FOOD_NAME).toString();
-                        if(!TextUtils.isEmpty(foodRemain)){
+                        Object foodRemain = document.get(QuanLyConstants.FOOD_NAME);
+                        if(foodRemain != null){
                             flag_cook = 0; // meaning still have food does not service
+                            highlightFoodNotCook(foodRemain.toString().split(";"));
                         }
                         else{
                             flag_cook = 1; // Everything good
                         }
+                        CheckFoodOfWaiter();
                     }
                 }
             });
-        db.collection(QuanLyConstants.NOTIFICATION)
-            .document(employeeID)
-            .collection(QuanLyConstants.TABLE)
-            .document(tableID)
-            .get()
-            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if(task.isSuccessful()){
-                        DocumentSnapshot document = task.getResult();
-                        String foodRemain = document.get(QuanLyConstants.FOOD_NAME).toString();
-                        if(!TextUtils.isEmpty(foodRemain)){
-                            flag_waiter = 0; // meaning still have food does not service
-                        }
-                        else{
-                            flag_waiter = 1; // Everything good
-                        }
-                    }
-                }
-            });
-        do{
-            if(flag_cook == 0){
-                Toast.makeText(this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
-                return false;
-            }
-            if(flag_waiter == 0){
-                Toast.makeText(this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        }while (flag_cook == -1 && flag_waiter == -1);
 
-        return true;
+//        db.collection(QuanLyConstants.NOTIFICATION)
+//            .document(employeeID)
+//                .collection(QuanLyConstants.TABLE)
+//                .document(tableID)
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                        if(task.isSuccessful()){
+//                            DocumentSnapshot document = task.getResult();
+//                            Object foodRemain = document.get(QuanLyConstants.FOOD_NAME);
+//                            if(foodRemain != null){
+//                                flag_waiter = 0; // meaning still have food does not service
+//                            }
+//                            else{
+//                                flag_waiter = 1; // Everything good
+//                            }
+//                        }
+//                    }
+//                });
+
+//        while (flag_cook == -1 && flag_waiter == -1) {
+//            try {
+//                Thread.sleep(1000);
+//                if(flag_cook == 0){
+//                    Toast.makeText(this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
+//                    return false;
+//                }
+//                if(flag_waiter == 0){
+//                    Toast.makeText(this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
+//                    return false;
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+    }
+
+    private void highlightFoodNotCook(String[] foodName) {
+        for (String s : foodName) {
+            String compare = s.split("    ")[0];
+            for (int j = 0; j < listData.size(); j++) {
+                if (compare.equals(listData.get(j).getFoodName())) {
+                    View view = getViewByPosition(j, listViewFoodOnBill);
+                    view.setBackgroundColor(getResources().getColor(R.color.primary));
+                }
+            }
+        }
+    }
+
+
+    private View getViewByPosition(int pos, ListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+        pos++; // because listview have header
+        if (pos < firstListItemPosition || pos > lastListItemPosition ) {
+            return listView.getAdapter().getView(pos, null, listView);
+        } else {
+            final int childIndex = pos - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
+    }
+
+    private void CheckFoodOfWaiter() {
+        db.collection(QuanLyConstants.NOTIFICATION)
+                .document(employeeID)
+                .collection(QuanLyConstants.TABLE)
+                .document(tableID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            DocumentSnapshot document = task.getResult();
+                            Object foodRemain = document.get(QuanLyConstants.FOOD_NAME);
+                            if(foodRemain != null){
+                                flag_waiter = 0; // meaning still have food does not service
+                            }
+                            else{
+                                flag_waiter = 1; // Everything good
+                            }
+                            if(flag_cook == 0){
+                                Toast.makeText(OrderDetailActivity.this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
+                            }
+                            if(flag_waiter == 0){
+                                Toast.makeText(OrderDetailActivity.this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
+                            }
+                            if(flag_waiter == 1 && flag_cook == 1){
+                                doCheckOutDone();
+                            }
+                        }
+                    }
+                });
+    }
+
+    private void doCheckOutDone() {
+        Map<String, Object> table = new HashMap<>();
+        table.put(QuanLyConstants.TABLE_ORDER_ID,"1");
+        db.collection(QuanLyConstants.TABLE)
+                .document(tableID)
+                .set(table, SetOptions.merge());
+        Map<String, Object> order = new HashMap<>();
+        order.put(QuanLyConstants.ORDER_CheckOut,true);
+        order.put(QuanLyConstants.ORDER_CASH_TOTAL, MoneyFormatter.backToString(txtTotalCost.getText().toString()));
+        DocumentReference docRef = db.collection(QuanLyConstants.ORDER).document(saveOrderID);
+        docRef.set(order, SetOptions.merge());
+        docRef.collection(QuanLyConstants.FOOD_ON_ORDER)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for(DocumentSnapshot document : task.getResult()){
+                                String foodName = document.get(QuanLyConstants.FOOD_NAME).toString();
+                                boolean flag = false;
+                                for(FoodOnBill fob : listData){
+                                    if(fob.getFoodName().equals(foodName)){
+                                        flag = true;
+                                        listData.remove(fob);
+                                        break;
+                                    }
+                                }
+                                if(!flag){
+                                    document.getReference().delete();
+                                }
+                            }
+                        }
+                    }
+                });
+        Toast.makeText(getApplicationContext(),getResources().getString(R.string.checkOutDone),Toast.LENGTH_SHORT).show();
+        onBackPressed();
     }
 
     public String getRestaurantID(){

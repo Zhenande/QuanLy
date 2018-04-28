@@ -11,11 +11,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.birin.gridlistviewadapters.dataholders.RowDataHolder;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -27,12 +36,14 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import adapter.GridListViewAdapter;
+import manhquan.khoaluan_quanly.MainActivity;
 import manhquan.khoaluan_quanly.R;
 import model.TableModel;
 
@@ -92,6 +103,131 @@ public class RestaurantFragment extends Fragment {
         menu.clear();
         inflater.inflate(R.menu.main, menu);
         menu.add(0,QuanLyConstants.CREATE_TABLE_ID,0,getResources().getString(R.string.action_create_table));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == QuanLyConstants.CREATE_TABLE_ID){
+            MaterialDialog create_table_dialog = new MaterialDialog.Builder(view.getContext())
+                    .positiveText(getResources().getString(R.string.main_agree))
+                    .negativeText(getResources().getString(R.string.main_disagree))
+                    .positiveColor(getResources().getColor(R.color.primary_dark))
+                    .negativeColor(getResources().getColor(R.color.black))
+                    .title(getResources().getString(R.string.action_create_table))
+                    .customView(R.layout.create_table_dialog, true)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            View view = dialog.getView();
+                            EditText edNumber = view.findViewById(R.id.create_table_number);
+                            RadioButton rbCreate = view.findViewById(R.id.create_table_create_radio);
+                            if (edNumber.getText().toString().matches("[0-9]*")) {
+                                int NumberTableCurrent = Integer.parseInt(getTableNumber());
+                                int NumberTableNeedChange = Integer.parseInt(edNumber.getText().toString());
+
+                                String restaurantID = getRestaurantID();
+                                if (rbCreate.isChecked()) {
+                                    createTable(NumberTableCurrent, NumberTableNeedChange, restaurantID);
+                                } else {
+                                    if (NumberTableCurrent < NumberTableNeedChange) {
+                                        Toast.makeText(view.getContext(),
+                                                getResources().getString(R.string.table_error_delete_too_much,
+                                                        NumberTableNeedChange, NumberTableCurrent), Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        boolean flag_delete = true;
+                                        for(int i = NumberTableCurrent-1; i >= NumberTableCurrent - NumberTableNeedChange; i--){
+                                            TableModel tm = gridListAdapter.getCardData(i);
+                                            if(!tm.isAvailable()){
+                                                flag_delete = false;
+                                                break;
+                                            }
+                                        }
+                                        if(flag_delete) {
+                                            deleteTable(NumberTableCurrent, NumberTableNeedChange, restaurantID);
+                                        }
+                                        else{
+                                            Toast.makeText(view.getContext(), getResources().getString(R.string.delete_table_has_customer_error), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(view.getContext(), getResources().getString(R.string.table_error_input_letter), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    })
+                    .build();
+            create_table_dialog.show();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void createTable(int numberTableCurrent, int numberTableNeedChange, final String restaurantID) {
+        int NumberAfterChange = numberTableCurrent + numberTableNeedChange;
+        for(int i = numberTableCurrent+1; i <= NumberAfterChange; i++){
+            Map<String, Object> table = new HashMap<>();
+            table.put(QuanLyConstants.TABLE_NUMBER,i+"");
+            table.put(QuanLyConstants.TABLE_ORDER_ID,"1");
+            table.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
+            final int num = i;
+            db.collection(QuanLyConstants.TABLE)
+                    .add(table)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            String tableID = documentReference.getId();
+                            Map<String, Object> cook = new HashMap<>();
+                            cook.put(QuanLyConstants.TABLE_NUMBER, num);
+                            cook.put(QuanLyConstants.TABLE_EMPLOYEE_ID, "");
+                            cook.put(QuanLyConstants.FOOD_NAME,"");
+                            cook.put(QuanLyConstants.ORDER_TIME,"99:99");
+                            db.collection(QuanLyConstants.COOK)
+                                    .document(restaurantID)
+                                    .collection(QuanLyConstants.TABLE)
+                                    .document(tableID)
+                                    .set(cook);
+                        }
+                    });
+
+        }
+//        recreate();
+        Toast.makeText(view.getContext(),"Create Done",Toast.LENGTH_SHORT).show();
+    }
+
+    private void deleteTable(final int numberTableCurrent, int numberTableNeedChange, final String restaurantID) {
+        final int NumberAfterChange = numberTableCurrent - numberTableNeedChange;
+        db.collection(QuanLyConstants.TABLE)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for(DocumentSnapshot document : task.getResult()){
+                                final int tableNum = Integer.parseInt(document.get(QuanLyConstants.TABLE_NUMBER).toString());
+                                final String tableID = document.getId();
+                                if(tableNum <= numberTableCurrent && tableNum > NumberAfterChange){
+                                    db.collection(QuanLyConstants.TABLE)
+                                            .document(tableID)
+                                            .delete()
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    db.collection(QuanLyConstants.COOK)
+                                                            .document(restaurantID)
+                                                            .collection(QuanLyConstants.TABLE)
+                                                            .document(tableID)
+                                                            .delete();
+                                                }
+                                            });
+                                }
+                            }
+//                            recreate();
+                        }
+                    }
+                });
+        Toast.makeText(view.getContext(),"Delete Done",Toast.LENGTH_SHORT).show();
     }
 
     private void renderData(){
