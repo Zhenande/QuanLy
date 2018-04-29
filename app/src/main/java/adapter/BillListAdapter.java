@@ -14,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import manhquan.khoaluan_quanly.R;
 import model.Bill;
+import util.MoneyFormatter;
 
 /**
  * Created by LieuDucManh on 3/31/2018.
@@ -44,7 +45,7 @@ public class BillListAdapter extends BaseAdapter {
         return position;
     }
 
-    @SuppressLint("InflateParams")
+    @SuppressLint({"InflateParams", "SetTextI18n"})
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         BillHolder holder;
@@ -59,6 +60,7 @@ public class BillListAdapter extends BaseAdapter {
         }
 
         Bill bill = listBill.get(position);
+        holder.txtWaiterName.setText(bill.getWaiterName());
         holder.txtBillNumber.setText(bill.getBillNumber());
         holder.txtTime.setText(bill.getTime());
         holder.txtCost.setText(bill.getCostTotal());
@@ -68,6 +70,7 @@ public class BillListAdapter extends BaseAdapter {
 }
 
 class BillHolder{
+    @BindView(R.id.bill_list_bill_employee) TextView txtWaiterName;
     @BindView(R.id.bill_list_bill_number) TextView txtBillNumber;
     @BindView(R.id.bill_list_time) TextView txtTime;
     @BindView(R.id.bill_list_cost) TextView txtCost;

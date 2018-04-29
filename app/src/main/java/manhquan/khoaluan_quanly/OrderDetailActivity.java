@@ -366,55 +366,21 @@ public class OrderDetailActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
                         DocumentSnapshot document = task.getResult();
-                        Object foodRemain = document.get(QuanLyConstants.FOOD_NAME);
-                        if(foodRemain != null){
+                        String foodRemain = document.get(QuanLyConstants.FOOD_NAME).toString();
+                        if(!TextUtils.isEmpty(foodRemain)){
                             flag_cook = 0; // meaning still have food does not service
                             highlightFoodNotCook(foodRemain.toString().split(";"));
+                            Toast.makeText(OrderDetailActivity.this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
                         }
                         else{
                             flag_cook = 1; // Everything good
+                            doCheckOutDone();
                         }
-                        CheckFoodOfWaiter();
                     }
                 }
             });
 
-//        db.collection(QuanLyConstants.NOTIFICATION)
-//            .document(employeeID)
-//                .collection(QuanLyConstants.TABLE)
-//                .document(tableID)
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                        if(task.isSuccessful()){
-//                            DocumentSnapshot document = task.getResult();
-//                            Object foodRemain = document.get(QuanLyConstants.FOOD_NAME);
-//                            if(foodRemain != null){
-//                                flag_waiter = 0; // meaning still have food does not service
-//                            }
-//                            else{
-//                                flag_waiter = 1; // Everything good
-//                            }
-//                        }
-//                    }
-//                });
 
-//        while (flag_cook == -1 && flag_waiter == -1) {
-//            try {
-//                Thread.sleep(1000);
-//                if(flag_cook == 0){
-//                    Toast.makeText(this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
-//                    return false;
-//                }
-//                if(flag_waiter == 0){
-//                    Toast.makeText(this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
-//                    return false;
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 
     private void highlightFoodNotCook(String[] foodName) {
@@ -442,37 +408,6 @@ public class OrderDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void CheckFoodOfWaiter() {
-        db.collection(QuanLyConstants.NOTIFICATION)
-                .document(employeeID)
-                .collection(QuanLyConstants.TABLE)
-                .document(tableID)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.isSuccessful()){
-                            DocumentSnapshot document = task.getResult();
-                            Object foodRemain = document.get(QuanLyConstants.FOOD_NAME);
-                            if(foodRemain != null){
-                                flag_waiter = 0; // meaning still have food does not service
-                            }
-                            else{
-                                flag_waiter = 1; // Everything good
-                            }
-                            if(flag_cook == 0){
-                                Toast.makeText(OrderDetailActivity.this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
-                            }
-                            if(flag_waiter == 0){
-                                Toast.makeText(OrderDetailActivity.this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
-                            }
-                            if(flag_waiter == 1 && flag_cook == 1){
-                                doCheckOutDone();
-                            }
-                        }
-                    }
-                });
-    }
 
     private void doCheckOutDone() {
         Map<String, Object> table = new HashMap<>();

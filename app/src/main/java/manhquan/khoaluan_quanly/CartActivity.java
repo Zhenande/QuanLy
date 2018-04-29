@@ -152,7 +152,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
     @SuppressLint("SimpleDateFormat")
     private String getBillNumberOrder() {
         Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf_short_date = new SimpleDateFormat("ddMMkkmmss");
+        SimpleDateFormat sdf_short_date = new SimpleDateFormat("yyMMddkkmmss");
         return sdf_short_date.format(cal.getTime());
     }
 
@@ -439,6 +439,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                             order.put(QuanLyConstants.ORDER_DATE, sdf_Date.format(cal.getTime()));
                             order.put(QuanLyConstants.ORDER_TIME, sdf_Time.format(cal.getTime()));
                             order.put(QuanLyConstants.RESTAURANT_ID, restaurantID);
+                            order.put(QuanLyConstants.ORDER_WAITER_NAME, GlobalVariable.employeeName);
                             order.put(QuanLyConstants.BILL_NUMBER, getBillNumberOrder());
                             order.put(QuanLyConstants.TABLE_EMPLOYEE_ID, GlobalVariable.employeeID);
                             createOrderDetail(order);
@@ -538,6 +539,10 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
 
     }
 
+    /*
+    * @author: ManhLD
+    * Send food need to prepare to the cook
+    * */
     private void sendFoodToCook(String tableID) {
         final Map<String, Object> cook = new HashMap<>();
         cook.put(QuanLyConstants.ORDER_TIME, time);

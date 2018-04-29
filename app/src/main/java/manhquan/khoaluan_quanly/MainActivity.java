@@ -48,6 +48,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 
 import java.util.ArrayList;
@@ -70,6 +71,7 @@ import fragment.RestaurantFragment;
 import model.NotiContent;
 import model.Notification;
 import util.GlobalVariable;
+import util.MoneyFormatter;
 import util.NotificationTouchHelper;
 
 public class MainActivity extends AppCompatActivity
@@ -130,14 +132,35 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this,viewDrawerHeader);
 
         emName = getIntent().getStringExtra(QuanLyConstants.EMPLOYEE_NAME);
+        GlobalVariable.employeeName = emName;
         if(getPosition() != position){
             savePosition();
         }
         renderDrawerData();
 
-
+//        changeData();
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
     }
+
+//    private void changeData() {
+//        db.collection(QuanLyConstants.ORDER)
+//            .whereGreaterThanOrEqualTo(QuanLyConstants.BILL_NUMBER, "180427")
+//            .get()
+//            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                @Override
+//                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                    if(task.isSuccessful()){
+//                        for(DocumentSnapshot document : task.getResult()){
+//                            String newMoney = MoneyFormatter.formatToMoney(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()) + " VNĐ";
+//                            Map<String, Object> update = new HashMap<>();
+//                            update.put(QuanLyConstants.ORDER_CASH_TOTAL, newMoney);
+//                            document.getReference().set(update, SetOptions.merge());
+//                        }
+//                    }
+//                }
+//            });
+//    }
+
 
     private void setRoleOfApp() {
         switch (position){
@@ -482,10 +505,10 @@ public class MainActivity extends AppCompatActivity
     private void clickOnItemListView(final MaterialDialog dialogChoose) {
         View view = dialogChoose.getView();
         showLoadingDialog();
-//        listNotification.clear();
         if(listNotification.size()==0){
             dialogChoose.dismiss();
             Toast.makeText(this, getResources().getString(R.string.notification_error), Toast.LENGTH_SHORT).show();
+            closeLoadingDialog();
             return;
         }
         recyclerView = view.findViewById(R.id.recyclerView_notification);

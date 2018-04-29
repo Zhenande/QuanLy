@@ -111,15 +111,16 @@ public class EmployeeFragment extends Fragment {
     * @purpose: Get the collection of the employee work in the restaurant.
     * */
     private void renderData() {
-        listData.clear();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("employee")
+        db.collection(QuanLyConstants.EMPLOYEE)
                 .whereEqualTo(QuanLyConstants.RESTAURANT_ID, getRestaurantID())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
+                            listData.clear();
+                            listEmployeeID.clear();
                             for(DocumentSnapshot document : task.getResult()){
                                 int position = Integer.parseInt(document.get(QuanLyConstants.EMPLOYEE_POSITION).toString());
                                 if(position>1){

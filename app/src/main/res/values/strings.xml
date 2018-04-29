@@ -169,11 +169,18 @@
     <string name="bill_fragment_id">Bill number: </string>
     <string name="bill_fragment_search">Search</string>
     <string name="bill_fragment_error_search">You must fill at least 4 first number of bill number to search</string>
+    <string name="bill_fragment_advanced_search">Advanced Options</string>
+    <string name="bill_fragment_search_by_waiterID">Search by Waiter Name</string>
+    <string name="bill_fragment_search_by_time">Search by time</string>
+    <string name="bill_fragment_waiter_id">Waiter Name: </string>
+    <string name="bill_fragment_time">Time: </string>
+    <string name="bill_fragment_error_input_time">Your time input is not correct. You must follow the right input like "22:58"</string>
+    <string name="bill_fragment_over_current_time">You can not input time after the current time</string>
 
     <!--===============================Bill List Item=============================================-->
     <string name="bill_list_id">Bill Number</string>
     <string name="bill_list_time">Time</string>
-    <string name="bill_list_customer_name">Customer Name</string>
+    <string name="bill_list_employee_name">Waiter Name</string>
     <string name="bill_list_cost_total">Cost</string>
 
     <!--===============================Choose Food Dialog=============================================-->

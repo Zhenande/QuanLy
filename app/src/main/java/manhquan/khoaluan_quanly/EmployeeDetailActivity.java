@@ -59,7 +59,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
     public Button buttonUpdate;
     private String RestaurantID;
     private boolean flag = false;
-    private String documentID;
+    private String employeeID;
     private FirebaseFirestore db;
 
 
@@ -88,8 +88,8 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-        documentID = getIntent().getStringExtra(QuanLyConstants.INTENT_DOCUMENT_ID);
-        if(TextUtils.isEmpty(documentID)){
+        employeeID = getIntent().getStringExtra(QuanLyConstants.INTENT_DOCUMENT_ID);
+        if(TextUtils.isEmpty(employeeID)){
             // Create New Employee
             buttonUpdate.setText(getResources().getString(R.string.add_account_button_create));
         }
@@ -97,7 +97,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             // Update Employee
             showLoadingDialog();
             buttonUpdate.setText(getResources().getString(R.string.employee_detail_button_save));
-            renderUI(documentID);
+            renderUI(employeeID);
         }
         buttonUpdate.setOnClickListener(this);
     }
@@ -107,7 +107,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if(!TextUtils.isEmpty(documentID)){
+        if(!TextUtils.isEmpty(employeeID)){
             getMenuInflater().inflate(R.menu.detail, menu);
         }
         return true;
@@ -149,16 +149,16 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        db.collection(QuanLyConstants.EMPLOYEE).document(documentID)
+                        db.collection(QuanLyConstants.EMPLOYEE).document(employeeID)
                                 .delete()
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Toast.makeText(getApplicationContext(),getResources().getString(R.string.employee_detail_delete_success)
                                                 ,Toast.LENGTH_SHORT).show();
+                                        flag = true;
                                         closeLoadingDialog();
                                         onBackPressed();
-                                        flag = true;
                                     }
                                 });
                     }
@@ -173,7 +173,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
                 .show();
     }
 
-    public void renderUI(final String documentID){
+    public void renderUI(final String employeeID){
         db.collection(QuanLyConstants.EMPLOYEE)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -181,7 +181,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             for(DocumentSnapshot document : task.getResult()){
-                                if(document.getId().equals(documentID)){
+                                if(document.getId().equals(employeeID)){
                                     txtName.setText(document.get(QuanLyConstants.EMPLOYEE_NAME).toString());
                                     txtUsername.setText(document.get(QuanLyConstants.EMPLOYEE_USERNAME).toString());
                                     txtPassword.setText(document.get(QuanLyConstants.EMPLOYEE_PASSWORD).toString());
@@ -468,7 +468,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
                 employee.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
                 employee.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
                 employee.put(QuanLyConstants.EMPLOYEE_POSITION,spinnerPosition.getSelectedItemPosition()+2);
-                db.collection(QuanLyConstants.EMPLOYEE).document(documentID)
+                db.collection(QuanLyConstants.EMPLOYEE).document(employeeID)
                         .set(employee, SetOptions.merge());
                 Toast.makeText(getApplicationContext(),getResources().getString(R.string.employee_detail_update_success)
                         ,Toast.LENGTH_SHORT).show();

@@ -165,11 +165,18 @@
     <string name="bill_fragment_id">Mã hóa đơn: </string>
     <string name="bill_fragment_search">Tìm Kiếm</string>
     <string name="bill_fragment_error_search">Bạn phải điền ít nhất 4 số đầu tiên của Mã hóa đơn để tìm kiếm</string>
+    <string name="bill_fragment_advanced_search">Tìm kiếm nâng cao</string>
+    <string name="bill_fragment_search_by_waiterID">Tìm kiếm theo tên phục vụ</string>
+    <string name="bill_fragment_search_by_time">Tìm kiếm theo thời gian</string>
+    <string name="bill_fragment_waiter_id">Tên phục vụ: </string>
+    <string name="bill_fragment_time">Thời gian: </string>
+    <string name="bill_fragment_error_input_time">Thời gian bạn nhập không chính xác. Bạn phải nhập theo mẫu sau "22:58"</string>
+    <string name="bill_fragment_over_current_time">Bạn không thể nhập thời gian trước thời gian hiện tại</string>
 
     <!--===============================Bill List Item=============================================-->
     <string name="bill_list_id">Mã Hóa Đơn</string>
     <string name="bill_list_time">Thời Gian</string>
-    <string name="bill_list_customer_name">Tên Khách Hàng</string>
+    <string name="bill_list_employee_name">Tên Phục Vụ</string>
     <string name="bill_list_cost_total">Giá</string>
 
     <!--===============================Choose Food Dialog=============================================-->

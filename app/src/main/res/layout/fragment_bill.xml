@@ -23,6 +23,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <CheckBox
+            android:id="@+id/bill_fragment_checkbox_advanced_search"
+            android:text="@string/bill_fragment_advanced_search"
+            android:theme="@style/FirebaseUI"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
     
     <LinearLayout
@@ -32,6 +41,7 @@
         android:layout_height="wrap_content">
         
         <TextView
+            android:id="@+id/bill_fragment_textView_search_content"
             android:text="@string/bill_fragment_id"
             style="@style/TextBlack"
             android:layout_width="wrap_content"
@@ -57,6 +67,38 @@
         
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/bill_fragment_linear_advanced_search"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioGroup
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/bill_fragment_checkbox_searchByWaiterID"
+                android:text="@string/bill_fragment_search_by_waiterID"
+                android:theme="@style/FirebaseUI"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+
+            <RadioButton
+                android:id="@+id/bill_fragment_checkbox_searchByTime"
+                android:text="@string/bill_fragment_search_by_time"
+                android:theme="@style/FirebaseUI"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+
+        </RadioGroup>
+
+    </LinearLayout>
 
     <ListView
         android:id="@+id/bill_fragment_list_bill"

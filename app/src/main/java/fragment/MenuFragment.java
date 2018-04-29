@@ -244,7 +244,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         if(pos_res == 1 || pos_res == 2){
             Intent i = new Intent(this.view.getContext(), FoodDetailActivity.class);
             i.putExtra(QuanLyConstants.INTENT_FOOD_DETAIL_NAME,food.getFoodName());
-            this.view.getContext().startActivity(i);
+            startActivityForResult(i, QuanLyConstants.FOOD_DETAIL);
         }
         else{
             dialogChoose = new MaterialDialog.Builder(view.getContext())
@@ -319,5 +319,16 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         });
     }
 
-
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(Activity.RESULT_OK == resultCode){
+            if(requestCode == QuanLyConstants.FOOD_DETAIL){
+                FoodFragment fragment = (FoodFragment) getFragmentManager().findFragmentById(R.id.main_app_framelayout);
+                if(fragment != null){
+                    fragment.refreshMenu();
+                }
+            }
+        }
+    }
 }
