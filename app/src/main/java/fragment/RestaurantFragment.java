@@ -178,7 +178,7 @@ public class RestaurantFragment extends Fragment {
                         public void onSuccess(DocumentReference documentReference) {
                             String tableID = documentReference.getId();
                             Map<String, Object> cook = new HashMap<>();
-                            cook.put(QuanLyConstants.TABLE_NUMBER, num);
+                            cook.put(QuanLyConstants.TABLE_NUMBER, num + "");
                             cook.put(QuanLyConstants.TABLE_EMPLOYEE_ID, "");
                             cook.put(QuanLyConstants.FOOD_NAME,"");
                             cook.put(QuanLyConstants.ORDER_TIME,"99:99");

@@ -165,6 +165,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
         listData.clear();
         listShow.clear();
         db.collection(QuanLyConstants.ORDER)
+            .whereEqualTo(QuanLyConstants.RESTAURANT_ID, restaurantID)
             .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
             .whereEqualTo(QuanLyConstants.ORDER_DATE, date)
             .get()

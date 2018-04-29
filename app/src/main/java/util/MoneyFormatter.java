@@ -16,9 +16,9 @@ public class MoneyFormatter {
         return format.format(money);
     }
 
-    public static String backToString(String input){
+    public static int backToNumber(String input){
         String result;
         result = Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("[^0-9]", "");
-        return result;
+        return Integer.parseInt(result);
     }
 }

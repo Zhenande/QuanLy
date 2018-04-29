@@ -317,7 +317,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             boolean flagBreak = true;
                             do{
                                 if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
-                                    income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                    income += MoneyFormatter.backToNumber(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
                                     flagBreak = false;
                                 }
                                 else{
@@ -409,7 +409,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 boolean flagBreak = true;
                                 do{
                                     if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
-                                        income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                        income += MoneyFormatter.backToNumber(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
                                         flagBreak = false;
                                     }
                                     else{
@@ -518,7 +518,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 cal.set(Calendar.YEAR, Integer.parseInt(orderDate[0]));
                                 do{
                                     if(cal.before(compareDate)){
-                                        income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                        income += MoneyFormatter.backToNumber(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
                                         flagBreak = false;
                                     }
                                     else{
@@ -626,7 +626,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                     cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
                                     cal.set(Calendar.YEAR, Integer.parseInt(orderDate[0]));
                                     if(cal.before(compareDate)){
-                                        income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                        income += MoneyFormatter.backToNumber(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
                                         flagBreak = false;
                                     }
                                     else{
@@ -1122,7 +1122,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                     * */
                                     if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
                                         numberOrder++;
-                                        income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                        income += MoneyFormatter.backToNumber(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
                                         flagBreak = false;
                                     }
                                     else{
@@ -1245,7 +1245,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 boolean flagBreak = true;
                                 do{
                                     if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
-                                        income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                        income += MoneyFormatter.backToNumber(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
                                         numberOrder++;
                                         flagBreak = false;
                                     }
@@ -1376,7 +1376,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                     cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
                                     cal.set(Calendar.YEAR, Integer.parseInt(orderDate[0]));
                                     if(cal.before(compareDate)){
-                                        income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                        income += MoneyFormatter.backToNumber(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
                                         numberOrder++;
                                         flagBreak = false;
                                     }
@@ -1516,7 +1516,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                     cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
                                     cal.set(Calendar.YEAR, Integer.parseInt(orderDate[0]));
                                     if(cal.before(compareDate)){
-                                        income += Double.parseDouble(MoneyFormatter.backToString(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
+                                        income += MoneyFormatter.backToNumber(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
                                         numberOrder++;
                                         flagBreak = false;
                                     }

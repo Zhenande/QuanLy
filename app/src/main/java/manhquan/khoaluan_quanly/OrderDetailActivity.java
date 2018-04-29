@@ -1,12 +1,14 @@
 package manhquan.khoaluan_quanly;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,9 +74,9 @@ public class OrderDetailActivity extends AppCompatActivity {
     private String saveOrderID;
     private String TAG = "OrderDetailActivity";
     private String restaurantID;
-    private String employeeID;
-    private int flag_cook = -1;
-    private int flag_waiter = -1;
+    private String waiterID;
+    private String waiterName;
+    private boolean flagRemoveItem = true;
 
 
     @Override
@@ -92,6 +95,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         tableNumber = getIntent().getStringExtra(QuanLyConstants.TABLE_NUMBER);
         if(TextUtils.isEmpty(tableNumber)) {
             // Open from BillFragment
+            flagRemoveItem = true;
             saveOrderID = getIntent().getStringExtra(QuanLyConstants.TABLE_ORDER_ID);
             processCheckOrder();
             displayOrderDetail();
@@ -151,6 +155,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                     builder.append(temp[0]);
                     // ------------------------------------- End
 
+                    txtTotalCost.setText(getResources().getString(R.string.totalCost,document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
                     txtDateBook.setText(getResources().getString(R.string.dateBook, builder.toString()));
                     txtBillNumber.setText(getResources().getString(R.string.billNumber,document.get(QuanLyConstants.BILL_NUMBER).toString()));
                     String customerID = document.get(QuanLyConstants.CUSTOMER_ID).toString();
@@ -238,7 +243,9 @@ public class OrderDetailActivity extends AppCompatActivity {
                                     builder.append(temp[0]);
                                     // ------------------------------------- End
 
-                                    employeeID = document.get(QuanLyConstants.TABLE_EMPLOYEE_ID).toString();
+                                    waiterID = document.get(QuanLyConstants.TABLE_EMPLOYEE_ID).toString();
+                                    waiterName = document.get(QuanLyConstants.ORDER_WAITER_NAME).toString();
+                                    txtTotalCost.setText(getResources().getString(R.string.totalCost,document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()));
                                     txtDateBook.setText(getResources().getString(R.string.dateBook, builder.toString()));
                                     String customerID = document.get(QuanLyConstants.CUSTOMER_ID).toString();
                                     txtBillNumber.setText(getResources().getString(R.string.billNumber,document.get(QuanLyConstants.BILL_NUMBER).toString()));
@@ -288,7 +295,6 @@ public class OrderDetailActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
-                            int totalCost = 0;
                             for(DocumentSnapshot docFood : task.getResult()){
                                 String name = docFood.get(QuanLyConstants.FOOD_NAME).toString();
                                 String Str_price = docFood.get(QuanLyConstants.FOOD_PRICE).toString();
@@ -298,43 +304,158 @@ public class OrderDetailActivity extends AppCompatActivity {
                                 fob.setFoodName(name);
                                 fob.setPrice(price);
                                 fob.setQuantity(quantity);
-                                totalCost += (price * quantity);
                                 listData.add(fob);
                             }
                             closeLoadingDialog();
-                            txtTotalCost.setText(getResources().getString(R.string.totalCost,
-                                    MoneyFormatter.formatToMoney(totalCost+"") + " VNĐ"));
-                            listViewFoodOnBill.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                                    final FoodOnBill fob = listData.get(position-1);
-                                    new MaterialDialog.Builder(OrderDetailActivity.this)
-                                            .positiveText(getResources().getString(R.string.main_agree))
-                                            .negativeText(getResources().getString(R.string.main_disagree))
-                                            .positiveColor(getResources().getColor(R.color.primary_dark))
-                                            .negativeColor(getResources().getColor(R.color.black))
-                                            .content(getResources().getString(R.string.dialogRemoveFood, fob.getFoodName()))
-                                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+
+                            if(flagRemoveItem){
+                                listViewFoodOnBill.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> parent,final View view, final int position, long id) {
+                                        final FoodOnBill fob = listData.get(position-1);
+                                        if(fob.getQuantity() == 1){
+                                            new MaterialDialog.Builder(OrderDetailActivity.this)
+                                                    .positiveText(getResources().getString(R.string.main_agree))
+                                                    .negativeText(getResources().getString(R.string.main_disagree))
+                                                    .positiveColor(getResources().getColor(R.color.primary_dark))
+                                                    .negativeColor(getResources().getColor(R.color.black))
+                                                    .content(getResources().getString(R.string.dialogRemoveFood, fob.getFoodName()))
+                                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                                        @Override
+                                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                                            removeFoodSingleQuantity(fob, view);
+                                                        }
+                                                    })
+                                                    .build()
+                                                    .show();
+                                        }
+                                        else{
+                                            final MaterialDialog dialog = new MaterialDialog.Builder(OrderDetailActivity.this)
+                                                    .positiveText(getResources().getString(R.string.main_agree))
+                                                    .negativeText(getResources().getString(R.string.main_disagree))
+                                                    .positiveColor(getResources().getColor(R.color.primary_dark))
+                                                    .negativeColor(getResources().getColor(R.color.black))
+                                                    .customView(R.layout.dialog_remove_food_list, true)
+                                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                                        @Override
+                                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                                            View cusView = dialog.getCustomView();
+                                                            EditText edNumberInput = cusView.findViewById(R.id.edQuantityFoodRemove);
+                                                            int numberInput = Integer.parseInt(edNumberInput.getText().toString());
+                                                            if(numberInput > fob.getQuantity()){
+                                                                Toast.makeText(OrderDetailActivity.this, getResources().getString(R.string.remove_too_much_food), Toast.LENGTH_SHORT).show();
+                                                            }
+                                                            else {
+                                                                if(numberInput == fob.getQuantity()){
+                                                                    listData.remove(fob);
+                                                                }
+                                                                else{
+                                                                    // fob is the final variable, so i can not change the value in fob
+                                                                    listData.get(position-1).setQuantity(fob.getQuantity()-numberInput);
+                                                                    View viewTemp = listFoodOnBillAdapter.getView(position-1,null,listViewFoodOnBill);
+                                                                    TextView txtTotal = viewTemp.findViewById(R.id.food_on_bill_list_total_price);
+                                                                    txtTotal.setText(MoneyFormatter.formatToMoney((fob.getQuantity()-numberInput)*fob.getPrice()+""));
+                                                                }
+                                                                listFoodOnBillAdapter.notifyDataSetChanged();
+                                                                removeFoodMultiQuantity(fob, numberInput);
+                                                            }
+                                                        }
+                                                    })
+                                                    .build();
+                                            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
                                                 @Override
-                                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                    int amountFood = fob.getQuantity() * fob.getPrice();
-                                                    int cashTotal = Integer.parseInt(MoneyFormatter.backToString(txtTotalCost.getText().toString()));
-                                                    txtTotalCost.setText(getResources().getString(R.string.totalCost,
-                                                            MoneyFormatter.formatToMoney(cashTotal-amountFood+"") + " VNĐ"));
-                                                    listData.remove(position-1);
-                                                    listFoodOnBillAdapter.notifyDataSetChanged();
-                                                    View view = getViewByPosition(position-1,listViewFoodOnBill);
-                                                    view.setBackgroundColor(getResources().getColor(R.color.white));
+                                                public void onShow(DialogInterface dialog2) {
+                                                    View cusView = dialog.getCustomView();
+                                                    TextView txtNameFoodRemove = cusView.findViewById(R.id.txtRemoveMultiQuantity);
+                                                    txtNameFoodRemove.setText(getResources().getString(R.string.RemoveMultiQuantity,fob.getFoodName()));
                                                 }
-                                            })
-                                            .build()
-                                            .show();
-                                }
-                            });
+                                            });
+                                            dialog.show();
+                                        }
+                                    }
+                                });
+                            }
                             listFoodOnBillAdapter.notifyDataSetChanged();
                         }
                     }
                 });
+    }
+
+    private void removeFoodMultiQuantity(final FoodOnBill fob, final int numberFoodRemove) {
+        final String foodNameRemove = fob.getFoodName();
+        db.collection(QuanLyConstants.ORDER)
+            .document(saveOrderID)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        final DocumentSnapshot documentOrder = task.getResult();
+                        documentOrder.getReference()
+                                .collection(QuanLyConstants.FOOD_ON_ORDER)
+                                .whereEqualTo(QuanLyConstants.FOOD_NAME, foodNameRemove)
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if(task.isSuccessful()){
+                                            for(DocumentSnapshot document : task.getResult()){
+                                                // Update the quantity of the food
+                                                int curQuantity = Integer.parseInt(document.get(QuanLyConstants.FOOD_QUANTITY).toString());
+                                                int nowQuantity = curQuantity - numberFoodRemove;
+                                                if(nowQuantity == 0){
+                                                    document.getReference().delete();
+                                                }
+                                                else{
+                                                    document.getReference()
+                                                            .update(QuanLyConstants.FOOD_QUANTITY,nowQuantity+"");
+                                                }
+                                                // End
+
+                                                // Update the Total Cost of Order
+                                                int curTotalCost = MoneyFormatter.backToNumber(documentOrder.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
+                                                int nowTotalCost = curTotalCost - fob.getPrice() * numberFoodRemove;
+                                                String displayMoney = MoneyFormatter.formatToMoney(nowTotalCost+"") + " VNĐ";
+                                                documentOrder.getReference()
+                                                        .update(QuanLyConstants.ORDER_CASH_TOTAL, displayMoney);
+                                                // End
+                                                txtTotalCost.setText(getResources().getString(R.string.totalCost,displayMoney));
+                                                Toast.makeText(OrderDetailActivity.this, getResources().getString(R.string.string_done), Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.e(TAG, e.getMessage());
+                                    }
+                                });
+                    }
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG,e.getMessage());
+                }
+            });
+    }
+
+    /*
+    * @author: ManhLD
+    * Remove food in list have 1 quantity
+    * */
+    private void removeFoodSingleQuantity(FoodOnBill fob, View view) {
+        int amountFood = fob.getQuantity() * fob.getPrice();
+        int cashTotal = MoneyFormatter.backToNumber(txtTotalCost.getText().toString());
+        txtTotalCost.setText(getResources().getString(R.string.totalCost,
+                MoneyFormatter.formatToMoney(cashTotal - amountFood + "") + " VNĐ"));
+        listData.remove(fob);
+        listFoodOnBillAdapter.notifyDataSetChanged();
+//        View view = getViewByPosition(position-1,listViewFoodOnBill);
+        view.setBackgroundColor(getResources().getColor(R.color.white));
+
     }
 
     @OnClick(R.id.order_detail_button_check_out)
@@ -368,12 +489,12 @@ public class OrderDetailActivity extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         String foodRemain = document.get(QuanLyConstants.FOOD_NAME).toString();
                         if(!TextUtils.isEmpty(foodRemain)){
-                            flag_cook = 0; // meaning still have food does not service
+                            // meaning still have food does not service
                             highlightFoodNotCook(foodRemain.toString().split(";"));
                             Toast.makeText(OrderDetailActivity.this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
                         }
                         else{
-                            flag_cook = 1; // Everything good
+                            // Everything good
                             doCheckOutDone();
                         }
                     }
@@ -412,37 +533,53 @@ public class OrderDetailActivity extends AppCompatActivity {
     private void doCheckOutDone() {
         Map<String, Object> table = new HashMap<>();
         table.put(QuanLyConstants.TABLE_ORDER_ID,"1");
+        // Release table by set table order id = 1
         db.collection(QuanLyConstants.TABLE)
                 .document(tableID)
                 .set(table, SetOptions.merge());
+        // End
+
+        // Set checkout of order is true
         Map<String, Object> order = new HashMap<>();
         order.put(QuanLyConstants.ORDER_CheckOut,true);
-        order.put(QuanLyConstants.ORDER_CASH_TOTAL, MoneyFormatter.backToString(txtTotalCost.getText().toString()));
+        order.put(QuanLyConstants.ORDER_CASH_TOTAL, txtTotalCost.getText().toString());
         DocumentReference docRef = db.collection(QuanLyConstants.ORDER).document(saveOrderID);
         docRef.set(order, SetOptions.merge());
-        docRef.collection(QuanLyConstants.FOOD_ON_ORDER)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            for(DocumentSnapshot document : task.getResult()){
-                                String foodName = document.get(QuanLyConstants.FOOD_NAME).toString();
-                                boolean flag = false;
-                                for(FoodOnBill fob : listData){
-                                    if(fob.getFoodName().equals(foodName)){
-                                        flag = true;
-                                        listData.remove(fob);
-                                        break;
-                                    }
-                                }
-                                if(!flag){
-                                    document.getReference().delete();
-                                }
-                            }
-                        }
+        // End
+
+        // Remove the table of the waiter
+        db.collection(QuanLyConstants.NOTIFICATION)
+            .document(waiterID)
+            .collection(QuanLyConstants.TABLE)
+            .document(tableID)
+            .delete();
+        // End
+
+        // Change the status in the list of cook
+        db.collection(QuanLyConstants.COOK)
+            .document(restaurantID)
+            .collection(QuanLyConstants.TABLE)
+            .document(tableID)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        Map<String, Object> update = new HashMap<>();
+                        update.put(QuanLyConstants.ORDER_TIME,"99:99");
+                        task.getResult().getReference().set(update, SetOptions.merge());
                     }
-                });
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            });
+        // End
+
+
         Toast.makeText(getApplicationContext(),getResources().getString(R.string.checkOutDone),Toast.LENGTH_SHORT).show();
         onBackPressed();
     }

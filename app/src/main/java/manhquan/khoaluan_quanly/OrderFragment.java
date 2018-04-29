@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -96,6 +97,7 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
             .document(restaurantID)
             .collection(QuanLyConstants.TABLE)
             .orderBy(QuanLyConstants.ORDER_TIME, Query.Direction.ASCENDING)
+            .orderBy(QuanLyConstants.TABLE_NUMBER, Query.Direction.ASCENDING)
             .get()
             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
@@ -130,6 +132,12 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                         isFirst = false;
                         closeLoadingDialog();
                     }
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.i(TAG, e.getMessage());
                 }
             });
 

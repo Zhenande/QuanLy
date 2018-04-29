@@ -63,6 +63,9 @@
     <string name="checkOutDone">Thanh toán thành công</string>
     <string name="customerNoName">Khách</string>
     <string name="dialogRemoveFood">Bạn có muốn xóa món %s?</string>
+    <string name="RemoveMultiQuantity">Nhập số lượng món %s cần xóa</string>
+    <string name="error_still_food_need_service">Có một số món ăn chưa được phục vụ</string>
+    <string name="remove_too_much_food">Bạn không thể xóa số lượng món ăn nhiều hơn số khách hàng gọi</string>
 
     <!--=================================Food On Bill List Item=========================================-->
     <string name="fobFoodName">Tên món</string>
