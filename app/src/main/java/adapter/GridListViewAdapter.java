@@ -3,13 +3,9 @@ package adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.birin.gridlistviewadapters.Card;
@@ -20,7 +16,7 @@ import com.birin.gridlistviewadapters.utils.ChildViewsClickHandler;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
-import manhquan.khoaluan_quanly.OrderDetailActivity;
+import manhquan.khoaluan_quanly.BillDetailActivity;
 import manhquan.khoaluan_quanly.R;
 import model.TableModel;
 
@@ -77,7 +73,7 @@ public class GridListViewAdapter extends ListGridAdapter<TableModel, ViewHolder>
     @Override
     protected void onCardClicked(TableModel cardData) {
         if(!cardData.isAvailable()) {
-            Intent i = new Intent(getContext(), OrderDetailActivity.class);
+            Intent i = new Intent(getContext(), BillDetailActivity.class);
             i.putExtra(QuanLyConstants.TABLE_NUMBER, cardData.getTableNumber());
             getContext().startActivity(i);
         }

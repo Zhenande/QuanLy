@@ -196,4 +196,7 @@
     <!--===============================Food Fragment=============================================-->
     <string name="food_frag_error_no_food">Bạn chưa chọn món ăn nào cả.</string>
 
+    <!--===============================Order Fragment=============================================-->
+    <string name="order_frag_no_checked">Bạn chưa tích món ăn nào cả.</string>
+
 </resources>

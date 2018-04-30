@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -121,6 +122,20 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                             CookFood cookFood = new CookFood(title,listFoodName);
                             cookFood.setTime(time);
                             cookFood.setEmployeeID(employeeID);
+                            if(!TextUtils.isEmpty(employeeID)){
+                                // meaning table are not checkout
+                                if(listFoodName.size() > 0){
+                                    // meaing table has food need to cook
+                                    cookFood.setStatus(2);
+                                }
+                                else{
+                                    // meaning table does not have any food need to cook
+                                    cookFood.setStatus(1);
+                                }
+                            }
+                            else{
+                                cookFood.setStatus(0);
+                            }
                             listData.add(cookFood);
                         }
 
@@ -143,12 +158,12 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    private void onChangeListener(String docID) {
+    private void onChangeListener(String tableID) {
 
         final DocumentReference docRef = db.collection(QuanLyConstants.COOK)
                                             .document(restaurantID)
                                             .collection(QuanLyConstants.TABLE)
-                                            .document(docID);
+                                            .document(tableID);
         docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
@@ -162,7 +177,7 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
 
                 if (snapshot != null && snapshot.exists()) {
                     Map<String, Object> order = snapshot.getData();
-                    if(!TextUtils.isEmpty(order.get(QuanLyConstants.FOOD_NAME).toString())){
+//                    if(!TextUtils.isEmpty(order.get(QuanLyConstants.FOOD_NAME).toString())){
                         String[] content = snapshot.get(QuanLyConstants.FOOD_NAME).toString().split(";");
                         List<FoodInside> listFoodName = new ArrayList<>();
                         if(!content[0].equals("")){
@@ -183,13 +198,28 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                         CookFood cookFood = new CookFood(title,listFoodName);
                         cookFood.setTime(time);
                         cookFood.setEmployeeID(employeeID);
+                        if(!TextUtils.isEmpty(employeeID)){
+                            // meaning table are not checkout
+                            if(listFoodName.size() > 0){
+                                // meaing table has food need to cook
+                                cookFood.setStatus(2);
+                            }
+                            else{
+                                // meaning table does not have any food need to cook
+                                cookFood.setStatus(1);
+                            }
+                        }
+                        else{
+                            cookFood.setStatus(0);
+                        }
                         listData.add(cookFood);
 
                         Collections.sort(listData, new Comparator<CookFood>() {
                             @Override
                             public int compare(CookFood o1, CookFood o2) {
                                 if(o1.getTime().compareTo(o2.getTime())==0){
-                                    return 1;
+                                    // if time equal, we will sort follow table number
+                                    return o1.getTitle().compareTo(o2.getTitle());
                                 }
                                 return o1.getTime().compareTo(o2.getTime());
                             }
@@ -212,9 +242,9 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                         }
                         // ------------------------------------- End
                     }
-                } else {
-                    Log.d(TAG, source + " data: null");
-                }
+//                } else {
+////                    Log.d(TAG, source + " data: null");
+////                }
             }
         });
     }
@@ -233,8 +263,25 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         int id = v.getId();
         if(id == R.id.order_fragment_submit){
-            doActionSubmit();
+            if(isHaveChecked()){
+                doActionSubmit();
+            }
+            else{
+                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.order_frag_no_checked), Toast.LENGTH_SHORT).show();
+            }
         }
+    }
+
+    private boolean isHaveChecked() {
+        for(int i = 0; i < adapter.getGroups().size(); i++){
+            CookFood cf = (CookFood)adapter.getGroups().get(i);
+            for(int j = 0; j < cf.getItems().size(); j++){
+                if(cf.isChildChecked(j)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void doActionSubmit() {
@@ -255,6 +302,11 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                         kill++;
                     }
                 }
+                if(kill == 0){
+                    // meaning checked all the food in table
+                    // so i will change the icon in the right
+                    cf.setStatus(1);
+                }
                 if(listTemp.size()>0) {
                     CookFood cf2 = new CookFood(cf.getTitle(), listTemp);
                     cf2.setTime(cf.getTime());
@@ -265,25 +317,27 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
         }
 
         updateDataToServer();
-        Collections.sort(listData, new Comparator<CookFood>() {
-            @Override
-            public int compare(CookFood o1, CookFood o2) {
-                if(o1.getTime().compareTo(o2.getTime())==0){
-                    return 1;
-                }
-                return o1.getTime().compareTo(o2.getTime());
-            }
-        });
+//        Collections.sort(listData, new Comparator<CookFood>() {
+//            @Override
+//            public int compare(CookFood o1, CookFood o2) {
+//                if(o1.getTime().compareTo(o2.getTime())==0){
+//                    return 1;
+//                }
+//                return o1.getTime().compareTo(o2.getTime());
+//            }
+//        });
         adapter.clearChoices();
         adapter.notifyDataSetChanged();
     }
 
     private void updateDataToServer() {
+        showLoadingDialog();
         // Remove the food have been cooked and prepare bring to the customer -- Start
         db.collection(QuanLyConstants.COOK)
             .document(restaurantID)
             .collection(QuanLyConstants.TABLE)
             .orderBy(QuanLyConstants.ORDER_TIME, Query.Direction.ASCENDING)
+            .orderBy(QuanLyConstants.TABLE_NUMBER, Query.Direction.ASCENDING)
             .get()
             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
@@ -291,15 +345,15 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                     if(task.isSuccessful()){
                         int i = 0;
                         for(DocumentSnapshot document : task.getResult()){
+                            String tableNumber = document.get(QuanLyConstants.TABLE_NUMBER).toString();
                             Map<String, Object> cook = new HashMap<>();
                             cook.put(QuanLyConstants.FOOD_NAME, getFoodName(i));
-                            if(adapter.getGroups().get(i).getItems().size()==0){
-                                cook.put(QuanLyConstants.ORDER_TIME, "99:99");
-                            }
                             DocumentReference docRef = document.getReference();
                             docRef.set(cook, SetOptions.merge());
                             i++;
                         }
+                        closeLoadingDialog();
+                        Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.string_done), Toast.LENGTH_SHORT).show();
                     }
                 }
             });

@@ -1,11 +1,13 @@
 package adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter;
@@ -18,7 +20,9 @@ import com.thoughtbot.expandablerecyclerview.viewholders.GroupViewHolder;
 import java.util.List;
 
 import manhquan.khoaluan_quanly.R;
+import model.CookFood;
 import model.NotiContent;
+import model.Notification;
 import util.NotificationTouchHelper;
 
 /**
@@ -101,14 +105,53 @@ public class NotificationAdapter extends ExpandableRecyclerViewAdapter<TableView
 
 class TableViewHolder extends GroupViewHolder{
     private TextView txtTableNumber;
+    private TextView txtTableTime;
+    private ImageView imgStatusTable;
 
     public TableViewHolder(View itemView) {
         super(itemView);
         txtTableNumber = itemView.findViewById(R.id.list_item_table_number);
+        txtTableTime = itemView.findViewById(R.id.list_item_table_time);
+        imgStatusTable = itemView.findViewById(R.id.list_item_table_status);
     }
 
     public void setTxtTableNumber(ExpandableGroup group){
         txtTableNumber.setText(group.getTitle());
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void setTxtTableTime(ExpandableGroup group){
+        if(group instanceof CookFood){
+            CookFood cf = (CookFood)group;
+            if(cf.getTime().equals("99:99")){
+                return;
+            }
+            txtTableTime.setText("Time: " + cf.getTime());
+        }
+        else if(group instanceof Notification){
+            Notification noti = (Notification)group;
+            if(noti.getTime().equals("99:99")){
+                return;
+            }
+            txtTableTime.setText("Time: " + noti.getTime());
+        }
+
+    }
+
+    public void setImgStatusTable(ExpandableGroup group){
+        CookFood cf = (CookFood)group;
+        switch (cf.getStatus()){
+            case 0: imgStatusTable.setVisibility(View.INVISIBLE);
+                    break;
+            case 1: imgStatusTable.setVisibility(View.VISIBLE);
+                    // meaning table had been create done all the food called
+                    imgStatusTable.setImageResource(R.drawable.ic_done);
+                    break;
+            case 2: imgStatusTable.setVisibility(View.VISIBLE);
+                    // meaing table still have some food need to cook
+                    imgStatusTable.setImageResource(R.drawable.ic_not_done);
+                    break;
+        }
     }
 }
 

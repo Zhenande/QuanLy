@@ -9,11 +9,6 @@ public class TableModel {
     private String tableNumber;
     private boolean isAvailable;
 
-    public TableModel(String tableNumber, boolean isAvailable) {
-        this.tableNumber = tableNumber;
-        this.isAvailable = isAvailable;
-    }
-
     public TableModel() {
     }
 

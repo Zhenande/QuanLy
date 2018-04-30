@@ -36,8 +36,6 @@ import com.tsongkha.spinnerdatepicker.DatePicker;
 import com.tsongkha.spinnerdatepicker.DatePickerDialog;
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder;
 
-import org.w3c.dom.Document;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,7 +48,7 @@ import adapter.BillListAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
-import manhquan.khoaluan_quanly.OrderDetailActivity;
+import manhquan.khoaluan_quanly.BillDetailActivity;
 import manhquan.khoaluan_quanly.R;
 import model.Bill;
 
@@ -472,7 +470,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent i = new Intent(view.getContext(), OrderDetailActivity.class);
+        Intent i = new Intent(view.getContext(), BillDetailActivity.class);
         i.putExtra(QuanLyConstants.TABLE_ORDER_ID,listShow.get(position-1).getId());
         startActivity(i);
     }

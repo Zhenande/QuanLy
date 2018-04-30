@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:background="@color/white"
     android:layout_margin="5dp"
     android:layout_width="match_parent"
@@ -9,8 +9,24 @@
     <TextView
         android:id="@+id/list_item_table_number"
         style="@style/TextBlack"
+        android:layout_weight="1"
         android:textSize="24sp"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/list_item_table_time"
+        style="@style/TextBlack"
+        android:layout_weight="1"
+        android:textSize="24sp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/list_item_table_status"
+        android:src="@drawable/ic_not_done"
+        android:layout_marginEnd="5dp"
+        android:layout_width="30dp"
+        android:layout_height="32dp" />
 
 </LinearLayout>

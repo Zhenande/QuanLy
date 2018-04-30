@@ -4,11 +4,9 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -47,7 +45,7 @@ import adapter.ListFoodOnBillAdapter;
 import model.FoodOnBill;
 import util.MoneyFormatter;
 
-public class OrderDetailActivity extends AppCompatActivity {
+public class BillDetailActivity extends AppCompatActivity {
 
     @BindView(R.id.order_detail_button_check_out)
     public Button buttonCheckOut;
@@ -72,7 +70,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     private String tableNumber;
     private String tableID;
     private String saveOrderID;
-    private String TAG = "OrderDetailActivity";
+    private String TAG = "BillDetailActivity";
     private String restaurantID;
     private String waiterID;
     private String waiterName;
@@ -314,7 +312,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                                     public void onItemClick(AdapterView<?> parent,final View view, final int position, long id) {
                                         final FoodOnBill fob = listData.get(position-1);
                                         if(fob.getQuantity() == 1){
-                                            new MaterialDialog.Builder(OrderDetailActivity.this)
+                                            new MaterialDialog.Builder(BillDetailActivity.this)
                                                     .positiveText(getResources().getString(R.string.main_agree))
                                                     .negativeText(getResources().getString(R.string.main_disagree))
                                                     .positiveColor(getResources().getColor(R.color.primary_dark))
@@ -330,7 +328,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                                                     .show();
                                         }
                                         else{
-                                            final MaterialDialog dialog = new MaterialDialog.Builder(OrderDetailActivity.this)
+                                            final MaterialDialog dialog = new MaterialDialog.Builder(BillDetailActivity.this)
                                                     .positiveText(getResources().getString(R.string.main_agree))
                                                     .negativeText(getResources().getString(R.string.main_disagree))
                                                     .positiveColor(getResources().getColor(R.color.primary_dark))
@@ -343,7 +341,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                                                             EditText edNumberInput = cusView.findViewById(R.id.edQuantityFoodRemove);
                                                             int numberInput = Integer.parseInt(edNumberInput.getText().toString());
                                                             if(numberInput > fob.getQuantity()){
-                                                                Toast.makeText(OrderDetailActivity.this, getResources().getString(R.string.remove_too_much_food), Toast.LENGTH_SHORT).show();
+                                                                Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.remove_too_much_food), Toast.LENGTH_SHORT).show();
                                                             }
                                                             else {
                                                                 if(numberInput == fob.getQuantity()){
@@ -420,7 +418,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                                                         .update(QuanLyConstants.ORDER_CASH_TOTAL, displayMoney);
                                                 // End
                                                 txtTotalCost.setText(getResources().getString(R.string.totalCost,displayMoney));
-                                                Toast.makeText(OrderDetailActivity.this, getResources().getString(R.string.string_done), Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.string_done), Toast.LENGTH_SHORT).show();
                                             }
                                         }
                                     }
@@ -491,7 +489,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                         if(!TextUtils.isEmpty(foodRemain)){
                             // meaning still have food does not service
                             highlightFoodNotCook(foodRemain.toString().split(";"));
-                            Toast.makeText(OrderDetailActivity.this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
                         }
                         else{
                             // Everything good
@@ -566,6 +564,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
                         Map<String, Object> update = new HashMap<>();
+                        update.put(QuanLyConstants.TABLE_EMPLOYEE_ID,"");
                         update.put(QuanLyConstants.ORDER_TIME,"99:99");
                         task.getResult().getReference().set(update, SetOptions.merge());
                     }

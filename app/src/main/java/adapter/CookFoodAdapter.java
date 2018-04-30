@@ -57,6 +57,8 @@ public class CookFoodAdapter extends CheckableChildRecyclerViewAdapter<TableView
     @Override
     public void onBindGroupViewHolder(TableViewHolder holder, int flatPosition, ExpandableGroup group) {
         holder.setTxtTableNumber(group);
+        holder.setTxtTableTime(group);
+        holder.setImgStatusTable(group);
     }
 
     @Override

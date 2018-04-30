@@ -199,4 +199,7 @@
     <!--===============================Food Fragment=============================================-->
     <string name="food_frag_error_no_food">You have not choose any food</string>
 
+    <!--===============================Order Fragment=============================================-->
+    <string name="order_frag_no_checked">You have not check any food</string>
+
 </resources>

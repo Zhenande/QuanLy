@@ -11,9 +11,18 @@ public class CookFood extends MultiCheckExpandableGroup {
 
     private String time;
     private String employeeID;
+    private int status;
 
-    public CookFood(String title, List<FoodInside> items) {
-        super(title, items);
+    public CookFood(String title ,List<FoodInside> items) {
+        super(title ,items);
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String getTime() {
