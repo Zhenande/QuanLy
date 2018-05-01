@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -73,6 +74,7 @@ public class MenuFoodListAdapter extends BaseAdapter{
         StorageReference imageRef = storageReference.child(QuanLyConstants.FOOD_PATH_IMAGE + food.getImageResource());
         GlideApp.with(context)
                 .load(imageRef)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(holder.foodImage);
         holder.foodPrice.setText(context.getResources().getString(R.string.money_type,MoneyFormatter.formatToMoney(food.getPrice()+"")));
         holder.foodName.setText(food.getFoodName());

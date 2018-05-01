@@ -30,20 +30,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".BillDetailActivity" />
+        <activity android:name=".BillDetailActivity"
+            android:windowSoftInputMode="stateVisible"/>
         <activity android:name=".MainActivity" />
-        <activity android:name=".EmployeeDetailActivity" />
-        <activity android:name=".FoodDetailActivity" />
-
-        <!--
-             Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more.
-        -->
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/colorAccent" />
-
-        <activity android:name=".CartActivity"></activity>
+        <activity android:name=".EmployeeDetailActivity"
+            android:windowSoftInputMode="stateVisible"/>
+        <activity android:name=".FoodDetailActivity"
+            android:windowSoftInputMode="stateVisible"/>
+        <activity android:name=".CartActivity"
+            android:windowSoftInputMode="stateVisible"/>
     </application>
 
 </manifest>

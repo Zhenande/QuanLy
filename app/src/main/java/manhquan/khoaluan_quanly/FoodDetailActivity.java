@@ -83,6 +83,8 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     private String restaurantID;
     private ArrayList<String> listFoodType = new ArrayList<>();
     private MenuItem item;
+    // Use when update food type of the food and the food type that just have 1 food
+    private String oldFoodType = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,6 +160,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                                 txtPrice.setText(document.get(QuanLyConstants.FOOD_PRICE).toString());
                                 txtDescription.setText(document.get(QuanLyConstants.FOOD_DESCRIPTION).toString());
                                 txtType.setText(document.get(QuanLyConstants.FOOD_TYPE).toString());
+                                oldFoodType = txtType.getText().toString();
                                 foodID = document.getId();
                                 available = (boolean)document.get(QuanLyConstants.FOOD_AVAILABLE);
                                 imageName = document.get(QuanLyConstants.FOOD_IMAGE_NAME).toString();
@@ -205,7 +208,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void updateButtonClick() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
         Map<String, Object> food = new HashMap<>();
         food.put(QuanLyConstants.FOOD_NAME,txtName.getText().toString());
         food.put(QuanLyConstants.FOOD_PRICE,txtPrice.getText().toString());
@@ -218,9 +221,29 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        closeLoadingDialog();
-                        Toast.makeText(getApplicationContext(),"Update Success",Toast.LENGTH_SHORT).show();
-                        createDone = true;
+                        db.collection(QuanLyConstants.FOOD)
+                                .whereEqualTo(QuanLyConstants.RESTAURANT_ID, restaurantID)
+                                .whereEqualTo(QuanLyConstants.FOOD_TYPE, oldFoodType)
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if(task.isSuccessful()){
+                                            if(task.getResult().isEmpty()){
+                                                removeFoodType(oldFoodType);
+                                            }
+                                            else{
+                                                Toast.makeText(getApplicationContext(),getResources().getString(R.string.string_done),Toast.LENGTH_SHORT).show();
+                                                closeLoadingDialog();
+                                                createDone = true;
+                                                onBackPressed();
+                                            }
+                                        }
+                                    }
+                                });
+//                        closeLoadingDialog();
+//                        Toast.makeText(getApplicationContext(),"Update Success",Toast.LENGTH_SHORT).show();
+//                        createDone = true;
                     }
                 });
         CheckIsNewFoodType();
@@ -242,25 +265,63 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        FirebaseFirestore db = FirebaseFirestore.getInstance();
                         db.collection(QuanLyConstants.FOOD).document(foodID)
-                                .delete();
-                        StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-                        StorageReference imageRef = mStorage.child(QuanLyConstants.FOOD_PATH_IMAGE + imageName);
-                        imageRef.delete()
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                .delete()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.employee_detail_delete_success),Toast.LENGTH_SHORT).show();
-                                        closeLoadingDialog();
-                                        createDone = true;
-                                        onBackPressed();
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        final String foodType = txtType.getText().toString().toLowerCase();
+                                        db.collection(QuanLyConstants.FOOD)
+                                                .whereEqualTo(QuanLyConstants.RESTAURANT_ID, restaurantID)
+                                                .whereEqualTo(QuanLyConstants.FOOD_TYPE, foodType)
+                                                .get()
+                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                        if(task.isSuccessful()){
+                                                            if(task.getResult().isEmpty()){
+                                                                removeFoodType(foodType);
+                                                            }
+                                                            else{
+                                                                Toast.makeText(getApplicationContext(),getResources().getString(R.string.string_done),Toast.LENGTH_SHORT).show();
+                                                                closeLoadingDialog();
+                                                                createDone = true;
+                                                                onBackPressed();
+                                                            }
+                                                        }
+                                                    }
+                                                });
                                     }
                                 });
+                        StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+                        StorageReference imageRef = mStorage.child(QuanLyConstants.FOOD_PATH_IMAGE + imageName);
+                        imageRef.delete();
                     }
                 })
                 .canceledOnTouchOutside(false)
                 .show();
+    }
+
+    private void removeFoodType(String foodType) {
+        db.collection(QuanLyConstants.RESTAURANT)
+                .document(restaurantID)
+                .collection(QuanLyConstants.RESTAURANT_FOOD_TYPE)
+                .whereEqualTo(QuanLyConstants.FOOD_NAME, foodType)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for(DocumentSnapshot document : task.getResult()){
+                                document.getReference().delete();
+                            }
+                            Toast.makeText(getApplicationContext(),getResources().getString(R.string.string_done),Toast.LENGTH_SHORT).show();
+                            closeLoadingDialog();
+                            createDone = true;
+                            onBackPressed();
+                        }
+                    }
+                });
     }
 
     @Override

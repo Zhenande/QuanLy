@@ -13,9 +13,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -57,6 +59,46 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
     private MaterialDialog dialogLoading;
     @BindView(R.id.employee_detail_button_create)
     public Button buttonUpdate;
+    @BindView(R.id.spinner_shift_type)
+    public Spinner spinnerType;
+    @BindView(R.id.employee_detail_linear_normal)
+    public LinearLayout llNormal;
+    @BindView(R.id.employee_detail_linear_custom)
+    public LinearLayout llCustom;
+    @BindView(R.id.employee_detail_editShiftStart)
+    public EditText edStart;
+    @BindView(R.id.employee_detail_editShiftEnd)
+    public EditText edEnd;
+    @BindView(R.id.employee_detail_editShiftStart2)
+    public EditText edStart_Monday;
+    @BindView(R.id.employee_detail_editShiftEnd2)
+    public EditText edEnd_Monday;
+    @BindView(R.id.employee_detail_editShiftStart3)
+    public EditText edStart_Tuesday;
+    @BindView(R.id.employee_detail_editShiftEnd3)
+    public EditText edEnd_Tuesday;
+    @BindView(R.id.employee_detail_editShiftStart4)
+    public EditText edStart_Wednesday;
+    @BindView(R.id.employee_detail_editShiftEnd4)
+    public EditText edEnd_Wednesday;
+    @BindView(R.id.employee_detail_editShiftStart5)
+    public EditText edStart_Thursday;
+    @BindView(R.id.employee_detail_editShiftEnd5)
+    public EditText edEnd_Thursday;
+    @BindView(R.id.employee_detail_editShiftStart6)
+    public EditText edStart_Friday;
+    @BindView(R.id.employee_detail_editShiftEnd6)
+    public EditText edEnd_Friday;
+    @BindView(R.id.employee_detail_editShiftStart7)
+    public EditText edStart_Saturday;
+    @BindView(R.id.employee_detail_editShiftEnd7)
+    public EditText edEnd_Saturday;
+    @BindView(R.id.employee_detail_editShiftStart8)
+    public EditText edStart_Sunday;
+    @BindView(R.id.employee_detail_editShiftEnd8)
+    public EditText edEnd_Sunday;
+
+
     private String RestaurantID;
     private boolean flag = false;
     private String employeeID;
@@ -77,7 +119,6 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        spinnerPosition = findViewById(R.id.employee_detail_spinnerEmployeePosition);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(getApplicationContext(),R.array.add_account_spinner_Position
                 ,R.layout.spinner_item_text);
 
@@ -86,7 +127,29 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
 
         RestaurantID = getRestaurantID();
 
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        ArrayAdapter<CharSequence> spinnerShiftType = ArrayAdapter.createFromResource(getApplicationContext(),R.array.add_account_spinner_shift_type
+                    , R.layout.spinner_item_text);
+
+        spinnerShiftType.setDropDownViewResource(R.layout.spinner_item_text);
+        spinnerType.setAdapter(spinnerShiftType);
+        final ArrayAdapter<CharSequence> spinnerFinal = spinnerShiftType;
+        spinnerType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position+1 == spinnerFinal.getCount()){
+                    //meaing choosing custom type
+                    renderCustomShiftType();
+                }
+                else{
+                    renderNormalShiftType();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         employeeID = getIntent().getStringExtra(QuanLyConstants.INTENT_DOCUMENT_ID);
         if(TextUtils.isEmpty(employeeID)){
@@ -102,7 +165,15 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         buttonUpdate.setOnClickListener(this);
     }
 
+    private void renderCustomShiftType() {
+        llNormal.setVisibility(View.GONE);
+        llCustom.setVisibility(View.VISIBLE);
+    }
 
+    private void renderNormalShiftType() {
+        llNormal.setVisibility(View.VISIBLE);
+        llCustom.setVisibility(View.GONE);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -313,12 +384,21 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
      * @purpose: Create cook employee.
      * */
     private void createCook(String restaurantID){
+        String dayWork = "";
+        if(spinnerType.getSelectedItemPosition()+1 == spinnerType.getCount()){
+            dayWork = getCustomDayWork();
+        }
+        else{
+            dayWork = getNormalDayWork();
+        }
         Map<String, Object > cook = new HashMap<>();
         cook.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
         cook.put(QuanLyConstants.RESTAURANT_NAME,txtName.getText().toString().trim());
         cook.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
         cook.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
         cook.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
+        cook.put(QuanLyConstants.EMPLOYEE_WORKDAY,dayWork);
+//        cook.put(QuanLyConstants.EMPLOYEE_TIMEWORK,txtShiftStart + " - " + txtShiftEnd);
         cook.put(QuanLyConstants.EMPLOYEE_POSITION,2);
         db.collection(QuanLyConstants.EMPLOYEE)
                 .add(cook)
@@ -347,6 +427,8 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         waiter.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
         waiter.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
         waiter.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
+//        waiter.put(QuanLyConstants.EMPLOYEE_WORKDAY,txtDayWork.getText().toString().trim());
+//        waiter.put(QuanLyConstants.EMPLOYEE_TIMEWORK,txtShiftStart + " - " + txtShiftEnd);
         waiter.put(QuanLyConstants.EMPLOYEE_POSITION,3);
         db.collection(QuanLyConstants.EMPLOYEE)
                 .add(waiter)
@@ -375,6 +457,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         cashier.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
         cashier.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
         cashier.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
+//        cashier.put(QuanLyConstants.EMPLOYEE_WORKDAY,txtDayWork.getText().toString().trim());
         cashier.put(QuanLyConstants.EMPLOYEE_POSITION,4);
         db.collection(QuanLyConstants.EMPLOYEE)
                 .add(cashier)
@@ -431,7 +514,216 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             txtContactNumber.setError(null);
         }
 
+        if(spinnerType.getSelectedItemPosition()+1 != spinnerType.getCount()){
+            // Choose normal type
+            String shiftStart = edStart.getText().toString();
+            if(TextUtils.isEmpty(shiftStart)){
+                edStart.setError(getResources().getString(R.string.required));
+                valid = false;
+            }
+            else{
+                edStart.setError(null);
+            }
+            String shiftEnd = edEnd.getText().toString();
+            if(TextUtils.isEmpty(shiftEnd)){
+                edEnd.setError(getResources().getString(R.string.required));
+                valid = false;
+            }
+            else{
+                edEnd.setError(null);
+            }
+        }
+        else{
+            // Choose custom type
+            // If Time Start not null then Time End will not null too
+            // If Time Start null, then Time End does not need to care
+
+            String monday_Start = edStart_Monday.getText().toString();
+            if(!TextUtils.isEmpty(monday_Start)){
+                String monday_End = edEnd_Monday.getText().toString();
+                if(TextUtils.isEmpty(monday_End)){
+                    edEnd_Monday.setError(getResources().getString(R.string.required));
+                }
+                else{
+                    edEnd_Monday.setError(null);
+                }
+            }
+
+        }
+
         return valid;
+    }
+
+    public String getNormalDayWork(){
+        int id = spinnerType.getSelectedItemPosition();
+        String result = "";
+        switch (id){
+            case 0: result = createDayWorkPos1();
+                    break;
+            case 1: result = createDayWorkPos2();
+                    break;
+            case 2: result = createDayWorkPos3();
+                    break;
+        }
+        return result;
+    }
+
+    /*
+     * @author: ManhLD
+     * Create day work for monday to friday with input time
+     * */
+    private String createDayWorkPos1() {
+        StringBuilder result = new StringBuilder();
+        String[] dayWork = {"monday","tuesday","wednesday","thursday","friday"};
+        String timeStart = edStart.getText().toString();
+        String timeEnd = edEnd.getText().toString();
+        for(String s : dayWork){
+            result.append(s);
+            result.append(" ");
+            result.append(timeStart);
+            result.append(":");
+            result.append(timeEnd);
+            result.append(";");
+        }
+        return result.toString();
+    }
+
+    /*
+    * @author: ManhLD
+    * Create day work for monday, wednesday, friday with input time
+    * */
+    private String createDayWorkPos2() {
+        StringBuilder result = new StringBuilder();
+        String[] dayWork = {"monday","wednesday","friday"};
+        String timeStart = edStart.getText().toString();
+        String timeEnd = edEnd.getText().toString();
+        for(String s : dayWork){
+            result.append(s);
+            result.append(" ");
+            result.append(timeStart);
+            result.append(":");
+            result.append(timeEnd);
+            result.append(";");
+        }
+        return result.toString();
+    }
+
+    /*
+     * @author: ManhLD
+     * Create day work for tuesday, thursday, saturday with input time
+     * */
+    private String createDayWorkPos3() {
+        StringBuilder result = new StringBuilder();
+        String[] dayWork = {"tuesday","thursday","saturday"};
+        String timeStart = edStart.getText().toString();
+        String timeEnd = edEnd.getText().toString();
+        for(String s : dayWork){
+            result.append(s);
+            result.append(" ");
+            result.append(timeStart);
+            result.append(":");
+            result.append(timeEnd);
+            result.append(";");
+        }
+        return result.toString();
+    }
+
+
+
+    /*
+    * @author: ManhLD
+    * Use when the manager choose Custom day work
+    * DayWork return will be like monday 6:00-12:00;tuesday 12:00-18:00;wednesday ;thursday ;...
+    * We will use split ";" to get each day, after that split by "space"
+     * */
+    public String getCustomDayWork(){
+        StringBuilder result = new StringBuilder();
+
+        String monday_Start = edStart_Monday.getText().toString();
+        String monday_End = edEnd_Monday.getText().toString();
+        if(TextUtils.isEmpty(monday_Start)){
+            result.append("monday ;");
+        }
+        else if(!TextUtils.isEmpty(monday_End)){
+            result.append("monday ");
+            result.append(monday_Start);
+            result.append("-");
+            result.append(monday_End);
+        }
+
+        String tuesday_Start = edStart_Tuesday.getText().toString();
+        String tuesday_End = edEnd_Tuesday.getText().toString();
+        if(TextUtils.isEmpty(tuesday_Start)){
+            result.append("tuesday ;");
+        }
+        else if(!TextUtils.isEmpty(tuesday_End)){
+            result.append("tuesday ");
+            result.append(tuesday_Start);
+            result.append("-");
+            result.append(tuesday_End);
+        }
+
+        String wednesday_Start = edStart_Wednesday.getText().toString();
+        String wednesday_End = edEnd_Wednesday.getText().toString();
+        if(TextUtils.isEmpty(wednesday_Start)){
+            result.append("wednesday ;");
+        }
+        else if(!TextUtils.isEmpty(wednesday_End)){
+            result.append("wednesday ");
+            result.append(wednesday_Start);
+            result.append("-");
+            result.append(wednesday_End);
+        }
+
+        String thursday_Start = edStart_Thursday.getText().toString();
+        String thursday_End = edEnd_Thursday.getText().toString();
+        if(TextUtils.isEmpty(thursday_Start)){
+            result.append("thursday ;");
+        }
+        else if(!TextUtils.isEmpty(thursday_End)){
+            result.append("thursday ");
+            result.append(thursday_Start);
+            result.append("-");
+            result.append(thursday_End);
+        }
+
+        String friday_Start = edStart_Friday.getText().toString();
+        String friday_End = edEnd_Friday.getText().toString();
+        if(TextUtils.isEmpty(friday_Start)){
+            result.append("friday ;");
+        }
+        else if(!TextUtils.isEmpty(friday_End)){
+            result.append("friday ");
+            result.append(friday_Start);
+            result.append("-");
+            result.append(friday_End);
+        }
+
+        String saturday_Start = edStart_Saturday.getText().toString();
+        String saturday_End = edEnd_Saturday.getText().toString();
+        if(TextUtils.isEmpty(saturday_Start)){
+            result.append("saturday ;");
+        }
+        else if(!TextUtils.isEmpty(saturday_End)){
+            result.append("saturday ");
+            result.append(saturday_Start);
+            result.append("-");
+            result.append(saturday_End);
+        }
+
+        String sunday_Start = edStart_Sunday.getText().toString();
+        String sunday_End = edEnd_Sunday.getText().toString();
+        if(TextUtils.isEmpty(sunday_Start)){
+            result.append("sunday ;");
+        }
+        else if(!TextUtils.isEmpty(sunday_End)){
+            result.append("sunday ");
+            result.append(sunday_Start);
+            result.append("-");
+            result.append(sunday_End);
+        }
+
+        return result.toString();
     }
 
     public String getRestaurantID(){

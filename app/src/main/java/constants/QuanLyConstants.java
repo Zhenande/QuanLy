@@ -33,6 +33,8 @@ public class QuanLyConstants {
     public static final String EMPLOYEE_PASSWORD = "Password";
     public static final String EMPLOYEE_CONTACT = "ContactNumber";
     public static final String EMPLOYEE_POSITION = "Position";
+    public static final String EMPLOYEE_WORKDAY = "WorkDay";
+    public static final String EMPLOYEE_TIMEWORK = "Time";
 
     // Field of food
     public static final String FOOD = "food";

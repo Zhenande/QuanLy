@@ -4,6 +4,7 @@ package fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -73,6 +74,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
 
     public interface CallbackTmp {
         void onReturnData(FoodOnBill foodOnBill);
+        void refreshMenu();
     }
 
     @SuppressLint("ValidFragment")
@@ -324,11 +326,9 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         super.onActivityResult(requestCode, resultCode, data);
         if(Activity.RESULT_OK == resultCode){
             if(requestCode == QuanLyConstants.FOOD_DETAIL){
-                FoodFragment fragment = (FoodFragment) getFragmentManager().findFragmentById(R.id.main_app_framelayout);
-                if(fragment != null){
-                    fragment.refreshMenu();
-                }
+                call.refreshMenu();
             }
         }
     }
+
 }

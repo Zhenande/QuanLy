@@ -9,6 +9,7 @@
 
     <LinearLayout
         android:orientation="vertical"
+        android:layout_margin="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -21,7 +22,7 @@
 
         <EditText
             android:id="@+id/employee_detail_editEmployeeName"
-            android:theme="@style/FirebaseUI.TextInputEditText"
+            android:background="@color/white_greyish"
             android:labelFor="@+id/employee_detail_txtEmployeeName"
             android:inputType="textPersonName"
             android:layout_width="match_parent"
@@ -37,7 +38,7 @@
 
         <EditText
             android:id="@+id/employee_detail_editEmployeeUsername"
-            android:theme="@style/FirebaseUI.TextInputEditText"
+            android:background="@color/white_greyish"
             android:labelFor="@+id/employee_detail_txtEmployeeUsername"
             android:inputType="textEmailAddress"
             android:layout_width="match_parent"
@@ -53,7 +54,7 @@
 
         <EditText
             android:id="@+id/employee_detail_editEmployeePassword"
-            android:theme="@style/FirebaseUI.TextInputEditText"
+            android:background="@color/white_greyish"
             android:labelFor="@+id/employee_detail_txtEmployeePassword"
             android:inputType="textPassword"
             android:layout_width="match_parent"
@@ -69,12 +70,435 @@
 
         <EditText
             android:id="@+id/employee_detail_editEmployeeContactNumber"
-            android:theme="@style/FirebaseUI.TextInputEditText"
+            android:background="@color/white_greyish"
             android:inputType="phone"
             android:labelFor="@+id/employee_detail_txtEmployeeContactNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:ignore="LabelFor" />
+
+        <TextView
+            android:id="@+id/employee_detail_txtEmployeeDayWork"
+            android:text="@string/add_account_EmployeeDayWork"
+            style="@style/TextBlack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Spinner
+                android:id="@+id/spinner_shift_type"
+                android:minWidth="100dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:id="@+id/employee_detail_linear_normal"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="0dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftStart"
+                    style="@style/TextBlack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftStart"
+                    android:background="@color/white_greyish"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:inputType="time"
+                    android:gravity="center"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftEnd"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftEnd"
+                    android:background="@color/white_greyish"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:inputType="time"
+                    android:gravity="center"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!--
+        Custom day work in week, with different time work of day
+
+        -->
+
+        <LinearLayout
+            android:id="@+id/employee_detail_linear_custom"
+            android:orientation="vertical"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="0dp"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="@string/monday"
+                    style="@style/TextBlack"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftStart"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftStart2"
+                    android:background="@color/white_greyish"
+                    android:inputType="time"
+android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftEnd"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftEnd2"
+                    android:background="@color/white_greyish"
+                    android:inputType="time"
+android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="@string/tuesday"
+                    style="@style/TextBlack"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftStart"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftStart3"
+                    android:background="@color/white_greyish"
+                    android:inputType="time"
+android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftEnd"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftEnd3"
+                    android:background="@color/white_greyish"
+                    android:inputType="time"
+android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="@string/wednesday"
+                    style="@style/TextBlack"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftStart"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftStart4"
+                    android:background="@color/white_greyish"
+                    android:inputType="time"
+android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftEnd"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftEnd4"
+                    android:background="@color/white_greyish"
+                    android:inputType="time"
+android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="@string/thursday"
+                    style="@style/TextBlack"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftStart"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftStart5"
+                    android:background="@color/white_greyish"
+                    android:inputType="time"
+android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftEnd"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftEnd5"
+                    android:background="@color/white_greyish"
+                    android:inputType="time"
+android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="@string/friday"
+                    style="@style/TextBlack"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftStart"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftStart6"
+                    android:background="@color/white_greyish"
+                    android:inputType="time"
+android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftEnd"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftEnd6"
+                    android:background="@color/white_greyish"
+                    android:inputType="time"
+android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="@string/saturday"
+                    style="@style/TextBlack"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftStart"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftStart7"
+                    android:background="@color/white_greyish"
+                    android:inputType="time"
+android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftEnd"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftEnd7"
+                    android:background="@color/white_greyish"
+                    android:inputType="time"
+android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="@string/sunday"
+                    style="@style/TextBlack"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftStart"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftStart8"
+                    android:background="@color/white_greyish"
+                    android:inputType="time"
+android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/add_account_EmployeeTimeShiftEnd"
+                    style="@style/TextBlack"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/employee_detail_editShiftEnd8"
+                    android:background="@color/white_greyish"
+                    android:inputType="time"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/employee_detail_txtEmployeePosition"

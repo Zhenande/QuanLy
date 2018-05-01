@@ -6,6 +6,13 @@
     <string name="required">Bắt buộc.</string>
     <string name="string_done">Hoàn thành</string>
     <string name="image_content_error">Lỗi hình ảnh</string>
+    <string name="monday">Thứ 2</string>
+    <string name="tuesday">Thứ 3</string>
+    <string name="wednesday">Thứ 4</string>
+    <string name="thursday">Thứ 5</string>
+    <string name="friday">Thứ 6</string>
+    <string name="saturday">Thứ 7</string>
+    <string name="sunday">Chủ Nhật</string>
 
     <!--=================================Main Activity===================================================-->
     <string name="main_language">Ngôn ngữ</string>
@@ -123,11 +130,27 @@
     <string name="add_account_EmployeeUsername">Tên tài khoản :</string>
     <string name="add_account_EmployeePassword">Mật khẩu :</string>
     <string name="add_account_EmployeeContactNumber">Số điện thoại :</string>
+    <string name="add_account_EmployeeDayWork">Ngày làm việc :</string>
+    <string name="add_account_EmployeeTimeShiftStart">Giờ bắt đầu :</string>
+    <string name="add_account_EmployeeTimeShiftEnd">Giờ kết thúc :</string>
     <string name="add_account_EmployeePosition">Chức vụ :</string>
     <string-array name="add_account_spinner_Position">
         <item>Đầu bếp</item>
         <item>Phục vụ</item>
         <item>Thu ngân</item>
+    </string-array>
+    <!--
+        Adding item add_account_spinner_shift_type carefully
+        Adding new item above the last item
+    -->
+    <string-array name="add_account_spinner_shift_type">
+        <item>Thứ 2 đến Thứ 6</item>
+        <item>Thứ 2, Thứ 4, Thứ 6</item>
+        <item>Thứ 3, Thứ 5, Thứ 7</item>
+        <item>Thứ 2, Thứ 4, Thứ 6, Chủ Nhật</item>
+        <item>Thứ 3, Thứ 5, Thứ 7, Chủ Nhật</item>
+        <item>Thứ 2 đến Chủ Nhật</item>
+        <item>Tùy chọn</item>
     </string-array>
     <string name="add_account_button_create">Tạo</string>
     <string name="title_activity_login">Đăng Nhập</string>

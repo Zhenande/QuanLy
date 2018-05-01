@@ -3,6 +3,7 @@ package fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -189,9 +191,9 @@ public class RestaurantFragment extends Fragment {
                                     .set(cook);
                         }
                     });
-
+            reLayout();
         }
-//        recreate();
+
         Toast.makeText(view.getContext(),"Create Done",Toast.LENGTH_SHORT).show();
     }
 
@@ -223,11 +225,17 @@ public class RestaurantFragment extends Fragment {
                                             });
                                 }
                             }
-//                            recreate();
+                        reLayout();
                         }
                     }
                 });
         Toast.makeText(view.getContext(),"Delete Done",Toast.LENGTH_SHORT).show();
+    }
+
+    public void reLayout(){
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.main_app_framelayout, new RestaurantFragment());
+        fragmentTransaction.commit();
     }
 
     private void renderData(){

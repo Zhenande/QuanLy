@@ -87,6 +87,11 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
         restaurantID = getRestaurantID();
         renderData();
 
+        if(getEmployeePosition() == 3){
+            // Meaning waiter
+            buttonSubmit.setVisibility(View.GONE);
+        }
+
         buttonSubmit.setOnClickListener(this);
 
         return view;
@@ -423,6 +428,12 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
         }
 
         // -------------------------------------- END
+    }
+
+    public int getEmployeePosition(){
+        String langPref = QuanLyConstants.SHARED_POSITION;
+        SharedPreferences prefs = view.getContext().getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE, Activity.MODE_PRIVATE);
+        return prefs.getInt(langPref,0);
     }
 
     private String getFoodNameSend(CookFood cf) {

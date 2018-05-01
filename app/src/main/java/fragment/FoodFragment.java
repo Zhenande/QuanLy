@@ -4,6 +4,7 @@ package fragment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -215,7 +216,10 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
         }
     }
 
+    @Override
     public void refreshMenu(){
-        adapter.notifyDataSetChanged();
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.main_app_framelayout, new FoodFragment());
+        fragmentTransaction.commit();
     }
 }

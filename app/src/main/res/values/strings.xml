@@ -8,6 +8,13 @@
     <string name="image_content_error">Error Image</string>
     <string name="money_type">%s VNĐ</string>
     <string name="normal_string">%d </string>
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
 
     <!--=================================Main Activity===================================================-->
     <string name="main_language">Language</string>
@@ -126,11 +133,27 @@
     <string name="add_account_EmployeeUsername">Username :</string>
     <string name="add_account_EmployeePassword">Password :</string>
     <string name="add_account_EmployeeContactNumber">Contact Number :</string>
+    <string name="add_account_EmployeeDayWork">Work Day :</string>
+    <string name="add_account_EmployeeTimeShiftStart">Time Start :</string>
+    <string name="add_account_EmployeeTimeShiftEnd">Time End :</string>
     <string name="add_account_EmployeePosition">Position :</string>
     <string-array name="add_account_spinner_Position">
         <item>Cook</item>
         <item>Waiter</item>
         <item>Cashier</item>
+    </string-array>
+    <!--
+        Adding item add_account_spinner_shift_type carefully
+        Adding new item above the last item
+    -->
+    <string-array name="add_account_spinner_shift_type">
+        <item>Monday to Friday</item>
+        <item>Monday, Wednesday, Friday</item>
+        <item>Tuesday, Thursday, Saturday</item>
+        <item>Monday, Wednesday, Friday, Sunday</item>
+        <item>Tuesday, Thursday, Saturday, Sunday</item>
+        <item>Monday to Sunday</item>
+        <item>Custom</item>
     </string-array>
     <string name="add_account_button_create">Create</string>
     <string name="title_activity_login">Sign in</string>

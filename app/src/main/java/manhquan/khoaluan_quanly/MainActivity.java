@@ -183,18 +183,17 @@ public class MainActivity extends AppCompatActivity
         navigationView.getMenu().removeItem(R.id.nav_order);
         navigationView.getMenu().removeItem(R.id.nav_revenue);
         navigationView.getMenu().removeItem(R.id.nav_account);
+        navigationView.getMenu().removeItem(R.id.nav_food);
     }
 
     private void setLayoutForWaiter() {
-        navigationView.getMenu().removeItem(R.id.nav_restaurant);
         navigationView.getMenu().removeItem(R.id.nav_bill);
-        navigationView.getMenu().removeItem(R.id.nav_order);
+        navigationView.getMenu().removeItem(R.id.nav_restaurant);
         navigationView.getMenu().removeItem(R.id.nav_revenue);
         navigationView.getMenu().removeItem(R.id.nav_account);
     }
 
     private void setLayoutForCook() {
-
         navigationView.getMenu().removeItem(R.id.nav_restaurant);
         navigationView.getMenu().removeItem(R.id.nav_bill);
         navigationView.getMenu().removeItem(R.id.nav_account);
@@ -397,8 +396,12 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment;
 
         int id = item.getItemId();
+        navigationView.setCheckedItem(id);
 
         switch (id){
+            default:
+                fragment = new RestaurantFragment();
+                break;
             case R.id.nav_restaurant:
                 fragment = new RestaurantFragment();
                 break;
@@ -416,9 +419,6 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_food:
                 fragment = new FoodFragment();
-                break;
-            default:
-                fragment = new RestaurantFragment();
                 break;
         }
 

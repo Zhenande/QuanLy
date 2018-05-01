@@ -3,7 +3,9 @@ package fragment;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,6 +34,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -103,6 +106,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     private SimpleDateFormat sdf_date_display = new SimpleDateFormat("dd/MM/yyyy");
     private MaterialDialog dialogLoading;
     private int dayOfYear = 1;
+    private String restaurantID;
+    private final String TAG = "IncomeFragment";
 
 
     public IncomeFragment() {
@@ -138,6 +143,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         spinnerReportTime.setAdapter(adapterReportTime);
         spinnerKindOfChart.setAdapter(adapterKindOfChart);
         spinnerQuarter.setAdapter(adapterQuarter);
+
+        restaurantID = getRestaurantID();
 
 
         initDateStartEnd();
@@ -300,7 +307,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     private void drawChart0_0() {
         showLoadingDialog();
         db.collection(QuanLyConstants.ORDER)
-            //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+            .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+            .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
             .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString()))
             .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonEndDate.getText().toString()))
             .orderBy(QuanLyConstants.ORDER_DATE)
@@ -373,6 +381,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                         closeLoadingDialog();
                     }
                 }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG,e.getMessage());
+                }
             });
     }
 
@@ -392,7 +406,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         String endDate = sdf_full_date.format(cal.getTime());
         db.collection(QuanLyConstants.ORDER)
-                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
                 .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
                 .orderBy(QuanLyConstants.ORDER_DATE)
@@ -470,6 +485,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             closeLoadingDialog();
                         }
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
+                    }
                 });
     }
 
@@ -491,6 +512,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         String endDate = sdf_full_date.format(cal.getTime());
         final int maxDayQuarter = 13;
         db.collection(QuanLyConstants.ORDER)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
                 .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
                 .orderBy(QuanLyConstants.ORDER_DATE)
@@ -580,6 +603,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             closeLoadingDialog();
                         }
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
+                    }
                 });
     }
 
@@ -599,7 +628,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         String endDate = sdf_full_date.format(cal.getTime());
         final int maxMonth = 12;
         db.collection(QuanLyConstants.ORDER)
-                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
                 .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
                 .orderBy(QuanLyConstants.ORDER_DATE)
@@ -688,6 +718,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             closeLoadingDialog();
                         }
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
+                    }
                 });
     }
 
@@ -698,7 +734,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     private void drawChart1_0() {
         showLoadingDialog();
         db.collection(QuanLyConstants.ORDER)
-                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString()))
                 .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonEndDate.getText().toString()))
                 .orderBy(QuanLyConstants.ORDER_DATE)
@@ -767,6 +804,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             closeLoadingDialog();
                         }
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, e.getMessage());
+                    }
                 });
     }
 
@@ -786,7 +829,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         String endDate = sdf_full_date.format(cal.getTime());
         db.collection(QuanLyConstants.ORDER)
-                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
                 .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
                 .orderBy(QuanLyConstants.ORDER_DATE)
@@ -864,6 +908,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             closeLoadingDialog();
                         }
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
+                    }
                 });
     }
 
@@ -885,7 +935,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         String endDate = sdf_full_date.format(cal.getTime());
         final int maxDayQuarter = 13;
         db.collection(QuanLyConstants.ORDER)
-                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
                 .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
                 .orderBy(QuanLyConstants.ORDER_DATE)
@@ -974,6 +1025,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             closeLoadingDialog();
                         }
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
+                    }
                 });
     }
 
@@ -993,7 +1050,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         String endDate = sdf_full_date.format(cal.getTime());
         final int maxDayYear = 12;
         db.collection(QuanLyConstants.ORDER)
-                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
                 .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
                 .orderBy(QuanLyConstants.ORDER_DATE)
@@ -1082,6 +1140,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             closeLoadingDialog();
                         }
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
+                    }
                 });
     }
 
@@ -1092,7 +1156,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     private void drawChart2_0() {
         showLoadingDialog();
         db.collection(QuanLyConstants.ORDER)
-                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString()))
                 .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonEndDate.getText().toString()))
                 .orderBy(QuanLyConstants.ORDER_DATE)
@@ -1207,6 +1272,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             closeLoadingDialog();
                         }
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
+                    }
                 });
     }
 
@@ -1226,7 +1297,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         String endDate = sdf_full_date.format(cal.getTime());
         db.collection(QuanLyConstants.ORDER)
-                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
                 .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
                 .orderBy(QuanLyConstants.ORDER_DATE)
@@ -1325,6 +1397,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             closeLoadingDialog();
                         }
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
+                    }
                 });
     }
 
@@ -1346,7 +1424,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         String endDate = sdf_full_date.format(cal.getTime());
         final int maxDayQuarter = 13;
         db.collection(QuanLyConstants.ORDER)
-                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
                 .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
                 .orderBy(QuanLyConstants.ORDER_DATE)
@@ -1467,6 +1546,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             closeLoadingDialog();
                         }
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
+                    }
                 });
     }
 
@@ -1486,7 +1571,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         String endDate = sdf_full_date.format(cal.getTime());
         final int maxDayYear = 12;
         db.collection(QuanLyConstants.ORDER)
-                //.whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
                 .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
                 .orderBy(QuanLyConstants.ORDER_DATE)
@@ -1596,6 +1682,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             chart_combined.invalidate();
                             closeLoadingDialog();
                         }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
                     }
                 });
     }
@@ -1863,5 +1955,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
     public void closeLoadingDialog(){
         dialogLoading.dismiss();
+    }
+
+    public String getRestaurantID(){
+        String langPref = QuanLyConstants.RESTAURANT_ID;
+        SharedPreferences prefs = view.getContext().getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE, Activity.MODE_PRIVATE);
+        return prefs.getString(langPref,"");
     }
 }
