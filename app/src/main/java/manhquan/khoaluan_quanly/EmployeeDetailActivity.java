@@ -301,6 +301,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         txtPassword.setEnabled(false);
         txtContactNumber.setEnabled(false);
         spinnerPosition.setEnabled(false);
+
         buttonUpdate.setVisibility(View.INVISIBLE);
     }
 
@@ -369,22 +370,23 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
     }
 
     private void createEmployee(String restaurantID){
+        int position = 0;
         switch (spinnerPosition.getSelectedItemPosition()){
-            case 0 : createCook(restaurantID);
-                break;
-            case 1 : createWaiter(restaurantID);
-                break;
-            case 2 : createCashier(restaurantID);
-                break;
+            case 0 : //createCook(restaurantID);
+                    // Cook
+                    position = 2;
+                    break;
+            case 1 : //createWaiter(restaurantID);
+                    // Waiter
+                    position = 3;
+                    break;
+            case 2 : //createCashier(restaurantID);
+                    // Cashier
+                    position = 4;
+                    break;
         }
-    }
 
-    /*
-     * @author: ManhLD
-     * @purpose: Create cook employee.
-     * */
-    private void createCook(String restaurantID){
-        String dayWork = "";
+        String dayWork;
         if(spinnerType.getSelectedItemPosition()+1 == spinnerType.getCount()){
             dayWork = getCustomDayWork();
         }
@@ -398,8 +400,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         cook.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
         cook.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
         cook.put(QuanLyConstants.EMPLOYEE_WORKDAY,dayWork);
-//        cook.put(QuanLyConstants.EMPLOYEE_TIMEWORK,txtShiftStart + " - " + txtShiftEnd);
-        cook.put(QuanLyConstants.EMPLOYEE_POSITION,2);
+        cook.put(QuanLyConstants.EMPLOYEE_POSITION,position);
         db.collection(QuanLyConstants.EMPLOYEE)
                 .add(cook)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -416,64 +417,100 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
                 });
     }
 
-    /*
-     * @author: ManhLD
-     * @purpose: Create waiter employee.
-     * */
-    private void createWaiter(String restaurantID){
-        Map<String, Object > waiter = new HashMap<>();
-        waiter.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
-        waiter.put(QuanLyConstants.RESTAURANT_NAME,txtName.getText().toString().trim());
-        waiter.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
-        waiter.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
-        waiter.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
-//        waiter.put(QuanLyConstants.EMPLOYEE_WORKDAY,txtDayWork.getText().toString().trim());
-//        waiter.put(QuanLyConstants.EMPLOYEE_TIMEWORK,txtShiftStart + " - " + txtShiftEnd);
-        waiter.put(QuanLyConstants.EMPLOYEE_POSITION,3);
-        db.collection(QuanLyConstants.EMPLOYEE)
-                .add(waiter)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(getApplicationContext(), "Add Success", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), "Add Failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-    /*
-     * @author: ManhLD
-     * @purpose: Create cashier employee.
-     * */
-    private void createCashier(String restaurantID){
-        Map<String, Object > cashier = new HashMap<>();
-        cashier.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
-        cashier.put(QuanLyConstants.RESTAURANT_NAME,txtName.getText().toString().trim());
-        cashier.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
-        cashier.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
-        cashier.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
-//        cashier.put(QuanLyConstants.EMPLOYEE_WORKDAY,txtDayWork.getText().toString().trim());
-        cashier.put(QuanLyConstants.EMPLOYEE_POSITION,4);
-        db.collection(QuanLyConstants.EMPLOYEE)
-                .add(cashier)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(getApplicationContext(), "Add Success", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), "Add Failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
+//    /*
+//     * @author: ManhLD
+//     * @purpose: Create cook employee.
+//     * */
+//    private void createCook(String restaurantID){
+//        String dayWork;
+//        if(spinnerType.getSelectedItemPosition()+1 == spinnerType.getCount()){
+//            dayWork = getCustomDayWork();
+//        }
+//        else{
+//            dayWork = getNormalDayWork();
+//        }
+//        Map<String, Object > cook = new HashMap<>();
+//        cook.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
+//        cook.put(QuanLyConstants.RESTAURANT_NAME,txtName.getText().toString().trim());
+//        cook.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
+//        cook.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
+//        cook.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
+//        cook.put(QuanLyConstants.EMPLOYEE_WORKDAY,dayWork);
+//        cook.put(QuanLyConstants.EMPLOYEE_POSITION,2);
+//        db.collection(QuanLyConstants.EMPLOYEE)
+//                .add(cook)
+//                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                    @Override
+//                    public void onSuccess(DocumentReference documentReference) {
+//                        Toast.makeText(getApplicationContext(), "Add Success", Toast.LENGTH_SHORT).show();
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Toast.makeText(getApplicationContext(), "Add Failed", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//    }
+//
+//    /*
+//     * @author: ManhLD
+//     * @purpose: Create waiter employee.
+//     * */
+//    private void createWaiter(String restaurantID){
+//        Map<String, Object > waiter = new HashMap<>();
+//        waiter.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
+//        waiter.put(QuanLyConstants.RESTAURANT_NAME,txtName.getText().toString().trim());
+//        waiter.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
+//        waiter.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
+//        waiter.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
+////        waiter.put(QuanLyConstants.EMPLOYEE_WORKDAY,txtDayWork.getText().toString().trim());
+////        waiter.put(QuanLyConstants.EMPLOYEE_TIMEWORK,txtShiftStart + " - " + txtShiftEnd);
+//        waiter.put(QuanLyConstants.EMPLOYEE_POSITION,3);
+//        db.collection(QuanLyConstants.EMPLOYEE)
+//                .add(waiter)
+//                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                    @Override
+//                    public void onSuccess(DocumentReference documentReference) {
+//                        Toast.makeText(getApplicationContext(), "Add Success", Toast.LENGTH_SHORT).show();
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Toast.makeText(getApplicationContext(), "Add Failed", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//    }
+//
+//    /*
+//     * @author: ManhLD
+//     * @purpose: Create cashier employee.
+//     * */
+//    private void createCashier(String restaurantID){
+//        Map<String, Object > cashier = new HashMap<>();
+//        cashier.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
+//        cashier.put(QuanLyConstants.RESTAURANT_NAME,txtName.getText().toString().trim());
+//        cashier.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
+//        cashier.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
+//        cashier.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
+////        cashier.put(QuanLyConstants.EMPLOYEE_WORKDAY,txtDayWork.getText().toString().trim());
+//        cashier.put(QuanLyConstants.EMPLOYEE_POSITION,4);
+//        db.collection(QuanLyConstants.EMPLOYEE)
+//                .add(cashier)
+//                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                    @Override
+//                    public void onSuccess(DocumentReference documentReference) {
+//                        Toast.makeText(getApplicationContext(), "Add Success", Toast.LENGTH_SHORT).show();
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Toast.makeText(getApplicationContext(), "Add Failed", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//    }
 
     /*
      * @author: ManhLD
@@ -564,6 +601,12 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
                     break;
             case 2: result = createDayWorkPos3();
                     break;
+            case 3: result = createDayWorkPos4();
+                    break;
+            case 4: result = createDayWorkPos5();
+                    break;
+            case 5: result = createDayWorkPos6();
+                    break;
         }
         return result;
     }
@@ -615,6 +658,66 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
     private String createDayWorkPos3() {
         StringBuilder result = new StringBuilder();
         String[] dayWork = {"tuesday","thursday","saturday"};
+        String timeStart = edStart.getText().toString();
+        String timeEnd = edEnd.getText().toString();
+        for(String s : dayWork){
+            result.append(s);
+            result.append(" ");
+            result.append(timeStart);
+            result.append(":");
+            result.append(timeEnd);
+            result.append(";");
+        }
+        return result.toString();
+    }
+
+    /*
+     * @author: ManhLD
+     * Create day work for monday, wednesday, friday, sunday with input time
+     * */
+    private String createDayWorkPos4() {
+        StringBuilder result = new StringBuilder();
+        String[] dayWork = {"monday","wednesday","friday","sunday"};
+        String timeStart = edStart.getText().toString();
+        String timeEnd = edEnd.getText().toString();
+        for(String s : dayWork){
+            result.append(s);
+            result.append(" ");
+            result.append(timeStart);
+            result.append(":");
+            result.append(timeEnd);
+            result.append(";");
+        }
+        return result.toString();
+    }
+
+    /*
+     * @author: ManhLD
+     * Create day work for tuesday, thursday, saturday, sunday with input time
+     * */
+    private String createDayWorkPos5() {
+        StringBuilder result = new StringBuilder();
+        String[] dayWork = {"tuesday","thursday","saturday","sunday"};
+        String timeStart = edStart.getText().toString();
+        String timeEnd = edEnd.getText().toString();
+        for(String s : dayWork){
+            result.append(s);
+            result.append(" ");
+            result.append(timeStart);
+            result.append(":");
+            result.append(timeEnd);
+            result.append(";");
+        }
+        return result.toString();
+    }
+
+    /*
+     * @author: ManhLD
+     * Create day work for monday to sunday with input time
+     * */
+    private String createDayWorkPos6() {
+        StringBuilder result = new StringBuilder();
+        String[] dayWork = {"monday","tuesday","wednesday","thursday","friday","saturday","sunday"};
         String timeStart = edStart.getText().toString();
         String timeEnd = edEnd.getText().toString();
         for(String s : dayWork){
@@ -753,12 +856,20 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             }
             else{
                 showLoadingDialog();
+                String dayWork;
+                if(spinnerType.getSelectedItemPosition()+1 == spinnerType.getCount()){
+                    dayWork = getCustomDayWork();
+                }
+                else{
+                    dayWork = getNormalDayWork();
+                }
                 Map<String, Object > employee = new HashMap<>();
                 employee.put(QuanLyConstants.RESTAURANT_ID,RestaurantID);
                 employee.put(QuanLyConstants.EMPLOYEE_NAME,txtName.getText().toString().trim());
                 employee.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
                 employee.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
                 employee.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
+                employee.put(QuanLyConstants.EMPLOYEE_WORKDAY,dayWork);
                 employee.put(QuanLyConstants.EMPLOYEE_POSITION,spinnerPosition.getSelectedItemPosition()+2);
                 db.collection(QuanLyConstants.EMPLOYEE).document(employeeID)
                         .set(employee, SetOptions.merge());

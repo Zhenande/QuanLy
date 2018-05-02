@@ -10,6 +10,8 @@ public abstract class Employee {
     private String name;
     private String password;
     private int position;
+    private String emID;
+    private String dayWork;
     private String restaurantid;
 
     public Employee(String contactnumber, String name, String password, int position, String restaurantid) {
@@ -21,6 +23,22 @@ public abstract class Employee {
     }
 
     public Employee() {
+    }
+
+    public String getEmID() {
+        return emID;
+    }
+
+    public void setEmID(String emID) {
+        this.emID = emID;
+    }
+
+    public String getDayWork() {
+        return dayWork;
+    }
+
+    public void setDayWork(String dayWork) {
+        this.dayWork = dayWork;
     }
 
     public String getRestaurantid() {

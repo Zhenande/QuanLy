@@ -8,13 +8,15 @@
     <string name="image_content_error">Error Image</string>
     <string name="money_type">%s VNĐ</string>
     <string name="normal_string">%d </string>
-    <string name="monday">Monday</string>
-    <string name="tuesday">Tuesday</string>
-    <string name="wednesday">Wednesday</string>
-    <string name="thursday">Thursday</string>
-    <string name="friday">Friday</string>
-    <string name="saturday">Saturday</string>
-    <string name="sunday">Sunday</string>
+    <string-array name="week_date">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
 
     <!--=================================Main Activity===================================================-->
     <string name="main_language">Language</string>

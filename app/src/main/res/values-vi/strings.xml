@@ -6,13 +6,15 @@
     <string name="required">Bắt buộc.</string>
     <string name="string_done">Hoàn thành</string>
     <string name="image_content_error">Lỗi hình ảnh</string>
-    <string name="monday">Thứ 2</string>
-    <string name="tuesday">Thứ 3</string>
-    <string name="wednesday">Thứ 4</string>
-    <string name="thursday">Thứ 5</string>
-    <string name="friday">Thứ 6</string>
-    <string name="saturday">Thứ 7</string>
-    <string name="sunday">Chủ Nhật</string>
+    <string-array name="week_date">
+        <item>Thứ 2</item>
+        <item>Thứ 3</item>
+        <item>Thứ 4</item>
+        <item>Thứ 5</item>
+        <item>Thứ 6</item>
+        <item>Thứ 7</item>
+        <item>Chủ Nhật</item>
+    </string-array>
 
     <!--=================================Main Activity===================================================-->
     <string name="main_language">Ngôn ngữ</string>
