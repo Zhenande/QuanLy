@@ -74,7 +74,7 @@ public class MenuFoodListAdapter extends BaseAdapter{
         StorageReference imageRef = storageReference.child(QuanLyConstants.FOOD_PATH_IMAGE + food.getImageResource());
         GlideApp.with(context)
                 .load(imageRef)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(holder.foodImage);
         holder.foodPrice.setText(context.getResources().getString(R.string.money_type,MoneyFormatter.formatToMoney(food.getPrice()+"")));
         holder.foodName.setText(food.getFoodName());

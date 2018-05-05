@@ -628,6 +628,8 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             result.append(timeEnd);
             result.append(";");
         }
+        result.append(" ;"); //saturday
+        result.append(" ;"); //sunday
         return result.toString();
     }
 
@@ -640,14 +642,43 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         String[] dayWork = {"monday","wednesday","friday"};
         String timeStart = edStart.getText().toString();
         String timeEnd = edEnd.getText().toString();
-        for(String s : dayWork){
-            result.append(s);
-            result.append(" ");
-            result.append(timeStart);
-            result.append(":");
-            result.append(timeEnd);
-            result.append(";");
-        }
+
+        //monday
+        result.append(dayWork[0]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //tuesday
+        result.append(" ;");
+
+        //wednesday
+        result.append(dayWork[1]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //thursday
+        result.append(" ;");
+
+        //friday
+        result.append(dayWork[2]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //saturday
+        result.append(" ;");
+
+        //sunday
+        result.append(" ;");
+
         return result.toString();
     }
 
@@ -660,14 +691,42 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         String[] dayWork = {"tuesday","thursday","saturday"};
         String timeStart = edStart.getText().toString();
         String timeEnd = edEnd.getText().toString();
-        for(String s : dayWork){
-            result.append(s);
-            result.append(" ");
-            result.append(timeStart);
-            result.append(":");
-            result.append(timeEnd);
-            result.append(";");
-        }
+
+        //monday
+        result.append(" ;");
+
+        //tuesday
+        result.append(dayWork[0]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //wednesday
+        result.append(" ;");
+
+        //thursday
+        result.append(dayWork[1]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //friday
+        result.append(" ;");
+
+        //saturday
+        result.append(dayWork[2]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //sunday
+        result.append(" ;");
         return result.toString();
     }
 
@@ -680,14 +739,47 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         String[] dayWork = {"monday","wednesday","friday","sunday"};
         String timeStart = edStart.getText().toString();
         String timeEnd = edEnd.getText().toString();
-        for(String s : dayWork){
-            result.append(s);
-            result.append(" ");
-            result.append(timeStart);
-            result.append(":");
-            result.append(timeEnd);
-            result.append(";");
-        }
+        //monday
+        result.append(dayWork[0]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //tuesday
+        result.append(" ;");
+
+        //wednesday
+        result.append(dayWork[1]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //thursday
+        result.append(" ;");
+
+        //friday
+        result.append(dayWork[2]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //saturday
+        result.append(" ;");
+
+        //sunday
+        result.append(dayWork[3]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
         return result.toString();
     }
 
@@ -700,14 +792,48 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         String[] dayWork = {"tuesday","thursday","saturday","sunday"};
         String timeStart = edStart.getText().toString();
         String timeEnd = edEnd.getText().toString();
-        for(String s : dayWork){
-            result.append(s);
-            result.append(" ");
-            result.append(timeStart);
-            result.append(":");
-            result.append(timeEnd);
-            result.append(";");
-        }
+
+        //monday
+        result.append(" ;");
+
+        //tuesday
+        result.append(dayWork[0]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //wednesday
+        result.append(" ;");
+
+        //thursday
+        result.append(dayWork[1]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //friday
+        result.append(" ;");
+
+        //saturday
+        result.append(dayWork[2]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //sunday
+        result.append(dayWork[3]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
         return result.toString();
     }
 
@@ -720,14 +846,62 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         String[] dayWork = {"monday","tuesday","wednesday","thursday","friday","saturday","sunday"};
         String timeStart = edStart.getText().toString();
         String timeEnd = edEnd.getText().toString();
-        for(String s : dayWork){
-            result.append(s);
-            result.append(" ");
-            result.append(timeStart);
-            result.append(":");
-            result.append(timeEnd);
-            result.append(";");
-        }
+        //monday
+        result.append(dayWork[0]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //tuesday
+        result.append(dayWork[1]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //wednesday
+        result.append(dayWork[2]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //thursday
+        result.append(dayWork[3]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //friday
+        result.append(dayWork[4]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //saturday
+        result.append(dayWork[5]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
+        //sunday
+        result.append(dayWork[6]);
+        result.append(" ");
+        result.append(timeStart);
+        result.append(":");
+        result.append(timeEnd);
+        result.append(";");
+
         return result.toString();
     }
 
@@ -745,7 +919,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         String monday_Start = edStart_Monday.getText().toString();
         String monday_End = edEnd_Monday.getText().toString();
         if(TextUtils.isEmpty(monday_Start)){
-            result.append("monday ;");
+            result.append(" ;");
         }
         else if(!TextUtils.isEmpty(monday_End)){
             result.append("monday ");
@@ -757,7 +931,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         String tuesday_Start = edStart_Tuesday.getText().toString();
         String tuesday_End = edEnd_Tuesday.getText().toString();
         if(TextUtils.isEmpty(tuesday_Start)){
-            result.append("tuesday ;");
+            result.append(" ;");
         }
         else if(!TextUtils.isEmpty(tuesday_End)){
             result.append("tuesday ");
@@ -769,7 +943,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         String wednesday_Start = edStart_Wednesday.getText().toString();
         String wednesday_End = edEnd_Wednesday.getText().toString();
         if(TextUtils.isEmpty(wednesday_Start)){
-            result.append("wednesday ;");
+            result.append(" ;");
         }
         else if(!TextUtils.isEmpty(wednesday_End)){
             result.append("wednesday ");
@@ -781,7 +955,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         String thursday_Start = edStart_Thursday.getText().toString();
         String thursday_End = edEnd_Thursday.getText().toString();
         if(TextUtils.isEmpty(thursday_Start)){
-            result.append("thursday ;");
+            result.append(" ;");
         }
         else if(!TextUtils.isEmpty(thursday_End)){
             result.append("thursday ");
@@ -793,7 +967,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         String friday_Start = edStart_Friday.getText().toString();
         String friday_End = edEnd_Friday.getText().toString();
         if(TextUtils.isEmpty(friday_Start)){
-            result.append("friday ;");
+            result.append(" ;");
         }
         else if(!TextUtils.isEmpty(friday_End)){
             result.append("friday ");
@@ -805,7 +979,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         String saturday_Start = edStart_Saturday.getText().toString();
         String saturday_End = edEnd_Saturday.getText().toString();
         if(TextUtils.isEmpty(saturday_Start)){
-            result.append("saturday ;");
+            result.append(" ;");
         }
         else if(!TextUtils.isEmpty(saturday_End)){
             result.append("saturday ");
@@ -817,7 +991,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         String sunday_Start = edStart_Sunday.getText().toString();
         String sunday_End = edEnd_Sunday.getText().toString();
         if(TextUtils.isEmpty(sunday_Start)){
-            result.append("sunday ;");
+            result.append(" ;");
         }
         else if(!TextUtils.isEmpty(sunday_End)){
             result.append("sunday ");

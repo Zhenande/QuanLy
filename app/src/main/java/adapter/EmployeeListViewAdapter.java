@@ -64,7 +64,7 @@ public class EmployeeListViewAdapter extends BaseAdapter{
 
         Employee employee = this.data.get(position);
         holder.txtName.setText(employee.getName());
-        holder.txtContact.setText(employee.getContactnumber());
+        holder.txtTimeWork.setText(employee.getDayWork());
         String textPosition;
         switch (employee.getPosition()){
             case 2: textPosition = context.getResources().getString(R.string.employee_Cook);
@@ -86,8 +86,8 @@ class EmployeeViewHolder{
     TextView txtName;
     @BindView(R.id.employee_list_txtPosition)
     TextView txtPosition;
-    @BindView(R.id.employee_list_txtContact)
-    TextView txtContact;
+    @BindView(R.id.employee_list_txtTimeWork)
+    TextView txtTimeWork;
 
     public EmployeeViewHolder(View view) {
         ButterKnife.bind(this,view);

@@ -17,6 +17,14 @@
         <item>Saturday</item>
         <item>Sunday</item>
     </string-array>
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+    <string name="day">Day</string>
 
     <!--=================================Main Activity===================================================-->
     <string name="main_language">Language</string>
@@ -62,7 +70,7 @@
     <string name="noti_content">The table %s is not available</string>
 
 
-    <!--=================================Order Detail Activity=========================================-->
+    <!--=================================Bill Detail Activity=========================================-->
     <string name="customerName">Customer Name: %s</string>
     <string name="timeBook">Time: %s</string>
     <string name="dateBook">Date: %s</string>
@@ -77,6 +85,7 @@
     <string name="RemoveMultiQuantity">Input quantity of %s you need to remove</string>
     <string name="error_still_food_need_service">There is some food still not service</string>
     <string name="remove_too_much_food">You can not remove number of food larger than the customer order</string>
+    <string name="error_food_cooked">You can not remove food has been serviced</string>
 
     <!--=================================Food On Bill List Item=========================================-->
     <string name="fobFoodName">Food Name</string>
@@ -128,6 +137,9 @@
     <string name="employee_Waiter">Waiter</string>
     <string name="employee_Cashier">Cashier</string>
     <string name="employee_Contact">Contact Number</string>
+
+    <!--=================================Employee Fragment================================================-->
+    <string name="employee_time_work">Time Work</string>
 
 
     <!--=================================Add Account Activity================================================-->
@@ -204,6 +216,7 @@
     <string name="bill_fragment_error_input_time">Your time input is not correct. You must follow the right input like "22:58"</string>
     <string name="bill_fragment_over_current_time">You can not input time after the current time</string>
 
+
     <!--===============================Bill List Item=============================================-->
     <string name="bill_list_id">Bill Number</string>
     <string name="bill_list_time">Time</string>
@@ -219,12 +232,14 @@
     <string name="cart_hint_cus_id">Input Customer Phone Number</string>
     <string name="cart_button_order">Order</string>
     <string name="cart_button_checkID">Check ID</string>
-    <string name="cart_dialog_warning_no_cusID">The Customer ID is empty. Does the customer does not have sign up for the app?</string>
+    <string name="cart_dialog_warning_no_cusID">The Customer ID is empty. Do you want to order?</string>
 
     <!--===============================Food Fragment=============================================-->
     <string name="food_frag_error_no_food">You have not choose any food</string>
 
     <!--===============================Order Fragment=============================================-->
     <string name="order_frag_no_checked">You have not check any food</string>
+    <string name="order_frag_input_food_cooked">Input quantity of %s you have cooked</string>
+    <string name="order_frag_add_too_much_food">The customer just call %d of this food. Please check again.</string>
 
 </resources>

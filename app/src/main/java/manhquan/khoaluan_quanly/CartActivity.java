@@ -82,6 +82,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
     private StringBuilder nameFoodSendToCook = new StringBuilder();
     private String time;
     private List<String> listFullTable = new ArrayList<>();
+    private boolean isCallExtraFood = false;
 
 
     @Override
@@ -252,6 +253,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                 // meaning table is free
                 clickButtonOrder();
             }else{
+                isCallExtraFood = true;
                 // meaning table is having customer
                 callExtraFood();
             }
@@ -269,6 +271,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
         showLoadingDialog();
 
         db.collection(QuanLyConstants.TABLE)
+            .whereEqualTo(QuanLyConstants.RESTAURANT_ID, restaurantID)
             .whereEqualTo(QuanLyConstants.TABLE_NUMBER, spinnerTable.getSelectedItem().toString())
             .get()
             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -292,8 +295,8 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
-                        Calendar cal = Calendar.getInstance();
-                        time = sdf_Time.format(cal.getTime());
+//                        Calendar cal = Calendar.getInstance();
+//                        time = sdf_Time.format(cal.getTime());
                         final DocumentReference document = task.getResult().getReference();
                         document.collection(QuanLyConstants.FOOD_ON_ORDER)
                                 .get()
@@ -310,6 +313,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                                                 fob.setQuantity(Integer.parseInt(document.get(QuanLyConstants.FOOD_QUANTITY).toString()));
 
                                                 // fob2 meaning new food need send to cook
+                                                // Checking the food have on the list or not
                                                 for(FoodOnBill fob2 : listFoodChoose){
                                                     if(fob2.getFoodName().equals(fob.getFoodName())){
                                                         fob.setQuantity(fob.getQuantity() + fob2.getQuantity());
@@ -355,6 +359,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
 
     private void UpdateFoodSendToCook(String orderID) {
         db.collection(QuanLyConstants.TABLE)
+            .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
             .whereEqualTo(QuanLyConstants.TABLE_ORDER_ID, orderID)
             .get()
             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -545,7 +550,10 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
     * */
     private void sendFoodToCook(String tableID) {
         final Map<String, Object> cook = new HashMap<>();
-        cook.put(QuanLyConstants.ORDER_TIME, time);
+        if(!isCallExtraFood) {
+            // If the customer call extra, we would not change the time of that table
+            cook.put(QuanLyConstants.ORDER_TIME, time);
+        }
         cook.put(QuanLyConstants.TABLE_EMPLOYEE_ID, GlobalVariable.employeeID);
         db.collection(QuanLyConstants.COOK)
             .document(restaurantID)

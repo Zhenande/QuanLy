@@ -3,6 +3,7 @@ package manhquan.khoaluan_quanly;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -19,8 +20,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -33,6 +37,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.thoughtbot.expandablecheckrecyclerview.listeners.OnCheckChildClickListener;
+import com.thoughtbot.expandablecheckrecyclerview.models.CheckedExpandableGroup;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +55,7 @@ import constants.QuanLyConstants;
 import model.CookFood;
 import model.FoodInside;
 import util.GlobalVariable;
+import util.MoneyFormatter;
 
 
 /**
@@ -70,6 +77,7 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
     private MaterialDialog dialogLoading;
     private static final String TAG = "OrderFragment";
     private boolean isFirst = true;
+
 
     public OrderFragment() {
         // Required empty public constructor
@@ -113,8 +121,8 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                             String[] content = document.get(QuanLyConstants.FOOD_NAME).toString().split(";");
                             List<FoodInside> listFoodName = new ArrayList<>();
                             if(!content[0].equals("")){
-                                for (int i = 0; i < content.length; i++) {
-                                    listFoodName.add(new FoodInside(content[i]));
+                                for (String aContent : content) {
+                                    listFoodName.add(new FoodInside(aContent));
                                 }
                             }
                             String time = document.get(QuanLyConstants.ORDER_TIME).toString();
@@ -149,6 +157,19 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                         recyclerView.setLayoutManager(layoutManager);
                         recyclerView.setAdapter(adapter);
 
+//                        adapter.setChildClickListener(new OnCheckChildClickListener() {
+//                            @Override
+//                            public void onCheckChildCLick(View v, boolean checked, CheckedExpandableGroup group, int childIndex) {
+//                                if(checked){
+//                                    // Add the quantity of food to the list and prepare send to waiter
+//                                    doChildSelected(group, childIndex);
+//                                }
+//                                else{
+//                                    // Remove the quantity of food out of the list
+//                                }
+//                            }
+//                        });
+
                         isFirst = false;
                         closeLoadingDialog();
                     }
@@ -162,6 +183,81 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
             });
 
     }
+
+    /*
+    * @author: ManhLD
+    * Too much thing need to be done
+    * */
+//    private void doChildSelected(final CheckedExpandableGroup group, final int childIndex) {
+//        FoodInside fi = (FoodInside)group.getItems().get(childIndex);
+//        String[] contentFood = fi.getContent().split(" {4}SL: ");
+//        final String foodName = contentFood[0];
+//        final int quantityFood = Integer.parseInt(contentFood[1]);
+//
+//        final MaterialDialog dialog = new MaterialDialog.Builder(view.getContext())
+//                .positiveText(getResources().getString(R.string.main_agree))
+//                .negativeText(getResources().getString(R.string.main_disagree))
+//                .positiveColor(getResources().getColor(R.color.primary_dark))
+//                .negativeColor(getResources().getColor(R.color.black))
+//                .customView(R.layout.dialog_remove_food_list, true)
+//                .onPositive(new MaterialDialog.SingleButtonCallback() {
+//                    @Override
+//                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//                        View cusView = dialog.getCustomView();
+//                        EditText edNumberInput = cusView.findViewById(R.id.edQuantityFoodRemove);
+//                        int quantityInput = Integer.parseInt(edNumberInput.getText().toString());
+//                        if(quantityFood >= quantityInput){
+//                            String tableNumber = group.getTitle();
+//                            int groupIndex = getGroupIndex(tableNumber);
+//                            if(listSendToWaiter.size() > 0) {
+//                                for (CookFood cf : listSendToWaiter) {
+//                                    if (tableNumber.equals(cf.getTitle())) {
+//                                        ArrayList<FoodInside> listCurFoodInTable = (ArrayList<FoodInside>)cf.getItems();
+//                                        listCurFoodInTable.add(new FoodInside(foodName + "    SL: " + quantityInput));
+//                                    }
+//                                }
+//                            }
+//                            else{
+//                                ArrayList<FoodInside> listFoodDoneInTable = new ArrayList<>();
+//                                listFoodDoneInTable.add(new FoodInside(foodName + "    SL: " + quantityInput));
+//                                CookFood cf = new CookFood(tableNumber,listFoodDoneInTable);
+//                                listSendToWaiter.add(cf);
+//                            }
+//                        }
+//                        else{
+//                            Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.order_frag_add_too_much_food,quantityFood), Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                })
+//                .onNegative(new MaterialDialog.SingleButtonCallback() {
+//                    @Override
+//                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//                        group.unCheckChild(childIndex);
+//                        adapter.notifyDataSetChanged();
+//                    }
+//                })
+//                .onNeutral(new MaterialDialog.SingleButtonCallback() {
+//                    @Override
+//                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//                        group.unCheckChild(childIndex);
+//                        adapter.notifyDataSetChanged();
+//                    }
+//                })
+//                .build();
+//        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+//            @Override
+//            public void onShow(DialogInterface dialog2) {
+//                View cusView = dialog.getCustomView();
+//                TextView txtNameFoodRemove = cusView.findViewById(R.id.txtRemoveMultiQuantity);
+//                txtNameFoodRemove.setText(getResources().getString(R.string.RemoveMultiQuantity,foodName));
+//            }
+//        });
+//        dialog.show();
+//    }
+
+//    private int getGroupIndex(String tableNumber) {
+//
+//    }
 
     private void onChangeListener(String tableID) {
 
@@ -183,6 +279,7 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                 if (snapshot != null && snapshot.exists()) {
                     Map<String, Object> order = snapshot.getData();
 //                    if(!TextUtils.isEmpty(order.get(QuanLyConstants.FOOD_NAME).toString())){
+                        // Get the new change of food name
                         String[] content = snapshot.get(QuanLyConstants.FOOD_NAME).toString().split(";");
                         List<FoodInside> listFoodName = new ArrayList<>();
                         if(!content[0].equals("")){
@@ -190,6 +287,7 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                                 listFoodName.add(new FoodInside(content[i]));
                             }
                         }
+                        // Get the new change of time, employeeID, title
                         String time = order.get(QuanLyConstants.ORDER_TIME).toString();
                         String employeeID = order.get(QuanLyConstants.TABLE_EMPLOYEE_ID).toString();
                         String title = view.getContext().getResources().getString(R.string.table, order.get(QuanLyConstants.TABLE_NUMBER));

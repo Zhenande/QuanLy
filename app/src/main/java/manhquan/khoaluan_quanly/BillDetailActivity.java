@@ -33,7 +33,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -42,6 +46,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import constants.QuanLyConstants;
 import adapter.ListFoodOnBillAdapter;
+import model.FoodInside;
 import model.FoodOnBill;
 import util.MoneyFormatter;
 
@@ -75,6 +80,8 @@ public class BillDetailActivity extends AppCompatActivity {
     private String waiterID;
     private String waiterName;
     private boolean flagRemoveItem = true;
+    private boolean isFirstInit = true;
+    private ArrayList<Integer> listPositionFoodNotCook = new ArrayList<>();
 
 
     @Override
@@ -198,6 +205,9 @@ public class BillDetailActivity extends AppCompatActivity {
                             if(document.get(QuanLyConstants.TABLE_NUMBER).toString().equals(tableNumber)){
                                 tableID = document.getId();
                                 renderCusInfo(document.get(QuanLyConstants.TABLE_ORDER_ID).toString());
+
+                                // Get the food does not cook, to prevent remove food had been serviced
+                                validServiceFood();
                             }
                         }
                     }
@@ -321,7 +331,14 @@ public class BillDetailActivity extends AppCompatActivity {
                                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                                         @Override
                                                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                            removeFoodSingleQuantity(fob, view);
+                                                            if(listPositionFoodNotCook.contains(position)) {
+                                                                //meaning food want to remove doesn't cooked
+                                                                removeFoodSingleQuantity(fob, view);
+                                                            }
+                                                            else{
+                                                                //meaing food have been cooked. If the food was cooked, you can't remove it from bill
+                                                                Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.error_food_cooked), Toast.LENGTH_SHORT).show();
+                                                            }
                                                         }
                                                     })
                                                     .build()
@@ -340,22 +357,26 @@ public class BillDetailActivity extends AppCompatActivity {
                                                             View cusView = dialog.getCustomView();
                                                             EditText edNumberInput = cusView.findViewById(R.id.edQuantityFoodRemove);
                                                             int numberInput = Integer.parseInt(edNumberInput.getText().toString());
-                                                            if(numberInput > fob.getQuantity()){
-                                                                Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.remove_too_much_food), Toast.LENGTH_SHORT).show();
+                                                            if(listPositionFoodNotCook.contains(position)){
+                                                                Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.error_food_cooked), Toast.LENGTH_SHORT).show();
                                                             }
                                                             else {
-                                                                if(numberInput == fob.getQuantity()){
-                                                                    listData.remove(fob);
+                                                                if(numberInput <= fob.getQuantity()){
+                                                                    if(numberInput == fob.getQuantity()){
+                                                                        listData.remove(fob);
+                                                                    }
+                                                                    else{
+                                                                        // fob is the final variable, so i can not change the value in fob
+                                                                        listData.get(position-1).setQuantity(fob.getQuantity()-numberInput);
+                                                                        View viewTemp = listFoodOnBillAdapter.getView(position-1,null,listViewFoodOnBill);
+                                                                        TextView txtTotal = viewTemp.findViewById(R.id.food_on_bill_list_total_price);
+                                                                        txtTotal.setText(MoneyFormatter.formatToMoney((fob.getQuantity()-numberInput)*fob.getPrice()+""));
+                                                                    }
+                                                                    listFoodOnBillAdapter.notifyDataSetChanged();
+                                                                    removeFoodMultiQuantity(fob, numberInput);
+                                                                }else{
+                                                                    Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.remove_too_much_food), Toast.LENGTH_SHORT).show();
                                                                 }
-                                                                else{
-                                                                    // fob is the final variable, so i can not change the value in fob
-                                                                    listData.get(position-1).setQuantity(fob.getQuantity()-numberInput);
-                                                                    View viewTemp = listFoodOnBillAdapter.getView(position-1,null,listViewFoodOnBill);
-                                                                    TextView txtTotal = viewTemp.findViewById(R.id.food_on_bill_list_total_price);
-                                                                    txtTotal.setText(MoneyFormatter.formatToMoney((fob.getQuantity()-numberInput)*fob.getPrice()+""));
-                                                                }
-                                                                listFoodOnBillAdapter.notifyDataSetChanged();
-                                                                removeFoodMultiQuantity(fob, numberInput);
                                                             }
                                                         }
                                                     })
@@ -417,6 +438,10 @@ public class BillDetailActivity extends AppCompatActivity {
                                                 documentOrder.getReference()
                                                         .update(QuanLyConstants.ORDER_CASH_TOTAL, displayMoney);
                                                 // End
+
+                                                // Remove food haven't cook
+                                                removeFoodOfCook(fob.getFoodName(),numberFoodRemove);
+
                                                 txtTotalCost.setText(getResources().getString(R.string.totalCost,displayMoney));
                                                 Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.string_done), Toast.LENGTH_SHORT).show();
                                             }
@@ -451,9 +476,62 @@ public class BillDetailActivity extends AppCompatActivity {
                 MoneyFormatter.formatToMoney(cashTotal - amountFood + "") + " VNĐ"));
         listData.remove(fob);
         listFoodOnBillAdapter.notifyDataSetChanged();
-//        View view = getViewByPosition(position-1,listViewFoodOnBill);
         view.setBackgroundColor(getResources().getColor(R.color.white));
+        removeFoodOfCook(fob.getFoodName(), 1);
 
+    }
+
+    private void removeFoodOfCook(final String foodName,final int quantity){
+        db.collection(QuanLyConstants.COOK)
+                .document(restaurantID)
+                .collection(QuanLyConstants.TABLE)
+                .document(tableID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            DocumentSnapshot document = task.getResult();
+                            String[] content = document.get(QuanLyConstants.FOOD_NAME).toString().split(";");
+                            ArrayList<String> listFoodOfCook = new ArrayList<>();
+                            listFoodOfCook.addAll(Arrays.asList(content));
+                            StringBuilder newFoodQuantity = new StringBuilder();
+                            for (int i = 0; i < listFoodOfCook.size(); i++){
+                                String[] data = listFoodOfCook.get(i).split(" {4}SL: ");
+                                String name = data[0];
+                                int foodQuantity = Integer.parseInt(data[1]);
+                                if(foodName.equals(name)){
+                                    if(foodQuantity == quantity){
+                                        listFoodOfCook.remove(i);
+                                    }
+                                    else{
+                                        //meaning does not delete all of quantity of that food
+                                        int newQuantity = foodQuantity - quantity;
+                                        String newFood = data[0] + "    SL: " + newQuantity;
+                                        //remove the old food in the arraylist
+                                        listFoodOfCook.remove(i);
+                                        //add new food quantity in the arraylist with index of the old food
+                                        listFoodOfCook.add(i,newFood);
+                                        newFoodQuantity.append(newFood);
+                                        newFoodQuantity.append(";");
+                                    }
+                                }
+                                else{
+                                    newFoodQuantity.append(listFoodOfCook.get(i));
+                                    newFoodQuantity.append(";");
+                                }
+                            }
+                            document.getReference().update(QuanLyConstants.FOOD_NAME, newFoodQuantity.toString());
+                            Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.string_done), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, e.getMessage());
+                    }
+                });
     }
 
     @OnClick(R.id.order_detail_button_check_out)
@@ -488,27 +566,41 @@ public class BillDetailActivity extends AppCompatActivity {
                         String foodRemain = document.get(QuanLyConstants.FOOD_NAME).toString();
                         if(!TextUtils.isEmpty(foodRemain)){
                             // meaning still have food does not service
-                            highlightFoodNotCook(foodRemain.toString().split(";"));
-                            Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
+                            highlightFoodNotCook(foodRemain.split(";"));
+                            if(!isFirstInit) {
+                                Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
+                            }
+                            else{
+                                isFirstInit = false;
+                            }
                         }
                         else{
                             // Everything good
-                            doCheckOutDone();
+                            if(!isFirstInit) {
+                                doCheckOutDone();
+                            }
+                            else{
+                                isFirstInit = false;
+                            }
                         }
                     }
                 }
             });
-
-
     }
 
     private void highlightFoodNotCook(String[] foodName) {
         for (String s : foodName) {
-            String compare = s.split("    ")[0];
+            String compare = s.split(" {4}")[0];
             for (int j = 0; j < listData.size(); j++) {
                 if (compare.equals(listData.get(j).getFoodName())) {
-                    View view = getViewByPosition(j, listViewFoodOnBill);
-                    view.setBackgroundColor(getResources().getColor(R.color.primary));
+                    if(isFirstInit){
+                        listPositionFoodNotCook.add(j);
+                    }
+                    else{
+                        // fill row with primary color
+                        View view = getViewByPosition(j, listViewFoodOnBill);
+                        view.setBackgroundColor(getResources().getColor(R.color.blueLight));
+                    }
                 }
             }
         }
@@ -540,7 +632,8 @@ public class BillDetailActivity extends AppCompatActivity {
         // Set checkout of order is true
         Map<String, Object> order = new HashMap<>();
         order.put(QuanLyConstants.ORDER_CheckOut,true);
-        order.put(QuanLyConstants.ORDER_CASH_TOTAL, txtTotalCost.getText().toString());
+        // Check again the result update
+        order.put(QuanLyConstants.ORDER_CASH_TOTAL, txtTotalCost.getText().toString().split("Total: ")[0]);
         DocumentReference docRef = db.collection(QuanLyConstants.ORDER).document(saveOrderID);
         docRef.set(order, SetOptions.merge());
         // End

@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -63,6 +64,9 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
     private View view;
     private MaterialDialog dialogLoading;
     private FirebaseFirestore db;
+    private boolean isFirstInit = true;
+    private boolean flag_loading;
+    private List<Employee> listShow;
 
 
     public EmployeeFragment() {
@@ -81,6 +85,7 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
         ButterKnife.bind(this,view);
 
         listData = new ArrayList<>();
+        listShow = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
 
         showLoadingDialog();
@@ -94,14 +99,15 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
         adapterWeekDate.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dateSpinner.setAdapter(adapterWeekDate);
 
-        employeeAdapter = new EmployeeListViewAdapter(view.getContext(),listData);
+        employeeAdapter = new EmployeeListViewAdapter(view.getContext(),listShow);
         employeeListView.setAdapter(employeeAdapter);
 
-        dateSpinner.setOnItemSelectedListener(this);
         Calendar cal = Calendar.getInstance();
         int date = cal.get(Calendar.DAY_OF_WEEK);
-        dateSpinner.setSelection(date-1);
+        dateSpinner.setSelection(date-2);
+        renderData(date-2);
 
+        dateSpinner.setOnItemSelectedListener(this);
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,6 +126,23 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
             }
         });
 
+        employeeListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if(firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount != 0){
+                    if(!flag_loading && listData.size() > 0){
+                        flag_loading = true;
+                        getMoreItems();
+                    }
+                }
+            }
+        });
+
         return view;
     }
 
@@ -129,7 +152,6 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
     * @purpose: Get the collection of the employee work in the restaurant.
     * */
     private void renderData(final int posDate) {
-        db = FirebaseFirestore.getInstance();
         db.collection(QuanLyConstants.EMPLOYEE)
                 .whereEqualTo(QuanLyConstants.RESTAURANT_ID, getRestaurantID())
                 .get()
@@ -138,13 +160,14 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             listData.clear();
+                            listShow.clear();
                             for(DocumentSnapshot document : task.getResult()){
                                 int position = Integer.parseInt(document.get(QuanLyConstants.EMPLOYEE_POSITION).toString());
                                 if(position>1){
                                     Employee em = new Cook();
                                     String[] fullDayWork = document.get(QuanLyConstants.EMPLOYEE_WORKDAY).toString().split(";");
                                     String[] dateDisplay = fullDayWork[posDate].split(" ");
-                                    if(!TextUtils.isEmpty(dateDisplay[1])){
+                                    if(dateDisplay.length > 0){
                                         // meaning date like monday 6:00-12:00;
                                         // so the pos[1] will not null and we will display it.
                                         em.setDayWork(dateDisplay[1]);
@@ -157,7 +180,8 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
                                 }
                             }
                             closeLoadingDialog();
-                            employeeAdapter.notifyDataSetChanged();
+                            getMoreItems();
+                            isFirstInit = false;
                         }
                         else{
                             Log.e(TAG, "Error getting document");
@@ -199,6 +223,7 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
 
     public void showLoadingDialog(){
         dialogLoading = new MaterialDialog.Builder(view.getContext())
+                .backgroundColor(view.getContext().getResources().getColor(R.color.primary))
                 .customView(R.layout.loading_dialog,true)
                 .show();
     }
@@ -209,11 +234,30 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        renderData(position);
+        if(!isFirstInit){
+            renderData(position);
+        }
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    private void getMoreItems(){
+        if(!dialogLoading.isShowing()){
+            showLoadingDialog();
+        }
+        int count = 0;
+        while(count < 10 && listData.size() > 0){
+            listShow.add(listData.get(0));
+            listData.remove(0);
+            count++;
+        }
+        if(dialogLoading.isShowing()){
+            closeLoadingDialog();
+        }
+        flag_loading = false;
+        employeeAdapter.notifyDataSetChanged();
     }
 }

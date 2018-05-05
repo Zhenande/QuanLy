@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -98,6 +99,7 @@ public class MainActivity extends AppCompatActivity
     private int position;
     private String emName;
     private MaterialDialog dialogLoading;
+    private String restaurantID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,27 +138,41 @@ public class MainActivity extends AppCompatActivity
         if(getPosition() != position){
             savePosition();
         }
+        restaurantID = getRestaurantID();
         renderDrawerData();
 
 //        changeData();
-        onNavigationItemSelected(navigationView.getMenu().getItem(0));
+        if(position==3){
+            // select tab food
+            onNavigationItemSelected(navigationView.getMenu().getItem(1));
+        }
+        else {
+            onNavigationItemSelected(navigationView.getMenu().getItem(0));
+        }
     }
 
 //    private void changeData() {
-//        db.collection(QuanLyConstants.ORDER)
-//            .whereGreaterThanOrEqualTo(QuanLyConstants.BILL_NUMBER, "180427")
+//        db.collection(QuanLyConstants.EMPLOYEE)
+//            .whereEqualTo(QuanLyConstants.RESTAURANT_ID, restaurantID)
 //            .get()
 //            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 //                @Override
 //                public void onComplete(@NonNull Task<QuerySnapshot> task) {
 //                    if(task.isSuccessful()){
 //                        for(DocumentSnapshot document : task.getResult()){
-//                            String newMoney = MoneyFormatter.formatToMoney(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString()) + " VNĐ";
-//                            Map<String, Object> update = new HashMap<>();
-//                            update.put(QuanLyConstants.ORDER_CASH_TOTAL, newMoney);
-//                            document.getReference().set(update, SetOptions.merge());
+//                            String dayWork = "monday 8:00-17:30;tuesday 8:00-17:30;wednesday 8:00-17:30;thursday 8:00-17:30;friday 8:00-17:30; ; ;";
+//                            Map<String,Object> update = new HashMap<>();
+//                            update.put(QuanLyConstants.EMPLOYEE_WORKDAY, dayWork);
+//                            document.getReference().set(update,SetOptions.merge());
 //                        }
+//                        Log.i(TAG,"DONE");
 //                    }
+//                }
+//            })
+//            .addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception e) {
+//                    Log.e(TAG,e.getMessage());
 //                }
 //            });
 //    }

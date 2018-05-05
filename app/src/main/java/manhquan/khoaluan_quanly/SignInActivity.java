@@ -51,7 +51,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        mEmailField.setText("lieumanh96@gmail.com");
+        mEmailField.setText("tranvana@gmail.com");
         mPasswordField.setText("zhenande");
         updateUI(null);
     }

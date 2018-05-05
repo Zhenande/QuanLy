@@ -15,6 +15,14 @@
         <item>Thứ 7</item>
         <item>Chủ Nhật</item>
     </string-array>
+    <string name="monday">Thứ 2</string>
+    <string name="tuesday">Thứ 3</string>
+    <string name="wednesday">Thứ 4</string>
+    <string name="thursday">Thứ 5</string>
+    <string name="friday">Thứ 6</string>
+    <string name="saturday">Thứ 7</string>
+    <string name="sunday">Chủ Nhật</string>
+    <string name="day">Ngày</string>
 
     <!--=================================Main Activity===================================================-->
     <string name="main_language">Ngôn ngữ</string>
@@ -59,6 +67,9 @@
     <string name="notification">Thông báo</string>
     <string name="noti_content">Bàn %s không có khách ngồi</string>
 
+    <!--=================================Employee Fragment================================================-->
+    <string name="employee_time_work">Giờ làm</string>
+
 
     <!--=================================Order Detail Activity=========================================-->
     <string name="customerName">Tên khách hàng: %s</string>
@@ -75,6 +86,7 @@
     <string name="RemoveMultiQuantity">Nhập số lượng món %s cần xóa</string>
     <string name="error_still_food_need_service">Có một số món ăn chưa được phục vụ</string>
     <string name="remove_too_much_food">Bạn không thể xóa số lượng món ăn nhiều hơn số khách hàng gọi</string>
+    <string name="error_food_cooked">Bạn không thể xóa món ăn đã được phục vụ</string>
 
     <!--=================================Food On Bill List Item=========================================-->
     <string name="fobFoodName">Tên món</string>
@@ -216,12 +228,14 @@
     <string name="cart_hint_cus_id">Nhập số điện thoại khách hàng</string>
     <string name="cart_button_order">Gọi Món</string>
     <string name="cart_button_checkID">Kiểm Tra ID</string>
-    <string name="cart_dialog_warning_no_cusID">Customer ID trống. Có phải khách hàng không có tài khoản của ứng dụng?</string>
+    <string name="cart_dialog_warning_no_cusID">Mã khách hàng trống. Bạn có muốn tiếp tục đặt món không?</string>
 
     <!--===============================Food Fragment=============================================-->
     <string name="food_frag_error_no_food">Bạn chưa chọn món ăn nào cả.</string>
 
     <!--===============================Order Fragment=============================================-->
     <string name="order_frag_no_checked">Bạn chưa tích món ăn nào cả.</string>
+    <string name="order_frag_input_food_cooked">Nhập số lượng món %s bạn đã nấu xong</string>
+    <string name="order_frag_add_too_much_food">Khách hàng chỉ gọi %d món này. Hãy kiểm tra lại.</string>
 
 </resources>

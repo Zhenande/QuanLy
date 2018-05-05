@@ -17,5 +17,6 @@
     <color name="iron">#CCCCCC</color>
     <color name="white">#FFFFFF</color>
     <color name="yellow">#FFFF00</color>
+    <color name="blueLight">#5495ff</color>
 
 </resources>
