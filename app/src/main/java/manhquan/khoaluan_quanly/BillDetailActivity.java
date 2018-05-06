@@ -107,8 +107,13 @@ public class BillDetailActivity extends AppCompatActivity {
         }
         else{
             // Open from RestaurantFragment
+            if(getPosition() == 3){
+                processCheckOrder();
+            }
             renderData();
         }
+
+
 
         listData = new ArrayList<>();
 
@@ -121,6 +126,16 @@ public class BillDetailActivity extends AppCompatActivity {
         listFoodOnBillAdapter = new ListFoodOnBillAdapter(this, listData);
         listViewFoodOnBill.setAdapter(listFoodOnBillAdapter);
 
+    }
+
+    /*
+    * @author: ManhLD
+    * Get position of the Employee
+    * */
+    public int getPosition(){
+        String langPref = QuanLyConstants.SHARED_POSITION;
+        SharedPreferences prefs = getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE, Activity.MODE_PRIVATE);
+        return prefs.getInt(langPref,0);
     }
 
     @Override
@@ -370,7 +385,7 @@ public class BillDetailActivity extends AppCompatActivity {
                                                                         listData.get(position-1).setQuantity(fob.getQuantity()-numberInput);
                                                                         View viewTemp = listFoodOnBillAdapter.getView(position-1,null,listViewFoodOnBill);
                                                                         TextView txtTotal = viewTemp.findViewById(R.id.food_on_bill_list_total_price);
-                                                                        txtTotal.setText(MoneyFormatter.formatToMoney((fob.getQuantity()-numberInput)*fob.getPrice()+""));
+                                                                        txtTotal.setText(MoneyFormatter.formatToMoney((fob.getQuantity()-numberInput)*fob.getPrice()));
                                                                     }
                                                                     listFoodOnBillAdapter.notifyDataSetChanged();
                                                                     removeFoodMultiQuantity(fob, numberInput);
@@ -434,7 +449,7 @@ public class BillDetailActivity extends AppCompatActivity {
                                                 // Update the Total Cost of Order
                                                 int curTotalCost = MoneyFormatter.backToNumber(documentOrder.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
                                                 int nowTotalCost = curTotalCost - fob.getPrice() * numberFoodRemove;
-                                                String displayMoney = MoneyFormatter.formatToMoney(nowTotalCost+"") + " VNĐ";
+                                                String displayMoney = MoneyFormatter.formatToMoney(nowTotalCost) + " VNĐ";
                                                 documentOrder.getReference()
                                                         .update(QuanLyConstants.ORDER_CASH_TOTAL, displayMoney);
                                                 // End
@@ -473,7 +488,7 @@ public class BillDetailActivity extends AppCompatActivity {
         int amountFood = fob.getQuantity() * fob.getPrice();
         int cashTotal = MoneyFormatter.backToNumber(txtTotalCost.getText().toString());
         txtTotalCost.setText(getResources().getString(R.string.totalCost,
-                MoneyFormatter.formatToMoney(cashTotal - amountFood + "") + " VNĐ"));
+                MoneyFormatter.formatToMoney(cashTotal - amountFood) + " VNĐ"));
         listData.remove(fob);
         listFoodOnBillAdapter.notifyDataSetChanged();
         view.setBackgroundColor(getResources().getColor(R.color.white));
@@ -633,7 +648,8 @@ public class BillDetailActivity extends AppCompatActivity {
         Map<String, Object> order = new HashMap<>();
         order.put(QuanLyConstants.ORDER_CheckOut,true);
         // Check again the result update
-        order.put(QuanLyConstants.ORDER_CASH_TOTAL, txtTotalCost.getText().toString().split("Total: ")[0]);
+
+        order.put(QuanLyConstants.ORDER_CASH_TOTAL, txtTotalCost.getText().toString().substring(7));
         DocumentReference docRef = db.collection(QuanLyConstants.ORDER).document(saveOrderID);
         docRef.set(order, SetOptions.merge());
         // End

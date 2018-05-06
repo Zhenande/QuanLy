@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity
     private int position;
     private String emName;
     private MaterialDialog dialogLoading;
-    private String restaurantID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,13 +137,12 @@ public class MainActivity extends AppCompatActivity
         if(getPosition() != position){
             savePosition();
         }
-        restaurantID = getRestaurantID();
         renderDrawerData();
 
 //        changeData();
         if(position==3){
             // select tab food
-            onNavigationItemSelected(navigationView.getMenu().getItem(1));
+            onNavigationItemSelected(navigationView.getMenu().getItem(2));
         }
         else {
             onNavigationItemSelected(navigationView.getMenu().getItem(0));
@@ -204,7 +202,6 @@ public class MainActivity extends AppCompatActivity
 
     private void setLayoutForWaiter() {
         navigationView.getMenu().removeItem(R.id.nav_bill);
-        navigationView.getMenu().removeItem(R.id.nav_restaurant);
         navigationView.getMenu().removeItem(R.id.nav_revenue);
         navigationView.getMenu().removeItem(R.id.nav_account);
     }

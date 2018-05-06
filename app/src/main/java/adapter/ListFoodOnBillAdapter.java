@@ -63,9 +63,9 @@ public class ListFoodOnBillAdapter extends BaseAdapter {
 
         FoodOnBill foodOnBill = listData.get(position);
         holder.txtFoodName.setText(foodOnBill.getFoodName());
-        holder.txtPrice.setText(MoneyFormatter.formatToMoney(foodOnBill.getPrice()+""));
+        holder.txtPrice.setText(MoneyFormatter.formatToMoney(foodOnBill.getPrice()));
         holder.txtQuantity.setText(context.getResources().getString(R.string.normal_string,foodOnBill.getQuantity()));
-        holder.txtTotalPrice.setText(MoneyFormatter.formatToMoney(foodOnBill.getPrice()*foodOnBill.getQuantity()+""));
+        holder.txtTotalPrice.setText(MoneyFormatter.formatToMoney(foodOnBill.getPrice()*foodOnBill.getQuantity()));
 
         return convertView;
     }

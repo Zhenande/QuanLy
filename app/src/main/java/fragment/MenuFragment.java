@@ -298,7 +298,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         GlideApp.with(view.getContext())
                 .load(imageRef)
                 .into(imgFood);
-        txtFoodPrice.setText(MoneyFormatter.formatToMoney(food.getPrice()+"") + " VNĐ");
+        txtFoodPrice.setText(MoneyFormatter.formatToMoney(food.getPrice()) + " VNĐ");
         txtFoodName.setText(food.getFoodName());
         txtFoodDescription.setText(food.getDescription());
         editText.setText("1");

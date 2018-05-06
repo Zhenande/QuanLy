@@ -78,7 +78,7 @@ public class FoodChooseListAdapter extends BaseAdapter {
         FoodOnBill fob = listData.get(position);
         holder.txtID.setText(context.getResources().getString(R.string.normal_string,position+1));
         holder.txtName.setText(fob.getFoodName());
-        holder.txtPrice.setText(context.getResources().getString(R.string.money_type,MoneyFormatter.formatToMoney(fob.getPrice()+"")));
+        holder.txtPrice.setText(context.getResources().getString(R.string.money_type,MoneyFormatter.formatToMoney(fob.getPrice())));
         holder.txtQuantity.setText(context.getResources().getString(R.string.normal_string, fob.getQuantity()));
 
 

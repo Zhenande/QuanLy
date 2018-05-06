@@ -83,6 +83,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
     private String time;
     private List<String> listFullTable = new ArrayList<>();
     private boolean isCallExtraFood = false;
+    private int cashTotal;
 
 
     @Override
@@ -298,6 +299,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
 //                        Calendar cal = Calendar.getInstance();
 //                        time = sdf_Time.format(cal.getTime());
                         final DocumentReference document = task.getResult().getReference();
+                        cashTotal = MoneyFormatter.backToNumber(task.getResult().get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
                         document.collection(QuanLyConstants.FOOD_ON_ORDER)
                                 .get()
                                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -311,6 +313,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                                                 fob.setFoodId(document.getId());
                                                 fob.setFoodName(document.get(QuanLyConstants.FOOD_NAME).toString());
                                                 fob.setQuantity(Integer.parseInt(document.get(QuanLyConstants.FOOD_QUANTITY).toString()));
+                                                fob.setPrice(Integer.parseInt(document.get(QuanLyConstants.FOOD_PRICE).toString()));
 
                                                 // fob2 meaning new food need send to cook
                                                 // Checking the food have on the list or not
@@ -319,10 +322,13 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                                                         fob.setQuantity(fob.getQuantity() + fob2.getQuantity());
                                                         DocumentReference docRef = document.getReference();
                                                         docRef.update(QuanLyConstants.FOOD_QUANTITY, fob.getQuantity());
+
                                                         nameFoodSendToCook.append(fob.getFoodName());
                                                         nameFoodSendToCook.append("    SL: ");
                                                         nameFoodSendToCook.append(fob2.getQuantity());
                                                         nameFoodSendToCook.append(";");
+
+                                                        cashTotal += (fob.getPrice()*fob2.getQuantity());
                                                         listFoodChoose.remove(fob2);
                                                         break;
                                                     }
@@ -337,17 +343,19 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                                                     food.put(QuanLyConstants.FOOD_NAME, fob.getFoodName());
                                                     food.put(QuanLyConstants.FOOD_PRICE, fob.getPrice()+"");
                                                     food.put(QuanLyConstants.FOOD_QUANTITY, fob.getQuantity()+"");
+
                                                     nameFoodSendToCook.append(fob.getFoodName());
                                                     nameFoodSendToCook.append("    SL: ");
                                                     nameFoodSendToCook.append(fob.getQuantity());
                                                     nameFoodSendToCook.append(";");
 
+                                                    cashTotal += (fob.getPrice()*fob.getQuantity());
                                                     document.collection(QuanLyConstants.FOOD_ON_ORDER)
                                                             .document(fob.getFoodId())
                                                             .set(food);
                                                 }
                                             }
-
+                                            document.update(QuanLyConstants.ORDER_CASH_TOTAL, MoneyFormatter.formatToMoney(cashTotal) + " VNĐ");
                                             UpdateFoodSendToCook(orderID);
                                         }
                                     }
@@ -623,7 +631,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
         for(FoodOnBill fob : listFoodChoose){
             cashTotal += (fob.getPrice() * fob.getQuantity());
         }
-        return MoneyFormatter.formatToMoney(cashTotal+"") + " VNĐ";
+        return MoneyFormatter.formatToMoney(cashTotal) + " VNĐ";
     }
 
     public void showLoadingDialog(){

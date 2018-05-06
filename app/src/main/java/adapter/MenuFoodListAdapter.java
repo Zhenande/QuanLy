@@ -76,7 +76,7 @@ public class MenuFoodListAdapter extends BaseAdapter{
                 .load(imageRef)
 //                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(holder.foodImage);
-        holder.foodPrice.setText(context.getResources().getString(R.string.money_type,MoneyFormatter.formatToMoney(food.getPrice()+"")));
+        holder.foodPrice.setText(context.getResources().getString(R.string.money_type,MoneyFormatter.formatToMoney(food.getPrice())));
         holder.foodName.setText(food.getFoodName());
 
         return convertView;

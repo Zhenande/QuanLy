@@ -11,9 +11,8 @@ public class MoneyFormatter {
 
     public static NumberFormat format = new DecimalFormat("#,###");
 
-    public static String formatToMoney(String input){
-        int money = Integer.parseInt(input);
-        return format.format(money);
+    public static String formatToMoney(int input){
+        return format.format(input);
     }
 
     public static int backToNumber(String input){
