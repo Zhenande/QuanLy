@@ -258,6 +258,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
                                     txtPassword.setText(document.get(QuanLyConstants.EMPLOYEE_PASSWORD).toString());
                                     txtContactNumber.setText(document.get(QuanLyConstants.EMPLOYEE_CONTACT).toString());
                                     spinnerPosition.setSelection(Integer.parseInt(document.get(QuanLyConstants.EMPLOYEE_POSITION).toString())-2);
+                                    renderDayWorkEmployee(document.get(QuanLyConstants.EMPLOYEE_WORKDAY).toString());
                                     closeEditText();
                                     closeLoadingDialog();
                                 }
@@ -265,6 +266,13 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
                         }
                     }
                 });
+    }
+
+    private void renderDayWorkEmployee(String workDayInput) {
+        String[] dayList = workDayInput.split(";");
+        for(int i = 0; i < dayList.length ; i++){
+            
+        }
     }
 
     public void showLoadingDialog(){

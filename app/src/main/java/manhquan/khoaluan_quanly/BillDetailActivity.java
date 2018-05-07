@@ -220,9 +220,6 @@ public class BillDetailActivity extends AppCompatActivity {
                             if(document.get(QuanLyConstants.TABLE_NUMBER).toString().equals(tableNumber)){
                                 tableID = document.getId();
                                 renderCusInfo(document.get(QuanLyConstants.TABLE_ORDER_ID).toString());
-
-                                // Get the food does not cook, to prevent remove food had been serviced
-                                validServiceFood();
                             }
                         }
                     }
@@ -329,7 +326,8 @@ public class BillDetailActivity extends AppCompatActivity {
                                 fob.setQuantity(quantity);
                                 listData.add(fob);
                             }
-                            closeLoadingDialog();
+                            // Get the food does not cook, to prevent remove food had been serviced
+                            validServiceFood();
 
                             if(flagRemoveItem){
                                 listViewFoodOnBill.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -346,7 +344,7 @@ public class BillDetailActivity extends AppCompatActivity {
                                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                                         @Override
                                                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                            if(listPositionFoodNotCook.contains(position)) {
+                                                            if(listPositionFoodNotCook.contains(position-1)) {
                                                                 //meaning food want to remove doesn't cooked
                                                                 removeFoodSingleQuantity(fob, view);
                                                             }
@@ -372,10 +370,7 @@ public class BillDetailActivity extends AppCompatActivity {
                                                             View cusView = dialog.getCustomView();
                                                             EditText edNumberInput = cusView.findViewById(R.id.edQuantityFoodRemove);
                                                             int numberInput = Integer.parseInt(edNumberInput.getText().toString());
-                                                            if(listPositionFoodNotCook.contains(position)){
-                                                                Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.error_food_cooked), Toast.LENGTH_SHORT).show();
-                                                            }
-                                                            else {
+                                                            if(listPositionFoodNotCook.contains(position-1)){
                                                                 if(numberInput <= fob.getQuantity()){
                                                                     if(numberInput == fob.getQuantity()){
                                                                         listData.remove(fob);
@@ -392,6 +387,9 @@ public class BillDetailActivity extends AppCompatActivity {
                                                                 }else{
                                                                     Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.remove_too_much_food), Toast.LENGTH_SHORT).show();
                                                                 }
+                                                            }
+                                                            else {
+                                                                Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.error_food_cooked), Toast.LENGTH_SHORT).show();
                                                             }
                                                         }
                                                     })
@@ -598,6 +596,7 @@ public class BillDetailActivity extends AppCompatActivity {
                                 isFirstInit = false;
                             }
                         }
+                        closeLoadingDialog();
                     }
                 }
             });

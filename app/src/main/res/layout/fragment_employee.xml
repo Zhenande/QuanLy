@@ -39,8 +39,8 @@
             <TextView
                 android:text="@string/employee_Name"
                 style="@style/TextBlack"
-                android:layout_weight="1.2"
-                android:maxWidth="130dp"
+                android:layout_weight="0.8"
+                android:minWidth="120dp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
 
@@ -53,6 +53,7 @@
             <Button
                 android:id="@+id/employee_fragment_button_search"
                 android:text="@string/bill_fragment_search"
+                android:drawableStart="@drawable/ic_search"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />

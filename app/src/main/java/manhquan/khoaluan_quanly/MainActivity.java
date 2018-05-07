@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         navigationView = findViewById(R.id.nav_view);
-        navigationView.setCheckedItem(R.id.nav_restaurant);
+//        navigationView.setCheckedItem(R.id.nav_restaurant);
         navigationView.setNavigationItemSelectedListener(this);
         position = getIntent().getIntExtra(QuanLyConstants.EMPLOYEE_POSITION,0);
         setRoleOfApp();
@@ -561,6 +561,7 @@ public class MainActivity extends AppCompatActivity
                         NotificationTouchHelper nth = new NotificationTouchHelper(adapter, MainActivity.this);
                         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(nth);
                         itemTouchHelper.attachToRecyclerView(recyclerView);
+                        buttonNoti.setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications));
                         closeLoadingDialog();
                         isDialogNotificationShowUp = true;
                     }
@@ -612,6 +613,7 @@ public class MainActivity extends AppCompatActivity
                         }
 
                         if(!isFirst){
+                            buttonNoti.setImageDrawable(getResources().getDrawable(R.drawable.ic_new_notifications));
                             try {
                                 Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                                 Ringtone r = RingtoneManager.getRingtone(MainActivity.this, notification);

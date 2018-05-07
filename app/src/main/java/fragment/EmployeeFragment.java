@@ -104,6 +104,10 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
 
         Calendar cal = Calendar.getInstance();
         int date = cal.get(Calendar.DAY_OF_WEEK);
+        if(date == 1){
+            //Calendar.DAY_OF_WEEK return sunday = 1
+            date = 8;
+        }
         dateSpinner.setSelection(date-2);
         renderData(date-2);
 
