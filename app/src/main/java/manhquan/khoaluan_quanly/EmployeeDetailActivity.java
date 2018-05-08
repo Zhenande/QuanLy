@@ -270,9 +270,96 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
 
     private void renderDayWorkEmployee(String workDayInput) {
         String[] dayList = workDayInput.split(";");
-        for(int i = 0; i < dayList.length ; i++){
-            
+        StringBuilder dayWorkType = new StringBuilder();
+        boolean flag_day_normal = false;
+        boolean flag_time_normal = true;
+
+        // Get the first day work in week of employee
+        boolean flagInside = true;
+        String firstDayTimeWork = "";
+        for(int i = 0 ; i < dayList.length ; i++){
+            String[] checkDay = dayList[i].split(" ");
+            if(checkDay.length > 1){
+                if(flagInside){
+                    firstDayTimeWork = checkDay[1];
+                    flagInside = false;
+                }
+                dayWorkType.append(i+2);
+                if(!flagInside && !firstDayTimeWork.equals(checkDay[1])){
+                    flag_time_normal = false;
+                }
+            }
         }
+
+        int type = -1;
+        switch (dayWorkType.toString()){
+            case "23456":   type = 0;
+                            flag_day_normal = true;
+                            break;
+            case "246":     type = 1;
+                            flag_day_normal = true;
+                            break;
+            case "357":     type = 2;
+                            flag_day_normal = true;
+                            break;
+            case "2468":    type = 3;
+                            flag_day_normal = true;
+                            break;
+            case "3578":    type = 4;
+                            flag_day_normal = true;
+                            break;
+            case "2345678": type = 5;
+                            flag_day_normal = true;
+                            break;
+        }
+
+        // both the below flag need to be true to know that employee have use given type
+        if(flag_day_normal && flag_time_normal){
+            spinnerType.setSelection(type);
+            String[] specTime = firstDayTimeWork.split("-");
+            edStart.setText(specTime[0]);
+            edEnd.setText(specTime[1]);
+        }
+        else{
+            spinnerType.setSelection(6);
+            char[] dayHe = dayWorkType.toString().toCharArray();
+            for(int i = 0; i < dayHe.length ; i++){
+                int dayPos = Integer.parseInt(Character.toString(dayHe[i]));
+                String[] timeWork;
+                switch (dayPos){
+                            //----------- 0 = monday ------ 1 = get time ------- '-' = separate start and end time work
+                    case 2: timeWork = dayList[0].split(" ")[1].split("-");
+                            edStart_Monday.setText(timeWork[0]);
+                            edEnd_Monday.setText(timeWork[1]);
+                            break;
+                    case 3: timeWork = dayList[1].split(" ")[1].split("-");
+                            edStart_Tuesday.setText(timeWork[0]);
+                            edEnd_Tuesday.setText(timeWork[1]);
+                            break;
+                    case 4: timeWork = dayList[2].split(" ")[1].split("-");
+                            edStart_Wednesday.setText(timeWork[0]);
+                            edEnd_Wednesday.setText(timeWork[1]);
+                            break;
+                    case 5: timeWork = dayList[3].split(" ")[1].split("-");
+                            edStart_Thursday.setText(timeWork[0]);
+                            edEnd_Thursday.setText(timeWork[1]);
+                            break;
+                    case 6: timeWork = dayList[4].split(" ")[1].split("-");
+                            edStart_Friday.setText(timeWork[0]);
+                            edEnd_Friday.setText(timeWork[1]);
+                            break;
+                    case 7: timeWork = dayList[5].split(" ")[1].split("-");
+                            edStart_Saturday.setText(timeWork[0]);
+                            edEnd_Saturday.setText(timeWork[1]);
+                            break;
+                    case 8: timeWork = dayList[6].split(" ")[1].split("-");
+                            edStart_Sunday.setText(timeWork[0]);
+                            edEnd_Sunday.setText(timeWork[1]);
+                            break;
+                }
+            }
+        }
+
     }
 
     public void showLoadingDialog(){
@@ -297,6 +384,23 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         txtContactNumber.setEnabled(true);
         spinnerPosition.setEnabled(true);
         buttonUpdate.setVisibility(View.VISIBLE);
+        edStart.setEnabled(true);
+        edStart_Monday.setEnabled(true);
+        edStart_Tuesday.setEnabled(true);
+        edStart_Wednesday.setEnabled(true);
+        edStart_Thursday.setEnabled(true);
+        edStart_Friday.setEnabled(true);
+        edStart_Saturday.setEnabled(true);
+        edStart_Sunday.setEnabled(true);
+        edEnd.setEnabled(true);
+        edEnd_Monday.setEnabled(true);
+        edEnd_Tuesday.setEnabled(true);
+        edEnd_Wednesday.setEnabled(true);
+        edEnd_Thursday.setEnabled(true);
+        edEnd_Friday.setEnabled(true);
+        edEnd_Saturday.setEnabled(true);
+        edEnd_Sunday.setEnabled(true);
+        spinnerType.setEnabled(true);
     }
 
     /*
@@ -309,7 +413,23 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         txtPassword.setEnabled(false);
         txtContactNumber.setEnabled(false);
         spinnerPosition.setEnabled(false);
-
+        edStart.setEnabled(false);
+        edStart_Monday.setEnabled(false);
+        edStart_Tuesday.setEnabled(false);
+        edStart_Wednesday.setEnabled(false);
+        edStart_Thursday.setEnabled(false);
+        edStart_Friday.setEnabled(false);
+        edStart_Saturday.setEnabled(false);
+        edStart_Sunday.setEnabled(false);
+        edEnd.setEnabled(false);
+        edEnd_Monday.setEnabled(false);
+        edEnd_Tuesday.setEnabled(false);
+        edEnd_Wednesday.setEnabled(false);
+        edEnd_Thursday.setEnabled(false);
+        edEnd_Friday.setEnabled(false);
+        edEnd_Saturday.setEnabled(false);
+        edEnd_Sunday.setEnabled(false);
+        spinnerType.setEnabled(false);
         buttonUpdate.setVisibility(View.INVISIBLE);
     }
 
@@ -934,6 +1054,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             result.append(monday_Start);
             result.append("-");
             result.append(monday_End);
+            result.append(";");
         }
 
         String tuesday_Start = edStart_Tuesday.getText().toString();
@@ -946,6 +1067,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             result.append(tuesday_Start);
             result.append("-");
             result.append(tuesday_End);
+            result.append(";");
         }
 
         String wednesday_Start = edStart_Wednesday.getText().toString();
@@ -958,6 +1080,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             result.append(wednesday_Start);
             result.append("-");
             result.append(wednesday_End);
+            result.append(";");
         }
 
         String thursday_Start = edStart_Thursday.getText().toString();
@@ -970,6 +1093,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             result.append(thursday_Start);
             result.append("-");
             result.append(thursday_End);
+            result.append(";");
         }
 
         String friday_Start = edStart_Friday.getText().toString();
@@ -982,6 +1106,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             result.append(friday_Start);
             result.append("-");
             result.append(friday_End);
+            result.append(";");
         }
 
         String saturday_Start = edStart_Saturday.getText().toString();
@@ -994,6 +1119,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             result.append(saturday_Start);
             result.append("-");
             result.append(saturday_End);
+            result.append(";");
         }
 
         String sunday_Start = edStart_Sunday.getText().toString();
@@ -1006,6 +1132,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             result.append(sunday_Start);
             result.append("-");
             result.append(sunday_End);
+            result.append(";");
         }
 
         return result.toString();

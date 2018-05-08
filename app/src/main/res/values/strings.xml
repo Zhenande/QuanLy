@@ -109,6 +109,7 @@
     <string name="full_date">%d/%d/%d</string>
     <string name="month_year_date">%d/%d</string>
     <string name="year_date">%s</string>
+    <string name="year_input_after_current_year">You can not choose year after current year</string>
     <string-array name="income_spinner_reportTime">
         <item>Day</item>
         <item>Month</item>

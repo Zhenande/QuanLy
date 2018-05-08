@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -28,7 +29,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
@@ -48,6 +51,8 @@ import constants.QuanLyConstants;
 import adapter.ListFoodOnBillAdapter;
 import model.FoodInside;
 import model.FoodOnBill;
+import model.NotiContent;
+import model.Notification;
 import util.MoneyFormatter;
 
 public class BillDetailActivity extends AppCompatActivity {
@@ -579,12 +584,12 @@ public class BillDetailActivity extends AppCompatActivity {
                         String foodRemain = document.get(QuanLyConstants.FOOD_NAME).toString();
                         if(!TextUtils.isEmpty(foodRemain)){
                             // meaning still have food does not service
-                            highlightFoodNotCook(foodRemain.split(";"));
                             if(!isFirstInit) {
+                                highlightFoodNotCook(foodRemain.split(";"));
                                 Toast.makeText(BillDetailActivity.this, getResources().getString(R.string.error_still_food_need_service), Toast.LENGTH_SHORT).show();
                             }
                             else{
-                                isFirstInit = false;
+                                onChangeListener();
                             }
                         }
                         else{
@@ -602,7 +607,38 @@ public class BillDetailActivity extends AppCompatActivity {
             });
     }
 
+    private void onChangeListener() {
+        db.collection(QuanLyConstants.COOK)
+                .document(restaurantID)
+                .collection(QuanLyConstants.TABLE)
+                .document(tableID)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                        if( e != null){
+                            Log.w(TAG, "Listen failed.", e);
+                            return;
+                        }
+
+                        String source = documentSnapshot != null && documentSnapshot.getMetadata().hasPendingWrites()
+                                ? "Local" : "Server";
+
+                        if(documentSnapshot != null && documentSnapshot.exists()){
+                            String foodRemain = documentSnapshot.get(QuanLyConstants.FOOD_NAME).toString();
+                            isFirstInit = true;
+                            highlightFoodNotCook(foodRemain.split(";"));
+                        }else{
+                            Log.w(TAG, source + " data: null");
+                        }
+                    }
+                });
+
+    }
+
     private void highlightFoodNotCook(String[] foodName) {
+        if(isFirstInit) {
+            listPositionFoodNotCook.clear();
+        }
         for (String s : foodName) {
             String compare = s.split(" {4}")[0];
             for (int j = 0; j < listData.size(); j++) {
@@ -611,13 +647,19 @@ public class BillDetailActivity extends AppCompatActivity {
                         listPositionFoodNotCook.add(j);
                     }
                     else{
-                        // fill row with primary color
+                        // fill row with bluelight color
                         View view = getViewByPosition(j, listViewFoodOnBill);
                         view.setBackgroundColor(getResources().getColor(R.color.blueLight));
                     }
                 }
+                else{
+                    // fill row with bluelight color
+                    View view = getViewByPosition(j, listViewFoodOnBill);
+                    view.setBackgroundColor(getResources().getColor(R.color.white));
+                }
             }
         }
+        isFirstInit = false;
     }
 
 

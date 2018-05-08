@@ -293,7 +293,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
             }
         }
         else if(cbSearchByWaiterID.isChecked()){
-            searchByWaiterID();
+            searchByWaiterName();
         }
     }
 
@@ -305,9 +305,9 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
 
     /*
     * @author: ManhLD
-    * Search by Waiter ID to get the bill make by Waiter
+    * Search by Waiter Name to get the bill make by Waiter
     * */
-    private void searchByWaiterID() {
+    private void searchByWaiterName() {
         String billNumberStart = getDateFind();
         db.collection(QuanLyConstants.ORDER)
             .whereEqualTo(QuanLyConstants.RESTAURANT_ID, restaurantID)

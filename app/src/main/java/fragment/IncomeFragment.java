@@ -181,7 +181,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         }
         else if(id == buttonMonth.getId()){
             String[] date = buttonMonth.getText().toString().split("/");
-            dateSpinner.defaultDate(Integer.parseInt(date[1]),Integer.parseInt(date[1])-1,1);
+            dateSpinner.defaultDate(Integer.parseInt(date[1]),Integer.parseInt(date[0])-1,1);
             dateSpinner.showTitle(true);
             dateSpinner.build().show();
         }
@@ -1762,7 +1762,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     private boolean checkCorrectYear(int year) {
         Calendar cal = Calendar.getInstance();
         if(cal.get(Calendar.YEAR) < year){
-            Toast.makeText(getActivity().getApplicationContext(),"Year",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity().getApplicationContext(),view.getResources().getString(R.string.year_input_after_current_year),Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;

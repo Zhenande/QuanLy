@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -60,12 +62,17 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
 
     @BindView(R.id.employee_button_addAccount)
     public FloatingActionButton buttonAdd;
+    @BindView(R.id.employee_fragment_button_search)
+    public Button buttonSearch;
+    @BindView(R.id.employee_fragment_edEmName)
+    public EditText edEmployeeName;
 //    private ArrayList<String> listEmployeeID = new ArrayList<>();
     private View view;
     private MaterialDialog dialogLoading;
     private FirebaseFirestore db;
     private boolean isFirstInit = true;
     private boolean flag_loading;
+    private String restaurantID;
     private List<Employee> listShow;
 
 
@@ -102,6 +109,8 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
         employeeAdapter = new EmployeeListViewAdapter(view.getContext(),listShow);
         employeeListView.setAdapter(employeeAdapter);
 
+        restaurantID = getRestaurantID();
+
         Calendar cal = Calendar.getInstance();
         int date = cal.get(Calendar.DAY_OF_WEEK);
         if(date == 1){
@@ -112,6 +121,20 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
         renderData(date-2);
 
         dateSpinner.setOnItemSelectedListener(this);
+        buttonSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(validInputSearch()){
+                    Calendar cal = Calendar.getInstance();
+                    int date = cal.get(Calendar.DAY_OF_WEEK);
+                    if(date == 1){
+                        //Calendar.DAY_OF_WEEK return sunday = 1
+                        date = 8;
+                    }
+                    renderSearchData(date);
+                }
+            }
+        });
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,7 +148,7 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(getActivity().getApplicationContext(), EmployeeDetailActivity.class);
-                i.putExtra(QuanLyConstants.INTENT_DOCUMENT_ID,listData.get(position-1).getEmID());
+                i.putExtra(QuanLyConstants.INTENT_DOCUMENT_ID,listShow.get(position-1).getEmID());
                 startActivityForResult(i, QuanLyConstants.DETAIL_EMPLOYEE);
             }
         });
@@ -150,6 +173,61 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
         return view;
     }
 
+    private void renderSearchData(final int posDate) {
+        db.collection(QuanLyConstants.EMPLOYEE)
+            .whereEqualTo(QuanLyConstants.RESTAURANT_ID, restaurantID)
+            .whereGreaterThan(QuanLyConstants.EMPLOYEE_POSITION,1)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        String searchInput = edEmployeeName.getText().toString();
+                        for(DocumentSnapshot document : task.getResult()){
+                            String emName = document.get(QuanLyConstants.EMPLOYEE_NAME).toString();
+                            // Get the name of employee, and check if the keyword search have in the name of employee
+                            if(emName.contains(searchInput)){
+                                int position = Integer.parseInt(document.get(QuanLyConstants.EMPLOYEE_POSITION).toString());
+                                Employee em = new Cook();
+                                String[] fullDayWork = document.get(QuanLyConstants.EMPLOYEE_WORKDAY).toString().split(";");
+                                String[] dateDisplay = fullDayWork[posDate].split(" ");
+                                if(dateDisplay.length > 0){
+                                    // meaning date like monday 6:00-12:00;
+                                    // so the pos[1] will not null and we will display it.
+                                    em.setDayWork(dateDisplay[1]);
+                                    em.setEmID(document.getId());
+                                    em.setName(document.get(QuanLyConstants.EMPLOYEE_NAME).toString());
+                                    em.setContactnumber(document.get(QuanLyConstants.EMPLOYEE_CONTACT).toString());
+                                    em.setPosition(position);
+                                    listData.add(em);
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG,e.getMessage());
+                }
+            });
+    }
+
+    private boolean validInputSearch() {
+        boolean result = true;
+
+        String employeeName = edEmployeeName.getText().toString();
+        if(TextUtils.isEmpty(employeeName)){
+            edEmployeeName.setError(view.getContext().getResources().getString(R.string.required));
+            result = false;
+        }else{
+            edEmployeeName.setError(null);
+        }
+
+        return result;
+    }
+
 
     /*
     * @author: ManhLD
@@ -157,7 +235,8 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
     * */
     private void renderData(final int posDate) {
         db.collection(QuanLyConstants.EMPLOYEE)
-                .whereEqualTo(QuanLyConstants.RESTAURANT_ID, getRestaurantID())
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID, restaurantID)
+                .whereGreaterThan(QuanLyConstants.EMPLOYEE_POSITION,1)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -167,7 +246,7 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
                             listShow.clear();
                             for(DocumentSnapshot document : task.getResult()){
                                 int position = Integer.parseInt(document.get(QuanLyConstants.EMPLOYEE_POSITION).toString());
-                                if(position>1){
+//                                if(position>1){
                                     Employee em = new Cook();
                                     String[] fullDayWork = document.get(QuanLyConstants.EMPLOYEE_WORKDAY).toString().split(";");
                                     String[] dateDisplay = fullDayWork[posDate].split(" ");
@@ -181,7 +260,7 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
                                         em.setPosition(position);
                                         listData.add(em);
                                     }
-                                }
+//                                }
                             }
                             closeLoadingDialog();
                             getMoreItems();
