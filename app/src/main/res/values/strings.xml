@@ -111,6 +111,8 @@
     <string name="month_year_date">%d/%d</string>
     <string name="year_date">%s</string>
     <string name="year_input_after_current_year">You can not choose year after current year</string>
+    <string name="save_chart_to_gallery">Do you want to save this chart to gallery?</string>
+    <string name="save_success_chart">Save success chart: %s</string>
     <string-array name="income_spinner_reportTime">
         <item>Day</item>
         <item>Month</item>
@@ -211,6 +213,9 @@
     <string name="food_detail_content_delete">Do you want to delete this food?</string>
     <string name="food_detail_report_out_of_food">Out Of Food</string>
     <string name="food_detail_report_enable_food">Enable Food</string>
+    <string name="food_detail_name_too_long">Food name just contain only letter and not too long (over 100 characters)</string>
+    <string name="food_detail_type_too_long">Food type just contain only letter and not too long (over 100 characters)</string>
+    <string name="food_detail_price_too_long">Price input is too much. Please check again!</string>
 
     <!--===============================Bill Fragment=============================================-->
     <string name="bill_fragment_date">Date: </string>

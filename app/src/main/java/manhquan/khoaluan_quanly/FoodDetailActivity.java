@@ -499,12 +499,18 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     * */
     private boolean validateForm() {
         boolean valid = true;
+        String patternFoodName = "\\w{1,100}";
 
         String name = txtName.getText().toString();
         if (TextUtils.isEmpty(name)) {
             txtName.setError(getResources().getString(R.string.required));
             valid = false;
-        } else {
+        }
+        else if(!name.matches(patternFoodName)){
+            txtName.setError(getResources().getString(R.string.food_detail_name_too_long));
+            valid = false;
+        }
+        else {
             txtName.setError(null);
         }
 
@@ -528,10 +534,14 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         if (TextUtils.isEmpty(type)) {
             txtType.setError(getResources().getString(R.string.required));
             valid = false;
-        } else {
+        }
+        else if(!name.matches(patternFoodName)){
+            txtType.setError(getResources().getString(R.string.food_detail_type_too_long));
+            valid = false;
+        }
+        else {
             txtType.setError(null);
         }
-
         if(imageFood.getDrawable() == null){
             imageFood.setFocusable(true);
             valid = false;

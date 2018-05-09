@@ -111,6 +111,8 @@
     <string name="full_date">%d/%d/%d</string>
     <string name="month_year_date">%d/%d</string>
     <string name="year_date">%s</string>
+    <string name="save_chart_to_gallery">Bạn có muốn lưu biểu đồ này xuống bộ sưu tập không?</string>
+    <string name="save_success_chart">Lưu thành công biểu đồ: %s</string>
     <string-array name="income_spinner_reportTime">
         <item>Ngày</item>
         <item>Tháng</item>
@@ -205,6 +207,9 @@
     <string name="food_detail_content_delete">Bạn có muốn xóa món ăn này không?</string>
     <string name="food_detail_report_out_of_food">Hết món</string>
     <string name="food_detail_report_enable_food">Còn món</string>
+    <string name="food_detail_name_too_long">Tên món ăn chỉ gồm chữ cái và không được quá dài(100 ký tự)</string>
+    <string name="food_detail_type_too_long">Loại món ăn chỉ gồm chữ cái và không được quá dài(100 ký tự)</string>
+    <string name="food_detail_price_too_long">Giá tiền bạn nhập là quá lớn. Vui lòng kiểm tra lại!</string>
 
     <!--===============================Bill Fragment=============================================-->
     <string name="bill_fragment_date">Ngày: </string>

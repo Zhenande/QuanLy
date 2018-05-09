@@ -21,6 +21,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -379,6 +381,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                         chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
                         chart_combined.animateY(2000);
                         chart_combined.invalidate();
+                        saveChartToInternalStorage();
                         closeLoadingDialog();
                     }
                 }
@@ -445,6 +448,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             if(Double.compare(income,0) > 0){
                                 listBar.add(new BarEntry(counting, (float)income));
+                                counting++;
                             }
 
                             // When the user choose the current
@@ -483,6 +487,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
+                            saveChartToInternalStorage();
                             closeLoadingDialog();
                         }
                     }
@@ -601,6 +606,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             chart_combined.getXAxis().setAxisMaximum(counting-1.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
+                            saveChartToInternalStorage();
                             closeLoadingDialog();
                         }
                     }
@@ -716,6 +722,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             chart_combined.getXAxis().setAxisMaximum(counting-0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
+                            saveChartToInternalStorage();
                             closeLoadingDialog();
                         }
                     }
@@ -802,6 +809,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
                             chart_combined.animateY(2000);
                             chart_combined.invalidate();
+                            saveChartToInternalStorage();
                             closeLoadingDialog();
                         }
                     }
@@ -868,6 +876,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             if(orderNumber > 0){
                                 listBar.add(new BarEntry(counting, (float)orderNumber));
+                                counting++;
                             }
 
                             // When the user choose the current
@@ -906,6 +915,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
+                            saveChartToInternalStorage();
                             closeLoadingDialog();
                         }
                     }
@@ -1023,6 +1033,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             chart_combined.getXAxis().setAxisMaximum(counting-0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
+                            saveChartToInternalStorage();
                             closeLoadingDialog();
                         }
                     }
@@ -1138,6 +1149,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             chart_combined.getXAxis().setAxisMaximum(counting-0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
+                            saveChartToInternalStorage();
                             closeLoadingDialog();
                         }
                     }
@@ -1270,6 +1282,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
+                            saveChartToInternalStorage();
                             closeLoadingDialog();
                         }
                     }
@@ -1395,6 +1408,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
+                            saveChartToInternalStorage();
                             closeLoadingDialog();
                         }
                     }
@@ -1544,6 +1558,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             chart_combined.getXAxis().setAxisMaximum(counting-0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
+                            saveChartToInternalStorage();
                             closeLoadingDialog();
                         }
                     }
@@ -1681,6 +1696,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             chart_combined.getXAxis().setAxisMaximum(counting-0.5f);
                             chart_combined.setDragEnabled(true);
                             chart_combined.invalidate();
+                            saveChartToInternalStorage();
                             closeLoadingDialog();
                         }
                     }
@@ -1711,6 +1727,36 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
             builder.append(aDate);
         }
         return builder.toString();
+    }
+
+    private void saveChartToInternalStorage(){
+        if(chart_combined != null){
+            chart_combined.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    new MaterialDialog.Builder(view.getContext())
+                            .content(view.getContext().getResources().getString(R.string.save_chart_to_gallery))
+                            .positiveText(view.getContext().getResources().getString(R.string.main_agree))
+                            .negativeText(view.getContext().getResources().getString(R.string.main_disagree))
+                            .positiveColor(view.getContext().getResources().getColor(R.color.primary_dark))
+                            .negativeColor(view.getContext().getResources().getColor(R.color.black))
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    @SuppressLint("SimpleDateFormat")
+                                    SimpleDateFormat sdf = new SimpleDateFormat("yyMMddkkmmss");
+                                    Calendar cal = Calendar.getInstance();
+                                    String chartName = "chart_" + sdf.format(cal.getTime());
+                                    chart_combined.saveToGallery(chartName,View.DRAWING_CACHE_QUALITY_HIGH);
+                                    Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.save_success_chart,chartName), Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .build()
+                            .show();
+                    return true;
+                }
+            });
+        }
     }
 
 
