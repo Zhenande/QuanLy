@@ -646,12 +646,17 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
      * */
     private boolean validateForm() {
         boolean valid = true;
+        String patternName = "[a-zA-Z\\s]+";
 
         String name = txtName.getText().toString();
         if (TextUtils.isEmpty(name)) {
             txtName.setError(getResources().getString(R.string.required));
             valid = false;
-        } else {
+        }
+        else if(!name.matches(patternName)){
+
+        }
+        else {
             txtName.setError(null);
         }
 
@@ -752,7 +757,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             result.append(s);
             result.append(" ");
             result.append(timeStart);
-            result.append(":");
+            result.append("-");
             result.append(timeEnd);
             result.append(";");
         }
@@ -775,7 +780,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[0]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -786,7 +791,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[1]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -797,7 +802,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[2]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -827,7 +832,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[0]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -838,7 +843,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[1]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -849,7 +854,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[2]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -871,7 +876,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[0]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -882,7 +887,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[1]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -893,7 +898,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[2]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -904,7 +909,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[3]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -928,7 +933,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[0]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -939,7 +944,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[1]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -950,7 +955,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[2]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -958,7 +963,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[3]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -978,7 +983,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[0]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -986,7 +991,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[1]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -994,7 +999,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[2]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -1002,7 +1007,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[3]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -1010,7 +1015,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[4]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -1018,7 +1023,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[5]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 
@@ -1026,7 +1031,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         result.append(dayWork[6]);
         result.append(" ");
         result.append(timeStart);
-        result.append(":");
+        result.append("-");
         result.append(timeEnd);
         result.append(";");
 

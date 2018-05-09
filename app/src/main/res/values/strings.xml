@@ -25,6 +25,7 @@
     <string name="saturday">Saturday</string>
     <string name="sunday">Sunday</string>
     <string name="day">Day</string>
+    <string name="hintTime">hh:mm</string>
 
     <!--=================================Main Activity===================================================-->
     <string name="main_language">Language</string>
@@ -187,6 +188,10 @@
     <string name="employee_detail_update_success">Update success</string>
     <string name="employee_detail_delete_success">Delete success</string>
     <string name="employee_detail_content_delete">Do you want to delete this employee?</string>
+    <string name="employee_detail_name_regex_error">Name just content only letter</string>
+    <string name="employee_detail_email_regex_error">Email does not match email regex</string>
+    <string name="employee_detail_phone_regex_error">Phone content only number and have 10 to 11 numbers</string>
+
 
     <!--===============================Detail Menu=============================================-->
     <string name="detail_menu_update">Update</string>

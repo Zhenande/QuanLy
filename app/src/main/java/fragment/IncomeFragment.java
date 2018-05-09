@@ -1761,7 +1761,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * */
     private boolean checkCorrectYear(int year) {
         Calendar cal = Calendar.getInstance();
-        if(cal.get(Calendar.YEAR) < year){
+        if(cal.get(Calendar.YEAR) <= year){
             Toast.makeText(getActivity().getApplicationContext(),view.getResources().getString(R.string.year_input_after_current_year),Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -1940,7 +1940,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                 buttonMonth.setText(view.getContext().getResources().getString(R.string.month_year_date,monthOfYear+1,year));
                 }
                 break;
-            case 2: if(checkCorrectYear(year)){
+            case 2:
+            case 3: if(checkCorrectYear(year)){
                 buttonYear.setText(view.getContext().getResources().getString(R.string.year_date,year+""));
                 }
                 break;

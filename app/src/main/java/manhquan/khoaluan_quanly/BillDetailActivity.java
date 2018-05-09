@@ -639,6 +639,7 @@ public class BillDetailActivity extends AppCompatActivity {
         if(isFirstInit) {
             listPositionFoodNotCook.clear();
         }
+        resetColorListData();
         for (String s : foodName) {
             String compare = s.split(" {4}")[0];
             for (int j = 0; j < listData.size(); j++) {
@@ -647,19 +648,22 @@ public class BillDetailActivity extends AppCompatActivity {
                         listPositionFoodNotCook.add(j);
                     }
                     else{
-                        // fill row with bluelight color
+                        // fill row with blue light color
                         View view = getViewByPosition(j, listViewFoodOnBill);
                         view.setBackgroundColor(getResources().getColor(R.color.blueLight));
                     }
                 }
-                else{
-                    // fill row with bluelight color
-                    View view = getViewByPosition(j, listViewFoodOnBill);
-                    view.setBackgroundColor(getResources().getColor(R.color.white));
-                }
             }
         }
         isFirstInit = false;
+    }
+
+    private void resetColorListData() {
+        for(int i = 0; i < listData.size(); i++){
+            // fill row with white color
+            View view = getViewByPosition(i, listViewFoodOnBill);
+            view.setBackgroundColor(getResources().getColor(R.color.white));
+        }
     }
 
 
