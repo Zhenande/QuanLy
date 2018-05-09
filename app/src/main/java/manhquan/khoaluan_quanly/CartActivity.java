@@ -33,7 +33,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +52,9 @@ import fragment.FoodFragment;
 import model.FoodOnBill;
 import util.GlobalVariable;
 import util.MoneyFormatter;
+
+import static util.GlobalVariable.closeLoadingDialog;
+import static util.GlobalVariable.showLoadingDialog;
 
 public class CartActivity extends AppCompatActivity implements  AdapterView.OnItemSelectedListener, View.OnClickListener, FoodChooseListAdapter.CallBackFood {
 
@@ -78,7 +80,6 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat sdf_Time = new SimpleDateFormat("HH:mm");
     private String restaurantID;
-    private MaterialDialog dialogLoading;
     private StringBuilder nameFoodSendToCook = new StringBuilder();
     private String time;
     private List<String> listFullTable = new ArrayList<>();
@@ -269,7 +270,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
         GlobalVariable.tableCusID = "";
         GlobalVariable.tableChoose = "";
 
-        showLoadingDialog();
+        showLoadingDialog(this);
 
         db.collection(QuanLyConstants.TABLE)
             .whereEqualTo(QuanLyConstants.RESTAURANT_ID, restaurantID)
@@ -430,7 +431,7 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
         GlobalVariable.tableCusID = "";
         GlobalVariable.tableChoose = "";
 
-        showLoadingDialog();
+        showLoadingDialog(this);
         // First, Get the CustomerID through the PhoneNumber
         // Because the PhoneNumber is Unique
 
@@ -632,17 +633,6 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
             cashTotal += (fob.getPrice() * fob.getQuantity());
         }
         return MoneyFormatter.formatToMoney(cashTotal) + " VNĐ";
-    }
-
-    public void showLoadingDialog(){
-        dialogLoading = new MaterialDialog.Builder(this)
-                .backgroundColor(getResources().getColor(R.color.primary_dark))
-                .customView(R.layout.loading_dialog,true)
-                .show();
-    }
-
-    public void closeLoadingDialog(){
-        dialogLoading.dismiss();
     }
 
     @Override

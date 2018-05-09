@@ -21,7 +21,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -61,6 +60,9 @@ import util.MoneyAxisValueFormatter;
 import util.MonthAxisValueFormatter;
 import util.OrderAxisValueFormatter;
 import util.WeekAxisValueFormatter;
+
+import static util.GlobalVariable.closeLoadingDialog;
+import static util.GlobalVariable.showLoadingDialog;
 
 
 /**
@@ -104,7 +106,6 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     private SimpleDateFormat sdf_full_date = new SimpleDateFormat("yyyy/MM/dd");
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat sdf_date_display = new SimpleDateFormat("dd/MM/yyyy");
-    private MaterialDialog dialogLoading;
     private int dayOfYear = 1;
     private String restaurantID;
     private final String TAG = "IncomeFragment";
@@ -305,7 +306,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * Draw chart Time: Date and Type: Income
     * */
     private void drawChart0_0() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         db.collection(QuanLyConstants.ORDER)
             .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
             .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
@@ -395,7 +396,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * Draw chart Time: Month and Type: Income
     * */
     private void drawChart0_1() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         Calendar cal = Calendar.getInstance();
         String[] monthC = buttonMonth.getText().toString().split("/");
         cal.set(Calendar.MONTH, Integer.parseInt(monthC[0])-1);
@@ -499,7 +500,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * Draw chart Time: Quarter and Type: Income
     * */
     private void drawChart0_2() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         Calendar cal = Calendar.getInstance();
         int startMonth = (spinnerQuarter.getSelectedItemPosition()*3);
         cal.set(Calendar.MONTH, startMonth);
@@ -617,7 +618,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * Draw chart Time: Year and Type: Income
     * */
     private void drawChart0_3() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MONTH, 0);
         cal.set(Calendar.YEAR, Integer.parseInt(buttonYear.getText().toString()));
@@ -732,7 +733,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * Draw chart Time: Date and Type: Order
     * */
     private void drawChart1_0() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         db.collection(QuanLyConstants.ORDER)
                 .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
                 .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
@@ -818,7 +819,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * Draw chart Time: Month and Type: Order
     * */
     private void drawChart1_1() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         Calendar cal = Calendar.getInstance();
         String[] monthC = buttonMonth.getText().toString().split("/");
         cal.set(Calendar.MONTH, Integer.parseInt(monthC[0])-1);
@@ -922,7 +923,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * Draw chart Time: Quarter and Type: Number Order
     * */
     private void drawChart1_2() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         Calendar cal = Calendar.getInstance();
         int startMonth = (spinnerQuarter.getSelectedItemPosition()*3);
         cal.set(Calendar.MONTH, startMonth);
@@ -1039,7 +1040,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * Draw chart Time: Year and Type: Number Order
     * */
     private void drawChart1_3() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MONTH, 0);
         cal.set(Calendar.YEAR, Integer.parseInt(buttonYear.getText().toString()));
@@ -1154,7 +1155,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * Draw chart Time: Date and Type: Both
     * */
     private void drawChart2_0() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         db.collection(QuanLyConstants.ORDER)
                 .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
                 .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
@@ -1286,7 +1287,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * Draw chart Time: Month and Type: Both
     * */
     private void drawChart2_1() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         Calendar cal = Calendar.getInstance();
         String[] monthC = buttonMonth.getText().toString().split("/");
         cal.set(Calendar.MONTH, Integer.parseInt(monthC[0])-1);
@@ -1411,7 +1412,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * Draw chart Time: Quarter and Type: Income
     * */
     private void drawChart2_2() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         Calendar cal = Calendar.getInstance();
         int startMonth = (spinnerQuarter.getSelectedItemPosition()*3);
         cal.set(Calendar.MONTH, startMonth);
@@ -1560,7 +1561,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
     * Draw chart Time: Year and Type: Both
     * */
     private void drawChart2_3() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MONTH, 0);
         cal.set(Calendar.YEAR, Integer.parseInt(buttonYear.getText().toString()));
@@ -1946,16 +1947,6 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                 }
                 break;
         }
-    }
-
-    public void showLoadingDialog(){
-        dialogLoading = new MaterialDialog.Builder(view.getContext())
-                .customView(R.layout.loading_dialog,true)
-                .show();
-    }
-
-    public void closeLoadingDialog(){
-        dialogLoading.dismiss();
     }
 
     public String getRestaurantID(){

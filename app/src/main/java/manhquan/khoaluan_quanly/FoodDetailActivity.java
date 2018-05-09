@@ -1,7 +1,6 @@
 package manhquan.khoaluan_quanly;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -9,7 +8,9 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,7 +40,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.text.Normalizer;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,8 +51,10 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
-import fragment.FoodFragment;
 import util.GlideApp;
+
+import static util.GlobalVariable.closeLoadingDialog;
+import static util.GlobalVariable.showLoadingDialog;
 
 public class FoodDetailActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -75,7 +80,6 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     private Image image;
     private String TAG = "FoodDetailActivity";
     private String foodID;
-    private MaterialDialog dialogLoading;
     private String imageName;
     private boolean createDone = false;
     private boolean available = false;
@@ -85,6 +89,8 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     private MenuItem item;
     // Use when update food type of the food and the food type that just have 1 food
     private String oldFoodType = "";
+    private String current = "";
+    private NumberFormat numberFormat = new DecimalFormat("###,###");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +113,36 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
             GetFoodNeedUpdate();
             closeEdit();
         }
+
+        txtPrice.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(!s.toString().equals(current)){
+                    txtPrice.removeTextChangedListener(this);
+
+                    String cleanString = s.toString().replaceAll("[$,.]", "");
+
+                    double parsed = Double.parseDouble(cleanString);
+                    String formatted = numberFormat.format(parsed);
+
+                    current = formatted;
+                    txtPrice.setText(formatted);
+                    txtPrice.setSelection(formatted.length());
+
+                    txtPrice.addTextChangedListener(this);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         buttonCamera.setOnClickListener(this);
         buttonGallary.setOnClickListener(this);
@@ -140,7 +176,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     * @purpose: Render the food selected by the user
     * */
     private void GetFoodNeedUpdate() {
-        showLoadingDialog();
+        showLoadingDialog(this);
         db.collection(QuanLyConstants.FOOD)
                 .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
                 .whereEqualTo(QuanLyConstants.FOOD_NAME,foodName)
@@ -186,11 +222,11 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         if(viewID == R.id.food_detail_button_add){
             if(validateForm()){
                 if(buttonCreate.getText().toString().equals(getResources().getString(R.string.detail_menu_update))){
-                    showLoadingDialog();
+                    showLoadingDialog(this);
                     updateButtonClick();
                 }
                 else{
-                    showLoadingDialog();
+                    showLoadingDialog(this);
                     createButtonClick();
                 }
             }
@@ -254,7 +290,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     * Delete food when click on menu
     * */
     private void deleteFood(){
-        showLoadingDialog();
+        showLoadingDialog(this);
         new MaterialDialog.Builder(this)
                 .title(getResources().getString(R.string.detail_menu_delete))
                 .content(getResources().getString(R.string.food_detail_content_delete))
@@ -543,16 +579,6 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
             Log.i(TAG,"Rename Success");
         }
         return result.toString();
-    }
-
-    public void showLoadingDialog(){
-        dialogLoading = new MaterialDialog.Builder(this)
-                .customView(R.layout.loading_dialog,true)
-                .show();
-    }
-
-    public void closeLoadingDialog(){
-        dialogLoading.dismiss();
     }
 
     public void closeEdit(){

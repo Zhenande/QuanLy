@@ -4,7 +4,6 @@ package fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -52,6 +51,10 @@ import model.FoodOnBill;
 import util.GlideApp;
 import util.MoneyFormatter;
 
+import static util.GlobalVariable.closeLoadingDialog;
+import static util.GlobalVariable.dialogLoading;
+import static util.GlobalVariable.showLoadingDialog;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -65,7 +68,6 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
     public ListView listView;
     private ArrayList<Food> listData = new ArrayList<>();
     private MenuFoodListAdapter listFoodAdapter;
-    private MaterialDialog dialogLoading;
     private String restaurantID;
     private FirebaseFirestore db;
     private String foodType;
@@ -150,7 +152,9 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
      * */
     public void renderData() {
         listData.clear();
-        showLoadingDialog();
+        if(!dialogLoading.isShowing()){
+            showLoadingDialog(view.getContext());
+        }
         db.collection(QuanLyConstants.FOOD)
                 .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
                 .whereEqualTo(QuanLyConstants.FOOD_TYPE, foodType)
@@ -185,7 +189,9 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
      * */
     public void renderData_Cook_Manager() {
         listData.clear();
-        showLoadingDialog();
+        if(!dialogLoading.isShowing()){
+            showLoadingDialog(view.getContext());
+        }
         db.collection(QuanLyConstants.FOOD)
                 .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
                 .whereEqualTo(QuanLyConstants.FOOD_TYPE, foodType)
@@ -221,16 +227,6 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         String langPref = QuanLyConstants.RESTAURANT_ID;
         SharedPreferences prefs = getActivity().getSharedPreferences(QuanLyConstants.SHARED_PERFERENCE, Activity.MODE_PRIVATE);
         return prefs.getString(langPref,"");
-    }
-
-    public void showLoadingDialog(){
-        dialogLoading = new MaterialDialog.Builder(view.getContext())
-                .customView(R.layout.loading_dialog,true)
-                .show();
-    }
-
-    public void closeLoadingDialog(){
-        dialogLoading.dismiss();
     }
 
     public int getPosition(){

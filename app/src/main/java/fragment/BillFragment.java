@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -52,6 +53,10 @@ import manhquan.khoaluan_quanly.BillDetailActivity;
 import manhquan.khoaluan_quanly.R;
 import model.Bill;
 
+import static util.GlobalVariable.closeLoadingDialog;
+import static util.GlobalVariable.dialogLoading;
+import static util.GlobalVariable.showLoadingDialog;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -85,15 +90,16 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
     private SpinnerDatePickerDialogBuilder dateSpinner;
     private View view;
     private FirebaseFirestore db;
-    private MaterialDialog dialogLoading;
     @SuppressLint("SimpleDateFormat")
-    private SimpleDateFormat sdf_Date = new SimpleDateFormat("yyyy/MM/dd");
+    private SimpleDateFormat sdf_Date = new SimpleDateFormat("yyMMdd");
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat sdf_Display = new SimpleDateFormat("dd/MM/yyyy");
     private boolean flag_loading;
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat sdf_Time = new SimpleDateFormat("kk:mm");
     private String restaurantID;
+    private boolean isHaveFooter = false;
+    private ViewGroup myFooter;
 
     public BillFragment() {
         // Required empty public constructor
@@ -107,6 +113,9 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
         view = inflater.inflate(R.layout.fragment_bill, container, false);
 
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        Activity activity = (Activity)view.getContext();
+        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         ButterKnife.bind(this,view);
         db = FirebaseFirestore.getInstance();
@@ -159,7 +168,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
 
 
     private void renderData(String date) {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         listData.clear();
         listShow.clear();
         db.collection(QuanLyConstants.ORDER)
@@ -188,9 +197,19 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                         });
                         closeLoadingDialog();
                         getMoreItems();
+
                     }
                 }
             });
+    }
+
+    private void addFooterNoData() {
+        if(listBill.getFooterViewsCount() == 0){
+            Activity activity = (Activity)view.getContext();
+            myFooter = (ViewGroup)activity.getLayoutInflater().inflate(R.layout.list_view_no_data, listBill,false);
+            listBill.addFooterView(myFooter,null,false);
+            isHaveFooter = true;
+        }
     }
 
 
@@ -279,7 +298,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
     }
 
     private void doButtonSearch() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         if(!cbAdvancedSearch.isChecked()){
             searchNormal();
         }
@@ -333,6 +352,21 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                                 listData.add(bill);
                             }
                         }
+                        Collections.sort(listData, new Comparator<Bill>() {
+                            @Override
+                            public int compare(Bill o1, Bill o2) {
+                                return o1.getBillNumber().compareTo(o2.getBillNumber());
+                            }
+                        });
+                        if(listData.size()==0){
+                            addFooterNoData();
+                        }
+                        else{
+                            if(isHaveFooter){
+                                listBill.removeFooterView(myFooter);
+                                isHaveFooter = false;
+                            }
+                        }
                         getMoreItems();
                         closeLoadingDialog();
                     }
@@ -384,6 +418,22 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                                     listData.add(bill);
                                 }
                             }
+                            Collections.sort(listData, new Comparator<Bill>() {
+                                @Override
+                                public int compare(Bill o1, Bill o2) {
+                                    return o1.getBillNumber().compareTo(o2.getBillNumber());
+                                }
+                            });
+                            if(listData.size()==0){
+                                addFooterNoData();
+                            }
+                            else{
+                                if(isHaveFooter){
+                                    // View 0 is Header
+                                    listBill.removeFooterView(myFooter);
+                                    isHaveFooter = false;
+                                }
+                            }
                             getMoreItems();
                             closeLoadingDialog();
                         }
@@ -405,6 +455,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
         }
         db.collection(QuanLyConstants.ORDER)
                 .whereEqualTo(QuanLyConstants.RESTAURANT_ID, restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -421,6 +472,22 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                                     bill.setTime(document.get(QuanLyConstants.ORDER_TIME).toString());
                                     bill.setCostTotal(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
                                     listData.add(bill);
+                                }
+                            }
+                            Collections.sort(listData, new Comparator<Bill>() {
+                                @Override
+                                public int compare(Bill o1, Bill o2) {
+                                    return o1.getBillNumber().compareTo(o2.getBillNumber());
+                                }
+                            });
+                            if(listData.size()==0){
+                                addFooterNoData();
+                            }
+                            else{
+                                if(isHaveFooter){
+                                    // View 0 is Header
+                                    listBill.removeFooterView(myFooter);
+                                    isHaveFooter = false;
                                 }
                             }
                             getMoreItems();
@@ -457,16 +524,6 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
         return true;
     }
 
-    public void showLoadingDialog(){
-        dialogLoading = new MaterialDialog.Builder(view.getContext())
-                .backgroundColor(view.getContext().getResources().getColor(R.color.primary_dark))
-                .customView(R.layout.loading_dialog,true)
-                .show();
-    }
-
-    public void closeLoadingDialog(){
-        dialogLoading.dismiss();
-    }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -477,7 +534,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
 
     private void getMoreItems(){
         if(!dialogLoading.isShowing()){
-            showLoadingDialog();
+            showLoadingDialog(view.getContext());
         }
         int count = 0;
         while(count < 10 && listData.size() > 0){

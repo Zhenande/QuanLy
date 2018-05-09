@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -55,7 +56,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         mPasswordField.setText("zhenande");
         updateUI(null);
     }
-// [END on_start_check_user]
+    // [END on_start_check_user]
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +68,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         ButterKnife.bind(this);
 
         Button buttonSignIn = findViewById(R.id.sign_in_button_action);
-
-
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         buttonSignIn.setOnClickListener(this);
         mAuth = FirebaseAuth.getInstance();
         mStore = FirebaseFirestore.getInstance();
@@ -97,7 +97,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(SignInActivity.this, getResources().getString(R.string.sign_in_faild_input),
                                     Toast.LENGTH_SHORT).show();
-                            closeLoadingDialog();
+                            GlobalVariable.closeLoadingDialog();
                             updateUI(null);
                         }
                     }
@@ -146,7 +146,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                                         i.putExtra(QuanLyConstants.EMPLOYEE_NAME,emName);
                                         GlobalVariable.employeeID = document.getId();
                                         saveRestaurantID(document.get(QuanLyConstants.RESTAURANT_ID).toString());
-                                        closeLoadingDialog();
+                                        GlobalVariable.closeLoadingDialog();
                                         startActivity(i);
                                     }
                                 }
@@ -175,21 +175,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         int id = v.getId();
         if(id == R.id.sign_in_button_action){
             if(validateForm()){
-                showLoadingDialog();
+                GlobalVariable.showLoadingDialog(SignInActivity.this);
                 signIn(mEmailField.getText().toString().trim(),mPasswordField.getText().toString().trim());
             }
         }
-    }
-
-    public void showLoadingDialog(){
-        dialogLoading = new MaterialDialog.Builder(this)
-                .customView(R.layout.loading_dialog,true)
-                .backgroundColor(getResources().getColor(R.color.primary_darker))
-                .show();
-    }
-
-    public void closeLoadingDialog(){
-        dialogLoading.dismiss();
     }
 
     @Override

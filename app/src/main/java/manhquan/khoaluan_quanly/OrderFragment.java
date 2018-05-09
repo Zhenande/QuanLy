@@ -3,15 +3,12 @@ package manhquan.khoaluan_quanly;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,12 +17,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -37,8 +30,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
-import com.thoughtbot.expandablecheckrecyclerview.listeners.OnCheckChildClickListener;
-import com.thoughtbot.expandablecheckrecyclerview.models.CheckedExpandableGroup;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,8 +45,9 @@ import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import model.CookFood;
 import model.FoodInside;
-import util.GlobalVariable;
-import util.MoneyFormatter;
+
+import static util.GlobalVariable.closeLoadingDialog;
+import static util.GlobalVariable.showLoadingDialog;
 
 
 /**
@@ -74,7 +66,6 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
     private CookFoodAdapter adapter;
     private FirebaseFirestore db;
     private String restaurantID;
-    private MaterialDialog dialogLoading;
     private static final String TAG = "OrderFragment";
     private boolean isFirst = true;
 
@@ -106,7 +97,7 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
     }
 
     private void renderData() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         db.collection(QuanLyConstants.COOK)
             .document(restaurantID)
             .collection(QuanLyConstants.TABLE)
@@ -273,8 +264,8 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                     return;
                 }
 
-                String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
-                        ? "Local" : "Server";
+//                String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
+//                        ? "Local" : "Server";
 
                 if (snapshot != null && snapshot.exists()) {
                     Map<String, Object> order = snapshot.getData();
@@ -283,8 +274,8 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                         String[] content = snapshot.get(QuanLyConstants.FOOD_NAME).toString().split(";");
                         List<FoodInside> listFoodName = new ArrayList<>();
                         if(!content[0].equals("")){
-                            for (int i = 0; i < content.length; i++) {
-                                listFoodName.add(new FoodInside(content[i]));
+                            for (String aContent : content) {
+                                listFoodName.add(new FoodInside(aContent));
                             }
                         }
                         // Get the new change of time, employeeID, title
@@ -434,7 +425,7 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
     }
 
     private void updateDataToServer() {
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
         // Remove the food have been cooked and prepare bring to the customer -- Start
         db.collection(QuanLyConstants.COOK)
             .document(restaurantID)
@@ -448,7 +439,7 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
                     if(task.isSuccessful()){
                         int i = 0;
                         for(DocumentSnapshot document : task.getResult()){
-                            String tableNumber = document.get(QuanLyConstants.TABLE_NUMBER).toString();
+//                            String tableNumber = document.get(QuanLyConstants.TABLE_NUMBER).toString();
                             Map<String, Object> cook = new HashMap<>();
                             cook.put(QuanLyConstants.FOOD_NAME, getFoodName(i));
                             DocumentReference docRef = document.getReference();
@@ -553,14 +544,4 @@ public class OrderFragment extends Fragment implements View.OnClickListener {
         return builder.toString();
     }
 
-    public void showLoadingDialog(){
-        dialogLoading = new MaterialDialog.Builder(view.getContext())
-                .backgroundColor(getResources().getColor(R.color.primary_dark))
-                .customView(R.layout.loading_dialog,true)
-                .show();
-    }
-
-    public void closeLoadingDialog(){
-        dialogLoading.dismiss();
-    }
 }

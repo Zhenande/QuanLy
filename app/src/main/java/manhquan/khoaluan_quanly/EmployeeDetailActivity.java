@@ -43,6 +43,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 
+import static util.GlobalVariable.closeLoadingDialog;
+import static util.GlobalVariable.showLoadingDialog;
+
 public class EmployeeDetailActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "EmployeeDetailActivity";
@@ -158,7 +161,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         }
         else {
             // Update Employee
-            showLoadingDialog();
+            showLoadingDialog(this);
             buttonUpdate.setText(getResources().getString(R.string.employee_detail_button_save));
             renderUI(employeeID);
         }
@@ -197,7 +200,7 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             return true;
         }
         if(id == R.id.action_delete){
-            showLoadingDialog();
+            showLoadingDialog(this);
             deleteEmployee();
             return true;
         }
@@ -360,17 +363,6 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             }
         }
 
-    }
-
-    public void showLoadingDialog(){
-        dialogLoading = new MaterialDialog.Builder(this)
-                .backgroundColor(getResources().getColor(R.color.primary_dark))
-                .customView(R.layout.loading_dialog,true)
-                .show();
-    }
-
-    public void closeLoadingDialog(){
-        dialogLoading.dismiss();
     }
 
     /*
@@ -647,6 +639,10 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
     private boolean validateForm() {
         boolean valid = true;
         String patternName = "[a-zA-Z\\s]+";
+        String patternEmail = "\\w+@\\w+.\\w+";
+        String patternPassword = "\\w{6,}";
+        String patternPhone = "\\d{10,11}";
+        String patternTime = "[0-2]{1}[0-9]{1}:[0-5]{1}[0-9]{1}";
 
         String name = txtName.getText().toString();
         if (TextUtils.isEmpty(name)) {
@@ -654,7 +650,8 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             valid = false;
         }
         else if(!name.matches(patternName)){
-
+            txtName.setError(getResources().getString(R.string.employee_detail_name_regex_error));
+            valid = false;
         }
         else {
             txtName.setError(null);
@@ -664,7 +661,12 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         if (TextUtils.isEmpty(username)) {
             txtUsername.setError(getResources().getString(R.string.required));
             valid = false;
-        } else {
+        }
+        else if(!username.matches(patternEmail)){
+            txtUsername.setError(getResources().getString(R.string.employee_detail_email_regex_error));
+            valid = false;
+        }
+        else {
             txtUsername.setError(null);
         }
 
@@ -672,7 +674,12 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         if (TextUtils.isEmpty(password)) {
             txtPassword.setError(getResources().getString(R.string.required));
             valid = false;
-        } else {
+        }
+        else if(!password.matches(patternPassword)){
+            txtPassword.setError(getResources().getString(R.string.employee_detail_password_regex_error));
+            valid = false;
+        }
+        else {
             txtPassword.setError(null);
         }
 
@@ -680,7 +687,12 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         if (TextUtils.isEmpty(contactNumber)) {
             txtContactNumber.setError(getResources().getString(R.string.required));
             valid = false;
-        } else {
+        }
+        else if(!contactNumber.matches(patternPhone)){
+            txtContactNumber.setError(getResources().getString(R.string.employee_detail_phone_regex_error));
+            valid = false;
+        }
+        else {
             txtContactNumber.setError(null);
         }
 
@@ -691,6 +703,10 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
                 edStart.setError(getResources().getString(R.string.required));
                 valid = false;
             }
+            else if(!shiftStart.matches(patternTime)){
+                edStart.setError(getResources().getString(R.string.employee_detail_time_regex_error));
+                valid = false;
+            }
             else{
                 edStart.setError(null);
             }
@@ -699,29 +715,28 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
                 edEnd.setError(getResources().getString(R.string.required));
                 valid = false;
             }
+            else if(!shiftEnd.matches(patternTime)){
+                edEnd.setError(getResources().getString(R.string.employee_detail_time_regex_error));
+                valid = false;
+            }
             else{
                 edEnd.setError(null);
             }
         }
         else{
             // Choose custom type
-            // If Time Start not null then Time End will not null too
-            // If Time Start null, then Time End does not need to care
-
-            String monday_Start = edStart_Monday.getText().toString();
-            if(!TextUtils.isEmpty(monday_Start)){
-                String monday_End = edEnd_Monday.getText().toString();
-                if(TextUtils.isEmpty(monday_End)){
-                    edEnd_Monday.setError(getResources().getString(R.string.required));
-                }
-                else{
-                    edEnd_Monday.setError(null);
-                }
-            }
-
+            valid = getValidOfCustomTime();
         }
 
         return valid;
+    }
+
+    private boolean getValidOfCustomTime() {
+        boolean result = true;
+
+
+
+        return result;
     }
 
     public String getNormalDayWork(){
@@ -1164,12 +1179,12 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
             if(buttonUpdate.getText().equals(getResources().getString(R.string.add_account_button_create))){
                 // meaning create new employee
                 if(validateForm()){
-                    showLoadingDialog();
+                    showLoadingDialog(this);
                     createAuthForEmployee();
                 }
             }
             else{
-                showLoadingDialog();
+                showLoadingDialog(this);
                 String dayWork;
                 if(spinnerType.getSelectedItemPosition()+1 == spinnerType.getCount()){
                     dayWork = getCustomDayWork();

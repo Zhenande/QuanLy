@@ -129,6 +129,7 @@
         <item>Q4</item>
     </string-array>
     <string name="week">Week </string>
+    <string name="list_have_no_data">Can not find data on request</string>
     <string name="income_chart_no_data_error">The time you choose does not have any order. Please check again!</string>
     <string name="income_time_date_error">Date start and Date end can not over 31 days</string>
 
@@ -191,6 +192,8 @@
     <string name="employee_detail_name_regex_error">Name just content only letter</string>
     <string name="employee_detail_email_regex_error">Email does not match email regex</string>
     <string name="employee_detail_phone_regex_error">Phone content only number and have 10 to 11 numbers</string>
+    <string name="employee_detail_time_regex_error">Time input must follow regex (hh:mm)</string>
+    <string name="employee_detail_password_regex_error">Password must contain at least 6 characters</string>
 
 
     <!--===============================Detail Menu=============================================-->

@@ -23,6 +23,7 @@
     <string name="saturday">Thứ 7</string>
     <string name="sunday">Chủ Nhật</string>
     <string name="day">Ngày</string>
+    <string name="list_have_no_data">Không tìm thấy dữ liệu theo yêu cầu</string>
 
     <!--=================================Main Activity===================================================-->
     <string name="main_language">Ngôn ngữ</string>
@@ -183,6 +184,11 @@
     <string name="employee_detail_update_success">Cập nhật thành công</string>
     <string name="employee_detail_delete_success">Xóa thành công</string>
     <string name="employee_detail_content_delete">Bạn có muốn xóa nhân viên này không?</string>
+    <string name="employee_detail_name_regex_error">Tên chỉ gồm những ký tự</string>
+    <string name="employee_detail_email_regex_error">Email không đúng quy cách</string>
+    <string name="employee_detail_phone_regex_error">Số điện thoại liên hệ chỉ gồm 10 đến 11 số</string>
+    <string name="employee_detail_time_regex_error">Thời gian nhập phải theo quy cách (hh:mm)</string>
+    <string name="employee_detail_password_regex_error">Mật khẩu phải gồm ít nhất 6 ký tự</string>
 
     <!--===============================Detail Menu=============================================-->
     <string name="detail_menu_update">Cập nhật</string>

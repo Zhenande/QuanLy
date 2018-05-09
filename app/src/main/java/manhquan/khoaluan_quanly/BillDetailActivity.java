@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,10 +38,7 @@ import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -49,11 +47,11 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import constants.QuanLyConstants;
 import adapter.ListFoodOnBillAdapter;
-import model.FoodInside;
 import model.FoodOnBill;
-import model.NotiContent;
-import model.Notification;
 import util.MoneyFormatter;
+
+import static util.GlobalVariable.closeLoadingDialog;
+import static util.GlobalVariable.showLoadingDialog;
 
 public class BillDetailActivity extends AppCompatActivity {
 
@@ -101,11 +99,13 @@ public class BillDetailActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         restaurantID = getRestaurantID();
         tableNumber = getIntent().getStringExtra(QuanLyConstants.TABLE_NUMBER);
         if(TextUtils.isEmpty(tableNumber)) {
             // Open from BillFragment
-            flagRemoveItem = true;
+            flagRemoveItem = false;
             saveOrderID = getIntent().getStringExtra(QuanLyConstants.TABLE_ORDER_ID);
             processCheckOrder();
             displayOrderDetail();
@@ -158,7 +158,7 @@ public class BillDetailActivity extends AppCompatActivity {
     }
 
     private void displayOrderDetail() {
-        showLoadingDialog();
+        showLoadingDialog(this);
         db.collection(QuanLyConstants.ORDER)
             .document(saveOrderID)
             .get()
@@ -196,16 +196,6 @@ public class BillDetailActivity extends AppCompatActivity {
             });
     }
 
-    public void showLoadingDialog(){
-        dialogLoading = new MaterialDialog.Builder(this)
-                .customView(R.layout.loading_dialog,true)
-                .show();
-    }
-
-    public void closeLoadingDialog(){
-        dialogLoading.dismiss();
-    }
-
     /*
      * @author: ManhLD
      * @param: tableID
@@ -213,7 +203,7 @@ public class BillDetailActivity extends AppCompatActivity {
      * Second, it will put that into this method to display the needed information
      * */
     public void renderData(){
-        showLoadingDialog();
+        showLoadingDialog(this);
         db.collection(QuanLyConstants.TABLE)
             .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
             .get()
@@ -331,10 +321,10 @@ public class BillDetailActivity extends AppCompatActivity {
                                 fob.setQuantity(quantity);
                                 listData.add(fob);
                             }
-                            // Get the food does not cook, to prevent remove food had been serviced
-                            validServiceFood();
 
                             if(flagRemoveItem){
+                                // Get the food does not cook, to prevent remove food had been serviced
+                                validServiceFood();
                                 listViewFoodOnBill.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(AdapterView<?> parent,final View view, final int position, long id) {
@@ -411,6 +401,9 @@ public class BillDetailActivity extends AppCompatActivity {
                                         }
                                     }
                                 });
+                            }
+                            if(!flagRemoveItem){
+                                closeLoadingDialog();
                             }
                             listFoodOnBillAdapter.notifyDataSetChanged();
                         }

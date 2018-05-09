@@ -24,7 +24,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -44,6 +43,10 @@ import adapter.EmployeeListViewAdapter;
 import manhquan.khoaluan_quanly.EmployeeDetailActivity;
 import manhquan.khoaluan_quanly.R;
 import model.Cook;
+
+import static util.GlobalVariable.closeLoadingDialog;
+import static util.GlobalVariable.dialogLoading;
+import static util.GlobalVariable.showLoadingDialog;
 
 
 /**
@@ -68,12 +71,13 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
     public EditText edEmployeeName;
 //    private ArrayList<String> listEmployeeID = new ArrayList<>();
     private View view;
-    private MaterialDialog dialogLoading;
     private FirebaseFirestore db;
     private boolean isFirstInit = true;
     private boolean flag_loading;
     private String restaurantID;
     private List<Employee> listShow;
+    private ViewGroup myFooter;
+    private boolean isHaveFooter = false;
 
 
     public EmployeeFragment() {
@@ -95,7 +99,7 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
         listShow = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
 
-        showLoadingDialog();
+        showLoadingDialog(view.getContext());
 
         ViewGroup myHeader = (ViewGroup)inflater.inflate(R.layout.employee_list_item, employeeListView,false);
         employeeListView.addHeaderView(myHeader,null,false);
@@ -174,6 +178,7 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
     }
 
     private void renderSearchData(final int posDate) {
+        showLoadingDialog(view.getContext());
         db.collection(QuanLyConstants.EMPLOYEE)
             .whereEqualTo(QuanLyConstants.RESTAURANT_ID, restaurantID)
             .whereGreaterThan(QuanLyConstants.EMPLOYEE_POSITION,1)
@@ -203,6 +208,16 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
                                 }
                             }
                         }
+                        if(listData.size()==0){
+                            addFooterNoData();
+                        }
+                        else{
+                            if(isHaveFooter){
+                                employeeListView.removeFooterView(myFooter);
+                                isHaveFooter = false;
+                            }
+                        }
+                        closeLoadingDialog();
                     }
                 }
             })
@@ -212,6 +227,15 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
                     Log.e(TAG,e.getMessage());
                 }
             });
+    }
+
+    private void addFooterNoData() {
+        if(employeeListView.getFooterViewsCount() == 0){
+            Activity activity = (Activity)view.getContext();
+            myFooter = (ViewGroup)activity.getLayoutInflater().inflate(R.layout.list_view_no_data, employeeListView,false);
+            employeeListView.addFooterView(myFooter,null,false);
+            isHaveFooter = true;
+        }
     }
 
     private boolean validInputSearch() {
@@ -304,17 +328,6 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
         return prefs.getString(langPref,"");
     }
 
-    public void showLoadingDialog(){
-        dialogLoading = new MaterialDialog.Builder(view.getContext())
-                .backgroundColor(view.getContext().getResources().getColor(R.color.primary))
-                .customView(R.layout.loading_dialog,true)
-                .show();
-    }
-
-    public void closeLoadingDialog(){
-        dialogLoading.dismiss();
-    }
-
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if(!isFirstInit){
@@ -329,7 +342,7 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
 
     private void getMoreItems(){
         if(!dialogLoading.isShowing()){
-            showLoadingDialog();
+            showLoadingDialog(view.getContext());
         }
         int count = 0;
         while(count < 10 && listData.size() > 0){

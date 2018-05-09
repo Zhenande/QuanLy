@@ -27,10 +27,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,28 +35,21 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
-import adapter.GridListViewAdapter;
 import adapter.NotificationAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -72,8 +62,10 @@ import fragment.RestaurantFragment;
 import model.NotiContent;
 import model.Notification;
 import util.GlobalVariable;
-import util.MoneyFormatter;
 import util.NotificationTouchHelper;
+
+import static util.GlobalVariable.closeLoadingDialog;
+import static util.GlobalVariable.showLoadingDialog;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, NotificationTouchHelper.CallBackRemoveItem {
@@ -98,7 +90,6 @@ public class MainActivity extends AppCompatActivity
     private boolean isFirst = true;
     private int position;
     private String emName;
-    private MaterialDialog dialogLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -504,20 +495,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void showLoadingDialog(){
-        dialogLoading = new MaterialDialog.Builder(this)
-                .backgroundColor(getResources().getColor(R.color.primary_dark))
-                .customView(R.layout.loading_dialog,true)
-                .show();
-    }
-
-    public void closeLoadingDialog(){
-        dialogLoading.dismiss();
-    }
-
     private void clickOnItemListView(final MaterialDialog dialogChoose) {
         View view = dialogChoose.getView();
-        showLoadingDialog();
+        showLoadingDialog(this);
         if(listNotification.size()==0){
             dialogChoose.dismiss();
             Toast.makeText(this, getResources().getString(R.string.notification_error), Toast.LENGTH_SHORT).show();
