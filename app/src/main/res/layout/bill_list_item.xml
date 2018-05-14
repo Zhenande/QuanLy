@@ -13,7 +13,7 @@
         style="@style/TextBlack"
         android:gravity="center"
         android:layout_width="0dp"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/bill_list_bill_number"
@@ -22,7 +22,7 @@
         style="@style/TextBlack"
         android:gravity="center"
         android:layout_width="0dp"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/bill_list_time"
@@ -31,7 +31,7 @@
         style="@style/TextBlack"
         android:gravity="center"
         android:layout_width="0dp"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
 
 
     <TextView
@@ -41,6 +41,6 @@
         style="@style/TextBlack"
         android:gravity="center"
         android:layout_width="0dp"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>

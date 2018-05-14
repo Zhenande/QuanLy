@@ -56,4 +56,10 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="DetailEditText">
+        <item name="android:background">@drawable/background_rounded_edittext</item>
+        <item name="android:minHeight">35dp</item>
+        <item name="android:paddingLeft">5dp</item>
+    </style>
+
 </resources>

@@ -49,7 +49,7 @@
 
         <EditText
             android:id="@+id/bill_fragment_id"
-            style="@style/TextBlack"
+            style="@style/DetailEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"

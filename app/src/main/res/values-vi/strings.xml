@@ -122,7 +122,8 @@
     <string-array name="income_spinner_kindOfChart">
         <item>Doanh thu</item>
         <item>Hóa đơn</item>
-        <item>Cả hai</item>
+        <item>Doanh thu và Hóa đơn</item>
+        <item>Món hot</item>
     </string-array>
     <string-array name="income_spinner_quarter">
         <item>Q1</item>

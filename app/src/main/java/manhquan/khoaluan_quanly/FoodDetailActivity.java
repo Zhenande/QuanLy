@@ -126,14 +126,15 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                     txtPrice.removeTextChangedListener(this);
 
                     String cleanString = s.toString().replaceAll("[$,.]", "");
+                    if(!TextUtils.isEmpty(cleanString)) {
+                        double parsed = Double.parseDouble(cleanString);
+                        String formatted = numberFormat.format(parsed);
 
-                    double parsed = Double.parseDouble(cleanString);
-                    String formatted = numberFormat.format(parsed);
+                        current = formatted;
+                        txtPrice.setText(formatted);
+                        txtPrice.setSelection(formatted.length());
 
-                    current = formatted;
-                    txtPrice.setText(formatted);
-                    txtPrice.setSelection(formatted.length());
-
+                    }
                     txtPrice.addTextChangedListener(this);
                 }
             }
@@ -443,9 +444,10 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
 
             String[] getImageName = newPath.split("/");
             String imageName = getImageName[getImageName.length-1];
+            String cleanPrice = txtPrice.getText().toString().replaceAll(",","");
             Map<String, Object> food = new HashMap<>();
             food.put(QuanLyConstants.FOOD_NAME,txtName.getText().toString());
-            food.put(QuanLyConstants.FOOD_PRICE,txtPrice.getText().toString());
+            food.put(QuanLyConstants.FOOD_PRICE,cleanPrice);
             food.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
             food.put(QuanLyConstants.FOOD_DESCRIPTION,txtDescription.getText().toString());
             food.put(QuanLyConstants.FOOD_TYPE,txtType.getText().toString().toLowerCase());
@@ -499,17 +501,17 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     * */
     private boolean validateForm() {
         boolean valid = true;
-        String patternFoodName = "\\w{1,100}";
+        //String patternFoodName = "\\w{1,100}";
 
         String name = txtName.getText().toString();
         if (TextUtils.isEmpty(name)) {
             txtName.setError(getResources().getString(R.string.required));
             valid = false;
         }
-        else if(!name.matches(patternFoodName)){
-            txtName.setError(getResources().getString(R.string.food_detail_name_too_long));
-            valid = false;
-        }
+//        else if(!name.matches(patternFoodName)){
+//            txtName.setError(getResources().getString(R.string.food_detail_name_too_long));
+//            valid = false;
+//        }
         else {
             txtName.setError(null);
         }
@@ -535,10 +537,10 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
             txtType.setError(getResources().getString(R.string.required));
             valid = false;
         }
-        else if(!name.matches(patternFoodName)){
-            txtType.setError(getResources().getString(R.string.food_detail_type_too_long));
-            valid = false;
-        }
+//        else if(!name.matches(patternFoodName)){
+//            txtType.setError(getResources().getString(R.string.food_detail_type_too_long));
+//            valid = false;
+//        }
         else {
             txtType.setError(null);
         }

@@ -22,9 +22,9 @@
 
         <EditText
             android:id="@+id/employee_detail_editEmployeeName"
-            android:background="@color/white_greyish"
             android:labelFor="@+id/employee_detail_txtEmployeeName"
             android:inputType="textPersonName"
+            style="@style/DetailEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:ignore="LabelFor,TextFields" />
@@ -38,8 +38,8 @@
 
         <EditText
             android:id="@+id/employee_detail_editEmployeeUsername"
-            android:background="@color/white_greyish"
             android:labelFor="@+id/employee_detail_txtEmployeeUsername"
+            style="@style/DetailEditText"
             android:inputType="textEmailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -54,8 +54,8 @@
 
         <EditText
             android:id="@+id/employee_detail_editEmployeePassword"
-            android:background="@color/white_greyish"
             android:labelFor="@+id/employee_detail_txtEmployeePassword"
+            style="@style/DetailEditText"
             android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -70,9 +70,9 @@
 
         <EditText
             android:id="@+id/employee_detail_editEmployeeContactNumber"
-            android:background="@color/white_greyish"
             android:inputType="phone"
             android:labelFor="@+id/employee_detail_txtEmployeeContactNumber"
+            style="@style/DetailEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:ignore="LabelFor" />
@@ -113,10 +113,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftStart"
-                    android:background="@color/white_greyish"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:inputType="time"
                     android:gravity="center"
                     android:layout_width="80dp"
@@ -132,11 +132,11 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftEnd"
-                    android:background="@color/white_greyish"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:inputType="time"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:gravity="center"
                     android:layout_width="80dp"
                     android:layout_height="wrap_content" />
@@ -181,10 +181,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftStart2"
-                    android:background="@color/white_greyish"
                     android:inputType="time"
                     android:gravity="center"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:layout_width="80dp"
@@ -200,10 +200,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftEnd2"
-                    android:background="@color/white_greyish"
                     android:inputType="time"
                     android:gravity="center"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:layout_width="80dp"
@@ -233,10 +233,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftStart3"
-                    android:background="@color/white_greyish"
                     android:inputType="time"
                     android:gravity="center"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:layout_width="80dp"
@@ -252,10 +252,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftEnd3"
-                    android:background="@color/white_greyish"
                     android:inputType="time"
                     android:gravity="center"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:layout_width="80dp"
@@ -285,10 +285,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftStart4"
-                    android:background="@color/white_greyish"
                     android:inputType="time"
                     android:gravity="center"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:layout_width="80dp"
@@ -304,10 +304,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftEnd4"
-                    android:background="@color/white_greyish"
                     android:inputType="time"
                     android:gravity="center"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:layout_width="80dp"
@@ -337,10 +337,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftStart5"
-                    android:background="@color/white_greyish"
                     android:inputType="time"
                     android:gravity="center"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:layout_width="80dp"
@@ -356,10 +356,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftEnd5"
-                    android:background="@color/white_greyish"
                     android:inputType="time"
                     android:gravity="center"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:layout_width="80dp"
@@ -389,10 +389,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftStart6"
-                    android:background="@color/white_greyish"
                     android:inputType="time"
                     android:gravity="center"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:layout_width="80dp"
@@ -408,10 +408,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftEnd6"
-                    android:background="@color/white_greyish"
                     android:inputType="time"
                     android:gravity="center"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:layout_width="80dp"
@@ -441,10 +441,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftStart7"
-                    android:background="@color/white_greyish"
                     android:inputType="time"
                     android:gravity="center"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:layout_width="80dp"
@@ -460,10 +460,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftEnd7"
-                    android:background="@color/white_greyish"
                     android:inputType="time"
                     android:gravity="center"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:layout_width="80dp"
@@ -493,10 +493,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftStart8"
-                    android:background="@color/white_greyish"
                     android:inputType="time"
                     android:gravity="center"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:layout_width="80dp"
@@ -512,10 +512,10 @@
 
                 <EditText
                     android:id="@+id/employee_detail_editShiftEnd8"
-                    android:background="@color/white_greyish"
                     android:inputType="time"
                     android:gravity="center"
                     android:hint="@string/hintTime"
+                    style="@style/DetailEditText"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="0dp"
                     android:layout_width="80dp"

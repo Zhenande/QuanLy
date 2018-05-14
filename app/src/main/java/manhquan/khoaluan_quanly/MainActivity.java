@@ -141,27 +141,22 @@ public class MainActivity extends AppCompatActivity
     }
 
 //    private void changeData() {
-//        db.collection(QuanLyConstants.EMPLOYEE)
-//            .whereEqualTo(QuanLyConstants.RESTAURANT_ID, restaurantID)
+//        db.collection(QuanLyConstants.ORDER)
+//            .whereEqualTo(QuanLyConstants.RESTAURANT_ID, getRestaurantID())
+//            .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
 //            .get()
 //            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 //                @Override
 //                public void onComplete(@NonNull Task<QuerySnapshot> task) {
 //                    if(task.isSuccessful()){
 //                        for(DocumentSnapshot document : task.getResult()){
-//                            String dayWork = "monday 8:00-17:30;tuesday 8:00-17:30;wednesday 8:00-17:30;thursday 8:00-17:30;friday 8:00-17:30; ; ;";
-//                            Map<String,Object> update = new HashMap<>();
-//                            update.put(QuanLyConstants.EMPLOYEE_WORKDAY, dayWork);
-//                            document.getReference().set(update,SetOptions.merge());
+//                            String totalCostOld = document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString();
+//                            if(totalCostOld.contains("Total: ")){
+//                                String totalCostNew = totalCostOld.replace("Total: ","");
+//                                document.getReference().update(QuanLyConstants.ORDER_CASH_TOTAL,totalCostNew);
+//                            }
 //                        }
-//                        Log.i(TAG,"DONE");
 //                    }
-//                }
-//            })
-//            .addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception e) {
-//                    Log.e(TAG,e.getMessage());
 //                }
 //            });
 //    }

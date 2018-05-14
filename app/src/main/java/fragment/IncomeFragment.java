@@ -55,12 +55,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import manhquan.khoaluan_quanly.R;
+import model.WaiterOrder;
 import util.DayAxisValueFormatter;
 import util.DayUtil;
 import util.MoneyFormatter;
 import util.MoneyAxisValueFormatter;
 import util.MonthAxisValueFormatter;
 import util.OrderAxisValueFormatter;
+import util.WaiterOrderAxisValueFormatter;
 import util.WeekAxisValueFormatter;
 
 import static util.GlobalVariable.closeLoadingDialog;
@@ -261,6 +263,10 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                     break;
             case 2: drawChartBoth();
                     break;
+            case 3: drawChartTopFood();
+                    break;
+            case 4: drawChartWaiterOrder();
+                    break;
         }
     }
 
@@ -300,6 +306,32 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                 break;
             case 3: drawChart2_3();
                 break;
+        }
+    }
+
+    private void drawChartTopFood() {
+        switch (spinnerReportTime.getSelectedItemPosition()){
+            case 0: drawChart3_0();
+                break;
+//            case 1: drawChart2_1();
+//                break;
+//            case 2: drawChart2_2();
+//                break;
+//            case 3: drawChart2_3();
+//                break;
+        }
+    }
+
+    private void drawChartWaiterOrder() {
+        switch (spinnerReportTime.getSelectedItemPosition()){
+            case 0: drawChart4_0();
+                break;
+//            case 1: drawChart2_1();
+//                break;
+//            case 2: drawChart2_2();
+//                break;
+//            case 3: drawChart2_3();
+//                break;
         }
     }
 
@@ -1708,6 +1740,187 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                     }
                 });
     }
+
+    private void drawChart3_0() {
+        showLoadingDialog(view.getContext());
+        db.collection(QuanLyConstants.ORDER)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString()))
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonEndDate.getText().toString()))
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            float counting = dayOfYear+1;
+                            String compareDate = DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString());
+                            List<BarEntry> listBar = new ArrayList<>();
+                            double income = 0;
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                do{
+                                    if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
+                                        income += MoneyFormatter.backToNumber(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        if(Double.compare(income,0)>0){
+                                            listBar.add(new BarEntry(counting, (float)income));
+                                            income = 0;
+                                        }
+                                        else{
+                                            // if the compareday is the day restaurant does not open
+                                            listBar.add(new BarEntry(counting, 0f));
+                                        }
+                                        compareDate = increaseDate(compareDate);
+                                        counting++;
+                                    }
+                                }while (flagBreak);
+                            }
+
+                            if(Double.compare(income,0) > 0){
+                                listBar.add(new BarEntry(counting, (float)income));
+                            }
+
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), "The time you choose does not have any order. Please check again!", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size()+1);
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new MoneyAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarData barData = new BarData(barDataSet);
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            chart_combined.setData(combinedData);
+                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()+0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
+                            chart_combined.animateY(2000);
+                            chart_combined.invalidate();
+                            saveChartToInternalStorage();
+                            closeLoadingDialog();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
+                    }
+                });
+    }
+
+    /*
+    * @author: ManhLD
+    * Draw chart type: Waiter Order
+    *            time: Day
+    * */
+    private void drawChart4_0() {
+        showLoadingDialog(view.getContext());
+        db.collection(QuanLyConstants.ORDER)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString()))
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonEndDate.getText().toString()))
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            String compareDate = DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString());
+                            ArrayList<WaiterOrder> listData = new ArrayList<>();
+                            List<BarEntry> listBar = new ArrayList<>();
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                do{
+                                    if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
+                                        boolean newWaiter = true;
+                                        String waiterName = document.get(QuanLyConstants.EMPLOYEE_NAME).toString();
+                                        for(WaiterOrder wo : listData){
+                                            if(wo.getWaiterName().equals(waiterName)){
+                                                wo.setNumberOrder(wo.getNumberOrder()+1);
+                                                newWaiter = false;
+                                                break;
+                                            }
+                                        }
+                                        if(newWaiter){
+                                            listData.add(new WaiterOrder(waiterName,0));
+                                        }
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        compareDate = increaseDate(compareDate);
+                                    }
+                                }while (flagBreak);
+                            }
+
+                            if(listData.size()==0){
+                                Toast.makeText(view.getContext(), "The time you choose does not have any order. Please check again!", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            for(int i = 0; i < listData.size(); i++){
+                                listBar.add(new BarEntry(i+1, listData.get(i).getNumberOrder()));
+                            }
+                            IAxisValueFormatter xAxisFormatter = new WaiterOrderAxisValueFormatter(listData);
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size()+1);
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new MoneyAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarData barData = new BarData(barDataSet);
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            chart_combined.setData(combinedData);
+                            chart_combined.getXAxis().setAxisMinimum(listBar.size()+0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(0.5f);
+                            chart_combined.animateY(2000);
+                            chart_combined.invalidate();
+                            saveChartToInternalStorage();
+                            closeLoadingDialog();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
+                    }
+                });
+    }
+
+
 
     /*
     * @author: ManhLD

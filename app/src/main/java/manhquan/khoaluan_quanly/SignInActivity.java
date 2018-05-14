@@ -44,7 +44,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private FirebaseAuth mAuth;
     private FirebaseFirestore mStore;
     private int position;
-    private MaterialDialog dialogLoading;
     private boolean doubleBackToExitPressedOnce = false;
 
     // [START on_start_check_user]

@@ -122,7 +122,9 @@
     <string-array name="income_spinner_kindOfChart">
         <item>Revenue</item>
         <item>Order</item>
-        <item>Both</item>
+        <item>Revenue and Order</item>
+        <item>Top food</item>
+        <item>Waiter Order</item>
     </string-array>
     <string-array name="income_spinner_quarter">
         <item>Q1</item>

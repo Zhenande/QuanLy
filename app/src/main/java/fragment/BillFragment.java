@@ -91,7 +91,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
     private View view;
     private FirebaseFirestore db;
     @SuppressLint("SimpleDateFormat")
-    private SimpleDateFormat sdf_Date = new SimpleDateFormat("yyMMdd");
+    private SimpleDateFormat sdf_Date = new SimpleDateFormat("yyyy/MM/dd");
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat sdf_Display = new SimpleDateFormat("dd/MM/yyyy");
     private boolean flag_loading;
@@ -181,6 +181,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if(task.isSuccessful()){
                         for(DocumentSnapshot document : task.getResult()){
+//                            String dateType = document.get(QuanLyConstants.ORDER_DATE).toString();
                             Bill bill = new Bill();
                             bill.setId(document.getId());
                             bill.setBillNumber(document.get(QuanLyConstants.BILL_NUMBER).toString());
@@ -197,7 +198,6 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                         });
                         closeLoadingDialog();
                         getMoreItems();
-
                     }
                 }
             });

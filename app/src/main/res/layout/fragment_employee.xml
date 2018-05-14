@@ -39,14 +39,14 @@
             <TextView
                 android:text="@string/employee_Name"
                 style="@style/TextBlack"
-                android:layout_weight="0.8"
-                android:minWidth="120dp"
+                android:layout_weight="0.7"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
 
             <EditText
                 android:id="@+id/employee_fragment_edEmName"
                 android:layout_weight="3"
+                style="@style/DetailEditText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
 
