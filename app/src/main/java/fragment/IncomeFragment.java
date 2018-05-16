@@ -39,6 +39,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tsongkha.spinnerdatepicker.DatePickerDialog;
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder;
@@ -132,7 +133,10 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         ButterKnife.bind(this,view);
 
         db = FirebaseFirestore.getInstance();
-
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
         ArrayAdapter<CharSequence> adapterReportTime = ArrayAdapter.createFromResource(view.getContext(), R.array.income_spinner_reportTime,
                 android.R.layout.simple_spinner_item);
 
@@ -263,9 +267,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                     break;
             case 2: drawChartBoth();
                     break;
-            case 3: drawChartTopFood();
-                    break;
-            case 4: drawChartWaiterOrder();
+            case 3: drawChartWaiterOrder();
                     break;
         }
     }
@@ -309,31 +311,20 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         }
     }
 
-    private void drawChartTopFood() {
+    private void drawChartWaiterOrder() {
         switch (spinnerReportTime.getSelectedItemPosition()){
             case 0: drawChart3_0();
                 break;
-//            case 1: drawChart2_1();
-//                break;
-//            case 2: drawChart2_2();
-//                break;
-//            case 3: drawChart2_3();
-//                break;
+            case 1: drawChart3_1();
+                break;
+            case 2: drawChart3_2();
+                break;
+            case 3: drawChart3_3();
+                break;
         }
     }
 
-    private void drawChartWaiterOrder() {
-        switch (spinnerReportTime.getSelectedItemPosition()){
-            case 0: drawChart4_0();
-                break;
-//            case 1: drawChart2_1();
-//                break;
-//            case 2: drawChart2_2();
-//                break;
-//            case 3: drawChart2_3();
-//                break;
-        }
-    }
+
 
     /*
     * @authot: ManhLD
@@ -383,7 +374,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                         }
 
                         if(listBar.size()==0){
-                            Toast.makeText(view.getContext(), "The time you choose does not have any order. Please check again!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
                             return;
                         }
                         IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
@@ -404,7 +395,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                         leftAxis.setSpaceTop(15f);
                         leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-                        BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                        BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.revenue));
                         BarData barData = new BarData(barDataSet);
                         CombinedData combinedData = new CombinedData();
                         combinedData.setData(barData);
@@ -482,6 +473,10 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 listBar.add(new BarEntry(counting, (float)income));
                                 counting++;
                             }
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
 
                             // When the user choose the current
                             // Ex: currentDate is 19/4/2018 but the user choose to create chart 4/2018
@@ -509,7 +504,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             leftAxis.setSpaceTop(15f);
                             leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.revenue));
                             BarData barData = new BarData(barDataSet);
                             CombinedData combinedData = new CombinedData();
                             combinedData.setData(barData);
@@ -601,6 +596,10 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 listBar.add(new BarEntry(counting, (float)income));
                                 counting++;
                             }
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
 
                             // When the user choose the current quarter
                             // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
@@ -628,7 +627,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             leftAxis.setSpaceTop(15f);
                             leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.revenue));
                             BarData barData = new BarData(barDataSet);
                             CombinedData combinedData = new CombinedData();
                             combinedData.setData(barData);
@@ -717,6 +716,10 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 listBar.add(new BarEntry(counting, (float)income));
                                 counting++;
                             }
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
 
                             // When the user choose the current quarter
                             // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
@@ -744,7 +747,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             leftAxis.setSpaceTop(15f);
                             leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.revenue));
                             BarData barData = new BarData(barDataSet);
                             CombinedData combinedData = new CombinedData();
                             combinedData.setData(barData);
@@ -814,6 +817,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 listBar.add(new BarEntry(counting, (float)numberOrder));
                             }
 
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
 
                             XAxis xAxis = chart_combined.getXAxis();
@@ -832,7 +840,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             leftAxis.setSpaceTop(15f);
                             leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-                            BarDataSet barDataSet = new BarDataSet(listBar, "Order Number");
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.order));
                             BarData barData = new BarData(barDataSet);
                             CombinedData combinedData = new CombinedData();
                             combinedData.setData(barData);
@@ -911,6 +919,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 counting++;
                             }
 
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             // When the user choose the current
                             // Ex: currentDate is 19/4/2018 but the user choose to create chart 4/2018
                             // So i need to add the remaining date of the month.
@@ -937,7 +950,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             leftAxis.setSpaceTop(15f);
                             leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.order));
                             BarData barData = new BarData(barDataSet);
                             CombinedData combinedData = new CombinedData();
                             combinedData.setData(barData);
@@ -1029,6 +1042,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 counting++;
                             }
 
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             // When the user choose the current quarter
                             // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
                             // So i need to add the remaining date of the month.
@@ -1055,7 +1073,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             leftAxis.setSpaceTop(15f);
                             leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-                            BarDataSet barDataSet = new BarDataSet(listBar, "Number Order");
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.order));
                             BarData barData = new BarData(barDataSet);
                             CombinedData combinedData = new CombinedData();
                             combinedData.setData(barData);
@@ -1145,6 +1163,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 counting++;
                             }
 
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             // When the user choose the current quarter
                             // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
                             // So i need to add the remaining date of the month.
@@ -1171,7 +1194,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             leftAxis.setSpaceTop(15f);
                             leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.order));
                             BarData barData = new BarData(barDataSet);
                             CombinedData combinedData = new CombinedData();
                             combinedData.setData(barData);
@@ -1258,6 +1281,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 listLineEntry.add(new Entry(counting, (float) numberOrder));
                             }
 
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             if(listLineEntry.size()==0){
                                 listLineEntry.add(new Entry(0,0f));
                             }
@@ -1295,11 +1323,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             rightAxis.setSpaceTop(15f);
                             rightAxis.setAxisMinimum(0f);
 
-                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.revenue));
                             barDataSet.setAxisDependency(YAxis.AxisDependency.LEFT); // set the listBar data to the Left Axis
                             BarData barData = new BarData(barDataSet);
 
-                            LineDataSet lineDataSet = new LineDataSet(listLineEntry, "Number Order");
+                            LineDataSet lineDataSet = new LineDataSet(listLineEntry, view.getContext().getResources().getString(R.string.order));
                             lineDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT); // set the listLineEntry data to the Right Axis
                             lineDataSet.setColor(view.getContext().getResources().getColor(R.color.yellow));
                             LineData lineData = new LineData(lineDataSet);
@@ -1391,6 +1419,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 counting++;
                             }
 
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             // When the user choose the current
                             // Ex: currentDate is 19/4/2018 but the user choose to create chart 4/2018
                             // So i need to add the remaining date of the month.
@@ -1422,11 +1455,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             leftAxis.setSpaceTop(15f);
                             leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.revenue));
                             barDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
                             BarData barData = new BarData(barDataSet);
 
-                            LineDataSet lineDataSet = new LineDataSet(listLineEntry, "Order Number");
+                            LineDataSet lineDataSet = new LineDataSet(listLineEntry, view.getContext().getResources().getString(R.string.order));
                             lineDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
                             lineDataSet.setColor(view.getContext().getResources().getColor(R.color.yellow));
                             LineData lineData = new LineData(lineDataSet);
@@ -1530,6 +1563,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 counting++;
                             }
 
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             // When the user choose the current quarter
                             // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
                             // So i need to add the remaining date of the month.
@@ -1571,11 +1609,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             rightAxis.setSpaceTop(15f);
                             rightAxis.setAxisMinimum(0f);
 
-                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.revenue));
                             barDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
                             BarData barData = new BarData(barDataSet);
 
-                            LineDataSet lineDataSet = new LineDataSet(listLineEntry, "Number Order");
+                            LineDataSet lineDataSet = new LineDataSet(listLineEntry, view.getContext().getResources().getString(R.string.order));
                             lineDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
                             lineDataSet.setColor(view.getContext().getResources().getColor(R.color.yellow));
                             LineData lineData = new LineData(lineDataSet);
@@ -1679,6 +1717,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 counting++;
                             }
 
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             // When the user choose the current quarter
                             // Ex: currentDate is 19/4/2018 but the user choose to create chart Quarter 2 / 2018
                             // So i need to add the remaining date of the month.
@@ -1710,11 +1753,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             leftAxis.setSpaceTop(15f);
                             leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.revenue));
                             barDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
                             BarData barData = new BarData(barDataSet);
 
-                            LineDataSet lineDataSet = new LineDataSet(listLineEntry, "Number Order");
+                            LineDataSet lineDataSet = new LineDataSet(listLineEntry, view.getContext().getResources().getString(R.string.order));
                             lineDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
                             lineDataSet.setColor(view.getContext().getResources().getColor(R.color.yellow));
                             LineData lineData = new LineData(lineDataSet);
@@ -1741,99 +1784,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                 });
     }
 
-    private void drawChart3_0() {
-        showLoadingDialog(view.getContext());
-        db.collection(QuanLyConstants.ORDER)
-                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
-                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
-                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString()))
-                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, DayUtil.changeDayDisplayToDaySort(buttonEndDate.getText().toString()))
-                .orderBy(QuanLyConstants.ORDER_DATE)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            float counting = dayOfYear+1;
-                            String compareDate = DayUtil.changeDayDisplayToDaySort(buttonStartDate.getText().toString());
-                            List<BarEntry> listBar = new ArrayList<>();
-                            double income = 0;
-                            for(DocumentSnapshot document : task.getResult()){
-                                boolean flagBreak = true;
-                                do{
-                                    if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
-                                        income += MoneyFormatter.backToNumber(document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString());
-                                        flagBreak = false;
-                                    }
-                                    else{
-                                        if(Double.compare(income,0)>0){
-                                            listBar.add(new BarEntry(counting, (float)income));
-                                            income = 0;
-                                        }
-                                        else{
-                                            // if the compareday is the day restaurant does not open
-                                            listBar.add(new BarEntry(counting, 0f));
-                                        }
-                                        compareDate = increaseDate(compareDate);
-                                        counting++;
-                                    }
-                                }while (flagBreak);
-                            }
-
-                            if(Double.compare(income,0) > 0){
-                                listBar.add(new BarEntry(counting, (float)income));
-                            }
-
-                            if(listBar.size()==0){
-                                Toast.makeText(view.getContext(), "The time you choose does not have any order. Please check again!", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
-
-                            XAxis xAxis = chart_combined.getXAxis();
-                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-                            xAxis.setDrawGridLines(false);
-                            xAxis.setGranularity(1f);
-                            xAxis.setLabelCount(listBar.size()+1);
-                            xAxis.setValueFormatter(xAxisFormatter);
-
-                            IAxisValueFormatter yAxisFormatter = new MoneyAxisValueFormatter();
-
-                            YAxis leftAxis = chart_combined.getAxisLeft();
-                            leftAxis.setLabelCount(8, false);
-                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
-                            leftAxis.setValueFormatter(yAxisFormatter);
-                            leftAxis.setSpaceTop(15f);
-                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
-
-                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
-                            BarData barData = new BarData(barDataSet);
-                            CombinedData combinedData = new CombinedData();
-                            combinedData.setData(barData);
-                            chart_combined.setData(combinedData);
-                            chart_combined.getXAxis().setAxisMinimum(counting-listBar.size()+0.5f);
-                            chart_combined.getXAxis().setAxisMaximum(counting+0.5f);
-                            chart_combined.animateY(2000);
-                            chart_combined.invalidate();
-                            saveChartToInternalStorage();
-                            closeLoadingDialog();
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG,e.getMessage());
-                    }
-                });
-    }
-
     /*
     * @author: ManhLD
     * Draw chart type: Waiter Order
     *            time: Day
     * */
-    private void drawChart4_0() {
+    private void drawChart3_0() {
         showLoadingDialog(view.getContext());
         db.collection(QuanLyConstants.ORDER)
                 .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
@@ -1854,7 +1810,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 do{
                                     if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
                                         boolean newWaiter = true;
-                                        String waiterName = document.get(QuanLyConstants.EMPLOYEE_NAME).toString();
+                                        String waiterName = document.get(QuanLyConstants.ORDER_WAITER_NAME).toString();
                                         for(WaiterOrder wo : listData){
                                             if(wo.getWaiterName().equals(waiterName)){
                                                 wo.setNumberOrder(wo.getNumberOrder()+1);
@@ -1873,10 +1829,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                                 }while (flagBreak);
                             }
 
-                            if(listData.size()==0){
-                                Toast.makeText(view.getContext(), "The time you choose does not have any order. Please check again!", Toast.LENGTH_SHORT).show();
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
                                 return;
                             }
+
                             for(int i = 0; i < listData.size(); i++){
                                 listBar.add(new BarEntry(i+1, listData.get(i).getNumberOrder()));
                             }
@@ -1889,7 +1846,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             xAxis.setLabelCount(listBar.size()+1);
                             xAxis.setValueFormatter(xAxisFormatter);
 
-                            IAxisValueFormatter yAxisFormatter = new MoneyAxisValueFormatter();
+                            IAxisValueFormatter yAxisFormatter = new OrderAxisValueFormatter();
 
                             YAxis leftAxis = chart_combined.getAxisLeft();
                             leftAxis.setLabelCount(8, false);
@@ -1898,13 +1855,15 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             leftAxis.setSpaceTop(15f);
                             leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-                            BarDataSet barDataSet = new BarDataSet(listBar, "Income");
+                            chart_combined.getAxisRight().setEnabled(false);
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.order));
                             BarData barData = new BarData(barDataSet);
                             CombinedData combinedData = new CombinedData();
                             combinedData.setData(barData);
                             chart_combined.setData(combinedData);
-                            chart_combined.getXAxis().setAxisMinimum(listBar.size()+0.5f);
-                            chart_combined.getXAxis().setAxisMaximum(0.5f);
+                            chart_combined.getXAxis().setAxisMinimum(0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(listBar.size()+0.5f);
                             chart_combined.animateY(2000);
                             chart_combined.invalidate();
                             saveChartToInternalStorage();
@@ -1920,7 +1879,335 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                 });
     }
 
+    /*
+    * @authot: ManhLD
+    * Draw chart Time: Month and Type: Waiter Order
+    * */
+    private void drawChart3_1() {
+        showLoadingDialog(view.getContext());
+        Calendar cal = Calendar.getInstance();
+        String[] monthC = buttonMonth.getText().toString().split("/");
+        cal.set(Calendar.MONTH, Integer.parseInt(monthC[0])-1);
+        cal.set(Calendar.YEAR, Integer.parseInt(monthC[1]));
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        final String startDate = sdf_full_date.format(cal.getTime());
+        final int dayOfMonth = getLastDateOfMonth(Integer.parseInt(monthC[0])-1,Integer.parseInt(monthC[1]));
+        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        String endDate = sdf_full_date.format(cal.getTime());
+        db.collection(QuanLyConstants.ORDER)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            String compareDate = startDate;
+                            ArrayList<WaiterOrder> listData = new ArrayList<>();
+                            List<BarEntry> listBar = new ArrayList<>();
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                do{
+                                    if(document.get(QuanLyConstants.ORDER_DATE).toString().equals(compareDate)){
+                                        boolean newWaiter = true;
+                                        String waiterName = document.get(QuanLyConstants.ORDER_WAITER_NAME).toString();
+                                        for(WaiterOrder wo : listData){
+                                            if(wo.getWaiterName().equals(waiterName)){
+                                                wo.setNumberOrder(wo.getNumberOrder()+1);
+                                                newWaiter = false;
+                                                break;
+                                            }
+                                        }
+                                        if(newWaiter){
+                                            listData.add(new WaiterOrder(waiterName,0));
+                                        }
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        compareDate = increaseDate(compareDate);
+                                    }
+                                }while (flagBreak);
+                            }
 
+                            for(int i = 0; i < listData.size(); i++){
+                                listBar.add(new BarEntry(i+1, listData.get(i).getNumberOrder()));
+                            }
+
+                            IAxisValueFormatter xAxisFormatter = new WaiterOrderAxisValueFormatter(listData);
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size()+1);
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new OrderAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                            chart_combined.getAxisRight().setEnabled(false);
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.order));
+                            BarData barData = new BarData(barDataSet);
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            chart_combined.setData(combinedData);
+                            chart_combined.animateY(2000);
+                            chart_combined.getXAxis().setAxisMinimum(0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(listBar.size()+0.5f);
+                            chart_combined.setDragEnabled(true);
+                            chart_combined.invalidate();
+                            saveChartToInternalStorage();
+                            closeLoadingDialog();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
+                    }
+                });
+    }
+
+    /*
+* @authot: ManhLD
+* Draw chart Time: Quarter and Type: Waiter Order
+* */
+    private void drawChart3_2() {
+        showLoadingDialog(view.getContext());
+        Calendar cal = Calendar.getInstance();
+        int startMonth = (spinnerQuarter.getSelectedItemPosition()*3);
+        cal.set(Calendar.MONTH, startMonth);
+        cal.set(Calendar.YEAR, Integer.parseInt(buttonYear.getText().toString()));
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        final String startDate = sdf_full_date.format(cal.getTime());
+        final int dayOfMonth = getLastDateOfMonth(startMonth+2,Integer.parseInt(buttonYear.getText().toString()));
+        cal.set(Calendar.MONTH, startMonth+2);
+        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        String endDate = sdf_full_date.format(cal.getTime());
+        db.collection(QuanLyConstants.ORDER)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            String[] getStartDate = startDate.split("/");
+                            Calendar compareDate = Calendar.getInstance();
+                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[2]));
+                            compareDate.set(Calendar.MONTH, Integer.parseInt(getStartDate[1])-1);
+                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[0]));
+                            compareDate.add(Calendar.DAY_OF_MONTH,7);
+                            ArrayList<WaiterOrder> listData = new ArrayList<>();
+                            List<BarEntry> listBar = new ArrayList<>();
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                String[] orderDate = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
+                                Calendar cal = Calendar.getInstance();
+                                cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[2]));
+                                cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
+                                cal.set(Calendar.YEAR, Integer.parseInt(orderDate[0]));
+                                do{
+                                    if(cal.before(compareDate)){
+                                        boolean newWaiter = true;
+                                        String waiterName = document.get(QuanLyConstants.ORDER_WAITER_NAME).toString();
+                                        for(WaiterOrder wo : listData){
+                                            if(wo.getWaiterName().equals(waiterName)){
+                                                wo.setNumberOrder(wo.getNumberOrder()+1);
+                                                newWaiter = false;
+                                                break;
+                                            }
+                                        }
+                                        if(newWaiter){
+                                            listData.add(new WaiterOrder(waiterName,0));
+                                        }
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        compareDate.add(Calendar.DAY_OF_MONTH, 7);
+                                    }
+                                }while (flagBreak);
+                            }
+
+                            for(int i = 0; i < listData.size(); i++){
+                                listBar.add(new BarEntry(i+1, listData.get(i).getNumberOrder()));
+                            }
+
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            IAxisValueFormatter xAxisFormatter = new WaiterOrderAxisValueFormatter(listData);
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size()+1);
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new OrderAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                            chart_combined.getAxisRight().setEnabled(false);
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.order));
+                            BarData barData = new BarData(barDataSet);
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            chart_combined.setData(combinedData);
+                            chart_combined.animateY(2000);
+                            chart_combined.getXAxis().setAxisMinimum(0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(listBar.size()+0.5f);
+                            chart_combined.setDragEnabled(true);
+                            chart_combined.invalidate();
+                            saveChartToInternalStorage();
+                            closeLoadingDialog();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
+                    }
+                });
+    }
+
+    /*
+    * @authot: ManhLD
+    * Draw chart Time: Year and Type: Waiter Order
+    * */
+    private void drawChart3_3() {
+        showLoadingDialog(view.getContext());
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MONTH, 0);
+        cal.set(Calendar.YEAR, Integer.parseInt(buttonYear.getText().toString()));
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        final String startDate = sdf_full_date.format(cal.getTime());
+        cal.set(Calendar.MONTH, 11);
+        cal.set(Calendar.DAY_OF_MONTH, 31);
+        String endDate = sdf_full_date.format(cal.getTime());
+        db.collection(QuanLyConstants.ORDER)
+                .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
+                .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+                .whereGreaterThanOrEqualTo(QuanLyConstants.ORDER_DATE, startDate)
+                .whereLessThanOrEqualTo(QuanLyConstants.ORDER_DATE, endDate)
+                .orderBy(QuanLyConstants.ORDER_DATE)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            String[] getStartDate = startDate.split("/");
+                            Calendar compareDate = Calendar.getInstance();
+                            compareDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getStartDate[2]));
+                            compareDate.set(Calendar.MONTH, Integer.parseInt(getStartDate[1])-1);
+                            compareDate.set(Calendar.YEAR, Integer.parseInt(getStartDate[0]));
+                            compareDate.add(Calendar.MONTH,1);
+                            ArrayList<WaiterOrder> listData = new ArrayList<>();
+                            List<BarEntry> listBar = new ArrayList<>();
+                            for(DocumentSnapshot document : task.getResult()){
+                                boolean flagBreak = true;
+                                do{
+                                    String[] orderDate = document.get(QuanLyConstants.ORDER_DATE).toString().split("/");
+                                    Calendar cal = Calendar.getInstance();
+                                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(orderDate[2]));
+                                    cal.set(Calendar.MONTH, Integer.parseInt(orderDate[1])-1);
+                                    cal.set(Calendar.YEAR, Integer.parseInt(orderDate[0]));
+                                    if(cal.before(compareDate)){
+                                        boolean newWaiter = true;
+                                        String waiterName = document.get(QuanLyConstants.ORDER_WAITER_NAME).toString();
+                                        for(WaiterOrder wo : listData){
+                                            if(wo.getWaiterName().equals(waiterName)){
+                                                wo.setNumberOrder(wo.getNumberOrder()+1);
+                                                newWaiter = false;
+                                                break;
+                                            }
+                                        }
+                                        if(newWaiter){
+                                            listData.add(new WaiterOrder(waiterName,0));
+                                        }
+                                        flagBreak = false;
+                                    }
+                                    else{
+                                        compareDate.add(Calendar.MONTH, 1);
+                                    }
+                                }while (flagBreak);
+                            }
+
+                            for(int i = 0; i < listData.size(); i++){
+                                listBar.add(new BarEntry(i+1, listData.get(i).getNumberOrder()));
+                            }
+
+                            if(listBar.size()==0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            IAxisValueFormatter xAxisFormatter = new WaiterOrderAxisValueFormatter(listData);
+
+                            XAxis xAxis = chart_combined.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setGranularity(1f);
+                            xAxis.setLabelCount(listBar.size());
+                            xAxis.setValueFormatter(xAxisFormatter);
+
+                            IAxisValueFormatter yAxisFormatter = new OrderAxisValueFormatter();
+
+                            YAxis leftAxis = chart_combined.getAxisLeft();
+                            leftAxis.setLabelCount(8, false);
+                            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                            leftAxis.setValueFormatter(yAxisFormatter);
+                            leftAxis.setSpaceTop(15f);
+                            leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+                            chart_combined.getAxisRight().setEnabled(false);
+
+                            BarDataSet barDataSet = new BarDataSet(listBar, view.getContext().getResources().getString(R.string.order));
+                            BarData barData = new BarData(barDataSet);
+                            CombinedData combinedData = new CombinedData();
+                            combinedData.setData(barData);
+                            chart_combined.setData(combinedData);
+                            chart_combined.animateY(2000);
+                            chart_combined.getXAxis().setAxisMinimum(0.5f);
+                            chart_combined.getXAxis().setAxisMaximum(listBar.size()+0.5f);
+                            chart_combined.setDragEnabled(true);
+                            chart_combined.invalidate();
+                            saveChartToInternalStorage();
+                            closeLoadingDialog();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG,e.getMessage());
+                    }
+                });
+    }
 
     /*
     * @author: ManhLD
@@ -2037,12 +2324,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
         dateCheck.get(Calendar.MONTH);
         dateCheck.get(Calendar.YEAR);
         if(dateChoose.get(Calendar.YEAR) > dateCheck.get(Calendar.YEAR)){
-            Toast.makeText(getActivity().getApplicationContext(),"Year of month",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity().getApplicationContext(),view.getContext().getResources().getString(R.string.year_input_after_current_year),Toast.LENGTH_SHORT).show();
             return false;
         }
         else if(dateChoose.get(Calendar.YEAR) == dateCheck.get(Calendar.YEAR)){
             if(dateChoose.get(Calendar.MONTH) > dateCheck.get(Calendar.MONTH)){
-                Toast.makeText(getActivity().getApplicationContext(),"Year of month",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(),view.getContext().getResources().getString(R.string.year_input_after_current_year),Toast.LENGTH_SHORT).show();
                 return false;
             }
         }

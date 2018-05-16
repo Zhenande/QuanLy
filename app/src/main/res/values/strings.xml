@@ -6,7 +6,6 @@
     <string name="required">Required.</string>
     <string name="string_done">Done</string>
     <string name="image_content_error">Error Image</string>
-    <string name="money_type">%s VNĐ</string>
     <string name="normal_string">%d </string>
     <string-array name="week_date">
         <item>Monday</item>
@@ -123,7 +122,6 @@
         <item>Revenue</item>
         <item>Order</item>
         <item>Revenue and Order</item>
-        <item>Top food</item>
         <item>Waiter Order</item>
     </string-array>
     <string-array name="income_spinner_quarter">
@@ -133,6 +131,8 @@
         <item>Q4</item>
     </string-array>
     <string name="week">Week </string>
+    <string name="revenue">Revenue</string>
+    <string name="order">Order</string>
     <string name="list_have_no_data">Can not find data on request</string>
     <string name="income_chart_no_data_error">The time you choose does not have any order. Please check again!</string>
     <string name="income_time_date_error">Date start and Date end can not over 31 days</string>
@@ -249,6 +249,7 @@
     <string name="cart_button_order">Order</string>
     <string name="cart_button_checkID">Check ID</string>
     <string name="cart_dialog_warning_no_cusID">The Customer ID is empty. Do you want to order?</string>
+    <string name="order_success">Order Success</string>
 
     <!--===============================Food Fragment=============================================-->
     <string name="food_frag_error_no_food">You have not choose any food</string>
@@ -257,5 +258,6 @@
     <string name="order_frag_no_checked">You have not check any food</string>
     <string name="order_frag_input_food_cooked">Input quantity of %s you have cooked</string>
     <string name="order_frag_add_too_much_food">The customer just call %d of this food. Please check again.</string>
+    <string name="money_type">%s VNĐ</string>
 
 </resources>

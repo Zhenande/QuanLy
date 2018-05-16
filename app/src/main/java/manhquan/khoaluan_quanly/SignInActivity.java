@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import butterknife.BindView;
@@ -42,7 +43,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     public EditText mPasswordField;
 
     private FirebaseAuth mAuth;
-    private FirebaseFirestore mStore;
+    private FirebaseFirestore db;
     private int position;
     private boolean doubleBackToExitPressedOnce = false;
 
@@ -70,7 +71,12 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         buttonSignIn.setOnClickListener(this);
         mAuth = FirebaseAuth.getInstance();
-        mStore = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
+
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
 
     }
 
@@ -130,7 +136,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private void updateUI(FirebaseUser user) {
         final FirebaseUser finalUser = user;
         if (user != null) {
-            mStore.collection(QuanLyConstants.EMPLOYEE)
+            db.collection(QuanLyConstants.EMPLOYEE)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override

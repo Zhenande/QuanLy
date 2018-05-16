@@ -33,6 +33,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -100,7 +101,10 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         db = FirebaseFirestore.getInstance();
         restaurantID = getRestaurantID();
         foodType = getArguments().getCharSequence(QuanLyConstants.FOOD_TYPE).toString();
-
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
         listFoodAdapter = new MenuFoodListAdapter(view.getContext(),listData);
         listView.setAdapter(listFoodAdapter);
         listView.setOnItemClickListener(this);

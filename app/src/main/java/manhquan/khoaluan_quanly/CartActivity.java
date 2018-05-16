@@ -30,6 +30,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
@@ -96,6 +97,10 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
 
         ButterKnife.bind(this);
         db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
 
         if(!TextUtils.isEmpty(GlobalVariable.tableCusID)){
             edCusID.setText(GlobalVariable.tableCusID);

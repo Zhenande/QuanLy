@@ -32,6 +32,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tsongkha.spinnerdatepicker.DatePicker;
 import com.tsongkha.spinnerdatepicker.DatePickerDialog;
@@ -119,7 +120,10 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
 
         ButterKnife.bind(this,view);
         db = FirebaseFirestore.getInstance();
-
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
         dateSpinner = new SpinnerDatePickerDialogBuilder();
 
         buttonDate.setOnClickListener(BillFragment.this);

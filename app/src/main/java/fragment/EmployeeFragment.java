@@ -29,6 +29,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -98,7 +99,10 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
         listData = new ArrayList<>();
         listShow = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
-
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
         showLoadingDialog(view.getContext());
 
         ViewGroup myHeader = (ViewGroup)inflater.inflate(R.layout.employee_list_item, employeeListView,false);

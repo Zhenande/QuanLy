@@ -1,9 +1,12 @@
 package util;
 
+import android.util.Log;
+
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup;
 
 import java.util.ArrayList;
 
@@ -25,7 +28,13 @@ public class WaiterOrderAxisValueFormatter implements IAxisValueFormatter {
     @Override
     public String getFormattedValue(float value, AxisBase axis) {
         int index = (int)value;
-        return listData.get(index).getWaiterName();
+        try{
+            return listData.get(index-1).getWaiterName();
+        }
+        catch (Exception e){
+            Log.e("WaiterOrderAxis",e.getMessage());
+        }
+        return "";
     }
 
 

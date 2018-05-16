@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
@@ -76,7 +77,10 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
         restaurantID = getRestaurantID();
 //        showLoadingDialog(view.getContext());
         GetListFoodType();
-
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
         int positionEm = getPosition();
         if(positionEm == 2 || positionEm == 4){
             buttonCreate.setVisibility(View.GONE);
