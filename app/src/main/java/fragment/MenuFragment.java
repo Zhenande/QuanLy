@@ -138,7 +138,8 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                     String foodName = food.get(QuanLyConstants.FOOD_NAME).toString();
                     for(int i = 0; i < listData.size();i++){
                         if(listData.get(i).getFoodName().equals(foodName)){
-                            listData.get(i).setPrice(Integer.parseInt(food.get(QuanLyConstants.FOOD_PRICE).toString()));
+                            String cleanPrice = food.get(QuanLyConstants.FOOD_PRICE).toString().replaceAll(",","");
+                            listData.get(i).setPrice(Integer.parseInt(cleanPrice));
                             break;
                     }
                     }
@@ -211,7 +212,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                                 food.setFoodType(document.get(QuanLyConstants.FOOD_TYPE).toString());
                                 food.setImageResource(document.get(QuanLyConstants.FOOD_IMAGE_NAME).toString());
                                 food.setFoodName(document.get(QuanLyConstants.FOOD_NAME).toString());
-                                food.setPrice(Integer.parseInt(document.get(QuanLyConstants.FOOD_PRICE).toString()));
+                                food.setPrice(Integer.parseInt(document.get(QuanLyConstants.FOOD_PRICE).toString().replaceAll(",","")));
                                 listData.add(food);
                                 onChangeListener(document.getId());
                             }

@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -92,6 +93,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     private String oldFoodType = "";
     private String current = "";
     private NumberFormat numberFormat = new DecimalFormat("###,###");
+    private boolean flagNewFoodType = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +111,8 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         restaurantID = getRestaurantID();
         ButterKnife.bind(this);
         GetListFoodType();
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -255,7 +259,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
         db = FirebaseFirestore.getInstance();
         Map<String, Object> food = new HashMap<>();
         food.put(QuanLyConstants.FOOD_NAME,txtName.getText().toString());
-        food.put(QuanLyConstants.FOOD_PRICE,txtPrice.getText().toString());
+        food.put(QuanLyConstants.FOOD_PRICE,txtPrice.getText().toString().replaceAll(",",""));
         food.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
         food.put(QuanLyConstants.FOOD_DESCRIPTION,txtDescription.getText().toString());
         food.put(QuanLyConstants.FOOD_TYPE,txtType.getText().toString());
@@ -298,7 +302,6 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     * Delete food when click on menu
     * */
     private void deleteFood(){
-        showLoadingDialog(this);
         new MaterialDialog.Builder(this)
                 .title(getResources().getString(R.string.detail_menu_delete))
                 .content(getResources().getString(R.string.food_detail_content_delete))
@@ -309,6 +312,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        showLoadingDialog(FoodDetailActivity.this);
                         db.collection(QuanLyConstants.FOOD).document(foodID)
                                 .delete()
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -359,6 +363,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                             for(DocumentSnapshot document : task.getResult()){
                                 document.getReference().delete();
                             }
+                            flagNewFoodType = true;
                             Toast.makeText(getApplicationContext(),getResources().getString(R.string.string_done),Toast.LENGTH_SHORT).show();
                             closeLoadingDialog();
                             createDone = true;
@@ -462,15 +467,6 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
             food.put(QuanLyConstants.FOOD_AVAILABLE, true);
             db.collection(QuanLyConstants.FOOD)
                     .add(food)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Toast.makeText(getApplicationContext(), "Add Success", Toast.LENGTH_SHORT).show();
-                            closeLoadingDialog();
-                            createDone = true;
-                            onBackPressed();
-                        }
-                    })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
@@ -492,12 +488,28 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
                     .document(restaurantID)
                     .collection(QuanLyConstants.RESTAURANT_FOOD_TYPE)
                     .add(foodType)
+                    .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                            Toast.makeText(getApplicationContext(), "Add Success", Toast.LENGTH_SHORT).show();
+                            closeLoadingDialog();
+                            createDone = true;
+                            flagNewFoodType = true;
+                            onBackPressed();
+                        }
+                    })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.e(TAG, e.getMessage());
                         }
                     });
+        }
+        else{
+            Toast.makeText(getApplicationContext(), "Add Success", Toast.LENGTH_SHORT).show();
+            closeLoadingDialog();
+            createDone = true;
+            onBackPressed();
         }
         // -------------------------------------- End
     }
@@ -623,6 +635,7 @@ public class FoodDetailActivity extends AppCompatActivity implements View.OnClic
     public void finish() {
         Intent data = new Intent();
         data.putExtra(QuanLyConstants.INTENT_FOOD_DETAIL_FLAG,createDone);
+        data.putExtra(QuanLyConstants.NEW_FOOD_TYPE, flagNewFoodType);
 
         this.setResult(Activity.RESULT_OK, data);
         super.finish();

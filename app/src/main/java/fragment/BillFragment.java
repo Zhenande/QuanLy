@@ -200,6 +200,16 @@ public class BillFragment extends Fragment implements View.OnClickListener, Date
                                 return o1.getBillNumber().compareTo(o2.getBillNumber());
                             }
                         });
+                        if(listData.size()==0){
+                            addFooterNoData();
+                        }
+                        else{
+                            if(isHaveFooter){
+                                // View 0 is Header
+                                listBill.removeFooterView(myFooter);
+                                isHaveFooter = false;
+                            }
+                        }
                         closeLoadingDialog();
                         getMoreItems();
                     }

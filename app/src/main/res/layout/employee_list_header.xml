@@ -38,25 +38,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content" />
 
-
-    <LinearLayout
+    <TextView
+        android:id="@+id/employee_list_txtOnWork"
+        android:text="@string/employee_On_Work"
+        android:padding="10dp"
         android:layout_weight="1"
-        android:layout_width="0dp"
+        android:textSize="18sp"
         android:gravity="center"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/employee_list_txtOnWork"
-            android:padding="10dp"
-            android:src="@drawable/ic_false"
-            android:scaleType="fitXY"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:textColor="@color/black"
-            android:layout_width="45dp"
-            android:layout_height="45dp" />
-
-    </LinearLayout>
-
+        android:textColor="@color/black"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

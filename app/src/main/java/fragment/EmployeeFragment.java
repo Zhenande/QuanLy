@@ -105,7 +105,7 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
         db.setFirestoreSettings(settings);
         showLoadingDialog(view.getContext());
 
-        ViewGroup myHeader = (ViewGroup)inflater.inflate(R.layout.employee_list_item, employeeListView,false);
+        ViewGroup myHeader = (ViewGroup)inflater.inflate(R.layout.employee_list_header, employeeListView,false);
         employeeListView.addHeaderView(myHeader,null,false);
 
         ArrayAdapter<CharSequence> adapterWeekDate = ArrayAdapter.createFromResource(view.getContext(), R.array.week_date,
@@ -208,6 +208,7 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
                                     em.setName(document.get(QuanLyConstants.EMPLOYEE_NAME).toString());
                                     em.setContactnumber(document.get(QuanLyConstants.EMPLOYEE_CONTACT).toString());
                                     em.setPosition(position);
+                                    em.setOnWork((boolean)document.get(QuanLyConstants.EMPLOYEE_ONWORK));
                                     listData.add(em);
                                 }
                             }
@@ -286,6 +287,7 @@ public class EmployeeFragment extends Fragment implements AdapterView.OnItemSele
                                         em.setName(document.get(QuanLyConstants.EMPLOYEE_NAME).toString());
                                         em.setContactnumber(document.get(QuanLyConstants.EMPLOYEE_CONTACT).toString());
                                         em.setPosition(position);
+                                        em.setOnWork((boolean)document.get(QuanLyConstants.EMPLOYEE_ONWORK));
                                         listData.add(em);
                                     }
 //                                }

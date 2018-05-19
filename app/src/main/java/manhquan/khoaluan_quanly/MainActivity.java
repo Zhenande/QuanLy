@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -46,7 +47,9 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -59,6 +62,7 @@ import fragment.BillFragment;
 import fragment.EmployeeFragment;
 import fragment.FoodFragment;
 import fragment.IncomeFragment;
+import fragment.OrderFragment;
 import fragment.RestaurantFragment;
 import model.NotiContent;
 import model.Notification;
@@ -134,6 +138,10 @@ public class MainActivity extends AppCompatActivity
         }
         renderDrawerData();
 
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
+        resetCheckInEmployee(sdf.format(cal.getTime()));
+
 //        changeData();
         if(position==3){
             // select tab food
@@ -144,23 +152,78 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /*
+    * @author: ManhLD
+    * Reset the check in of the employee
+    * */
+    private void resetCheckInEmployee(final String newDay) {
+        // change the data of check-in in the restaurant
+        db.collection(QuanLyConstants.RESTAURANT)
+            .document(getRestaurantID())
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        String oldDay = task.getResult().get(QuanLyConstants.RESET_CHECK_IN).toString();
+                        if(!oldDay.equals(newDay)){
+                            task.getResult().getReference().update(QuanLyConstants.RESET_CHECK_IN,newDay);
+
+                            // Reset all the check in of employee
+                            db.collection(QuanLyConstants.EMPLOYEE)
+                                    .whereEqualTo(QuanLyConstants.RESTAURANT_ID,getRestaurantID())
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if(task.isSuccessful()){
+                                                for(DocumentSnapshot document : task.getResult()){
+                                                    document.getReference().update(QuanLyConstants.EMPLOYEE_ONWORK,false);
+                                                }
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.e(TAG,e.getMessage());
+                                        }
+                                    });
+                        }
+                    }
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG,e.getMessage());
+                }
+            });
+    }
+
 //    private void changeData() {
-//        db.collection(QuanLyConstants.ORDER)
-//            .whereEqualTo(QuanLyConstants.RESTAURANT_ID, getRestaurantID())
-//            .whereEqualTo(QuanLyConstants.ORDER_CheckOut,true)
+//        db.collection(QuanLyConstants.RESTAURANT)
 //            .get()
 //            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 //                @Override
 //                public void onComplete(@NonNull Task<QuerySnapshot> task) {
 //                    if(task.isSuccessful()){
+//                        Calendar cal = Calendar.getInstance();
+//                        cal.add(Calendar.DAY_OF_MONTH,-1);
+//                        SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
+//                        String newDay = sdf.format(cal.getTime());
 //                        for(DocumentSnapshot document : task.getResult()){
-//                            String totalCostOld = document.get(QuanLyConstants.ORDER_CASH_TOTAL).toString();
-//                            if(totalCostOld.contains("Total: ")){
-//                                String totalCostNew = totalCostOld.replace("Total: ","");
-//                                document.getReference().update(QuanLyConstants.ORDER_CASH_TOTAL,totalCostNew);
-//                            }
+//                            Map<String, Object> data = new HashMap<>();
+//                            data.put(QuanLyConstants.RESET_CHECK_IN, newDay);
+//                            document.getReference().set(data, SetOptions.merge());
 //                        }
 //                    }
+//                }
+//            })
+//            .addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception e) {
+//                    Log.e(TAG,e.getMessage());
 //                }
 //            });
 //    }
@@ -519,7 +582,7 @@ public class MainActivity extends AppCompatActivity
                                 String[] quantity = document.get(QuanLyConstants.FOOD_QUANTITY).toString().split(";");
                                 List<NotiContent> listNoti = new ArrayList<>();
                                 for (int i = 0; i < content.length; i++) {
-                                    listNoti.add(new NotiContent(content[i] + "    SL: " + quantity[i]));
+                                    listNoti.add(new NotiContent(content[i] + " {4}SL: " + quantity[i]));
                                 }
 
                                 String time = document.get(QuanLyConstants.ORDER_TIME).toString();

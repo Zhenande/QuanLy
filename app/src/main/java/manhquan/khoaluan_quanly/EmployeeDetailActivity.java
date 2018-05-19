@@ -36,6 +36,8 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -43,6 +45,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
+import util.StringEncryption;
 
 import static util.GlobalVariable.closeLoadingDialog;
 import static util.GlobalVariable.showLoadingDialog;
@@ -496,17 +499,11 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
     private void createEmployee(String restaurantID){
         int position = 0;
         switch (spinnerPosition.getSelectedItemPosition()){
-            case 0 : //createCook(restaurantID);
-                    // Cook
-                    position = 2;
+            case 0 :position = 2;
                     break;
-            case 1 : //createWaiter(restaurantID);
-                    // Waiter
-                    position = 3;
+            case 1 :position = 3;
                     break;
-            case 2 : //createCashier(restaurantID);
-                    // Cashier
-                    position = 4;
+            case 2 :position = 4;
                     break;
         }
 
@@ -517,124 +514,35 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
         else{
             dayWork = getNormalDayWork();
         }
-        Map<String, Object > cook = new HashMap<>();
-        cook.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
-        cook.put(QuanLyConstants.RESTAURANT_NAME,txtName.getText().toString().trim());
-        cook.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
-        cook.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
-        cook.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
-        cook.put(QuanLyConstants.EMPLOYEE_WORKDAY,dayWork);
-        cook.put(QuanLyConstants.EMPLOYEE_POSITION,position);
-        db.collection(QuanLyConstants.EMPLOYEE)
-                .add(cook)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(getApplicationContext(), "Add Success", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), "Add Failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        try {
+            Map<String, Object > cook = new HashMap<>();
+            cook.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
+            cook.put(QuanLyConstants.RESTAURANT_NAME,txtName.getText().toString().trim());
+            cook.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
+            cook.put(QuanLyConstants.EMPLOYEE_PASSWORD, StringEncryption.SHA1(txtPassword.getText().toString().trim()));
+            cook.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
+            cook.put(QuanLyConstants.EMPLOYEE_WORKDAY,dayWork);
+            cook.put(QuanLyConstants.EMPLOYEE_POSITION,position);
+            db.collection(QuanLyConstants.EMPLOYEE)
+                    .add(cook)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            Toast.makeText(getApplicationContext(), "Add Success", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), "Add Failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
     }
 
-//    /*
-//     * @author: ManhLD
-//     * @purpose: Create cook employee.
-//     * */
-//    private void createCook(String restaurantID){
-//        String dayWork;
-//        if(spinnerType.getSelectedItemPosition()+1 == spinnerType.getCount()){
-//            dayWork = getCustomDayWork();
-//        }
-//        else{
-//            dayWork = getNormalDayWork();
-//        }
-//        Map<String, Object > cook = new HashMap<>();
-//        cook.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
-//        cook.put(QuanLyConstants.RESTAURANT_NAME,txtName.getText().toString().trim());
-//        cook.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
-//        cook.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
-//        cook.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
-//        cook.put(QuanLyConstants.EMPLOYEE_WORKDAY,dayWork);
-//        cook.put(QuanLyConstants.EMPLOYEE_POSITION,2);
-//        db.collection(QuanLyConstants.EMPLOYEE)
-//                .add(cook)
-//                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-//                    @Override
-//                    public void onSuccess(DocumentReference documentReference) {
-//                        Toast.makeText(getApplicationContext(), "Add Success", Toast.LENGTH_SHORT).show();
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Toast.makeText(getApplicationContext(), "Add Failed", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//    }
-//
-//    /*
-//     * @author: ManhLD
-//     * @purpose: Create waiter employee.
-//     * */
-//    private void createWaiter(String restaurantID){
-//        Map<String, Object > waiter = new HashMap<>();
-//        waiter.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
-//        waiter.put(QuanLyConstants.RESTAURANT_NAME,txtName.getText().toString().trim());
-//        waiter.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
-//        waiter.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
-//        waiter.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
-////        waiter.put(QuanLyConstants.EMPLOYEE_WORKDAY,txtDayWork.getText().toString().trim());
-////        waiter.put(QuanLyConstants.EMPLOYEE_TIMEWORK,txtShiftStart + " - " + txtShiftEnd);
-//        waiter.put(QuanLyConstants.EMPLOYEE_POSITION,3);
-//        db.collection(QuanLyConstants.EMPLOYEE)
-//                .add(waiter)
-//                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-//                    @Override
-//                    public void onSuccess(DocumentReference documentReference) {
-//                        Toast.makeText(getApplicationContext(), "Add Success", Toast.LENGTH_SHORT).show();
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Toast.makeText(getApplicationContext(), "Add Failed", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//    }
-//
-//    /*
-//     * @author: ManhLD
-//     * @purpose: Create cashier employee.
-//     * */
-//    private void createCashier(String restaurantID){
-//        Map<String, Object > cashier = new HashMap<>();
-//        cashier.put(QuanLyConstants.RESTAURANT_ID,restaurantID);
-//        cashier.put(QuanLyConstants.RESTAURANT_NAME,txtName.getText().toString().trim());
-//        cashier.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
-//        cashier.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
-//        cashier.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
-////        cashier.put(QuanLyConstants.EMPLOYEE_WORKDAY,txtDayWork.getText().toString().trim());
-//        cashier.put(QuanLyConstants.EMPLOYEE_POSITION,4);
-//        db.collection(QuanLyConstants.EMPLOYEE)
-//                .add(cashier)
-//                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-//                    @Override
-//                    public void onSuccess(DocumentReference documentReference) {
-//                        Toast.makeText(getApplicationContext(), "Add Success", Toast.LENGTH_SHORT).show();
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Toast.makeText(getApplicationContext(), "Add Failed", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//    }
 
     /*
      * @author: ManhLD
@@ -1196,18 +1104,22 @@ public class EmployeeDetailActivity extends AppCompatActivity implements View.On
                 else{
                     dayWork = getNormalDayWork();
                 }
-                Map<String, Object > employee = new HashMap<>();
-                employee.put(QuanLyConstants.RESTAURANT_ID,RestaurantID);
-                employee.put(QuanLyConstants.EMPLOYEE_NAME,txtName.getText().toString().trim());
-                employee.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
-                employee.put(QuanLyConstants.EMPLOYEE_PASSWORD,txtPassword.getText().toString().trim());
-                employee.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
-                employee.put(QuanLyConstants.EMPLOYEE_WORKDAY,dayWork);
-                employee.put(QuanLyConstants.EMPLOYEE_POSITION,spinnerPosition.getSelectedItemPosition()+2);
-                db.collection(QuanLyConstants.EMPLOYEE).document(employeeID)
-                        .set(employee, SetOptions.merge());
-                Toast.makeText(getApplicationContext(),getResources().getString(R.string.employee_detail_update_success)
-                        ,Toast.LENGTH_SHORT).show();
+                try{
+                    Map<String, Object > employee = new HashMap<>();
+                    employee.put(QuanLyConstants.RESTAURANT_ID,RestaurantID);
+                    employee.put(QuanLyConstants.EMPLOYEE_NAME,txtName.getText().toString().trim());
+                    employee.put(QuanLyConstants.EMPLOYEE_USERNAME,txtUsername.getText().toString().trim());
+                    employee.put(QuanLyConstants.EMPLOYEE_PASSWORD,StringEncryption.SHA1(txtPassword.getText().toString().trim()));
+                    employee.put(QuanLyConstants.EMPLOYEE_CONTACT,txtContactNumber.getText().toString().trim());
+                    employee.put(QuanLyConstants.EMPLOYEE_WORKDAY,dayWork);
+                    employee.put(QuanLyConstants.EMPLOYEE_POSITION,spinnerPosition.getSelectedItemPosition()+2);
+                    db.collection(QuanLyConstants.EMPLOYEE).document(employeeID)
+                            .set(employee, SetOptions.merge());
+                    Toast.makeText(getApplicationContext(),getResources().getString(R.string.employee_detail_update_success)
+                            ,Toast.LENGTH_SHORT).show();
+                } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 closeLoadingDialog();
                 closeEditText();
                 flag = true;

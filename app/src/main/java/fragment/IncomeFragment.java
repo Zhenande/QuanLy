@@ -375,6 +375,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                         if(listBar.size()==0){
                             Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                            closeLoadingDialog();
                             return;
                         }
                         IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart_combined);
@@ -475,6 +476,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             }
                             if(listBar.size()==0){
                                 Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
                                 return;
                             }
 
@@ -598,6 +600,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             }
                             if(listBar.size()==0){
                                 Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
                                 return;
                             }
 
@@ -718,6 +721,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
                             }
                             if(listBar.size()==0){
                                 Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
                                 return;
                             }
 
@@ -819,6 +823,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             if(listBar.size()==0){
                                 Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
                                 return;
                             }
 
@@ -921,6 +926,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             if(listBar.size()==0){
                                 Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
                                 return;
                             }
 
@@ -1044,6 +1050,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             if(listBar.size()==0){
                                 Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
                                 return;
                             }
 
@@ -1165,6 +1172,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             if(listBar.size()==0){
                                 Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
                                 return;
                             }
 
@@ -1283,6 +1291,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             if(listBar.size()==0){
                                 Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
                                 return;
                             }
 
@@ -1421,6 +1430,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             if(listBar.size()==0){
                                 Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
                                 return;
                             }
 
@@ -1565,6 +1575,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             if(listBar.size()==0){
                                 Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
                                 return;
                             }
 
@@ -1719,6 +1730,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             if(listBar.size()==0){
                                 Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
                                 return;
                             }
 
@@ -1831,6 +1843,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             if(listBar.size()==0){
                                 Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
                                 return;
                             }
 
@@ -1934,6 +1947,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             for(int i = 0; i < listData.size(); i++){
                                 listBar.add(new BarEntry(i+1, listData.get(i).getNumberOrder()));
+                            }
+
+                            if(listBar.size() == 0){
+                                Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
+                                return;
                             }
 
                             IAxisValueFormatter xAxisFormatter = new WaiterOrderAxisValueFormatter(listData);
@@ -2049,6 +2068,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             if(listBar.size()==0){
                                 Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
                                 return;
                             }
 
@@ -2163,6 +2183,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Ad
 
                             if(listBar.size()==0){
                                 Toast.makeText(view.getContext(), view.getContext().getResources().getString(R.string.income_chart_no_data_error), Toast.LENGTH_SHORT).show();
+                                closeLoadingDialog();
                                 return;
                             }
 

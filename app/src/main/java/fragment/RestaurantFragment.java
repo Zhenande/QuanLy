@@ -50,6 +50,9 @@ import manhquan.khoaluan_quanly.MainActivity;
 import manhquan.khoaluan_quanly.R;
 import model.TableModel;
 
+import static util.GlobalVariable.closeLoadingDialog;
+import static util.GlobalVariable.showLoadingDialog;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -214,26 +217,29 @@ public class RestaurantFragment extends Fragment {
                                 final int tableNum = Integer.parseInt(document.get(QuanLyConstants.TABLE_NUMBER).toString());
                                 final String tableID = document.getId();
                                 if(tableNum <= numberTableCurrent && tableNum > NumberAfterChange){
-                                    db.collection(QuanLyConstants.TABLE)
-                                            .document(tableID)
-                                            .delete()
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    document.getReference().delete()
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
-                                                public void onSuccess(Void aVoid) {
+                                                public void onComplete(@NonNull Task<Void> task) {
                                                     db.collection(QuanLyConstants.COOK)
                                                             .document(restaurantID)
                                                             .collection(QuanLyConstants.TABLE)
                                                             .document(tableID)
-                                                            .delete();
+                                                            .delete()
+                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                    Toast.makeText(view.getContext(),"Delete Done",Toast.LENGTH_SHORT).show();
+                                                                    reLayout();
+                                                                }
+                                                            });
                                                 }
                                             });
                                 }
                             }
-                        reLayout();
                         }
                     }
                 });
-        Toast.makeText(view.getContext(),"Delete Done",Toast.LENGTH_SHORT).show();
     }
 
     public void reLayout(){
@@ -243,6 +249,7 @@ public class RestaurantFragment extends Fragment {
     }
 
     private void renderData(){
+        showLoadingDialog(view.getContext());
         db.collection(QuanLyConstants.TABLE)
             .whereEqualTo(QuanLyConstants.RESTAURANT_ID,restaurantID)
             .get()
@@ -267,7 +274,9 @@ public class RestaurantFragment extends Fragment {
                         Collections.sort(listData, new Comparator<TableModel>() {
                             @Override
                             public int compare(TableModel o1, TableModel o2) {
-                                return o1.getTableNumber().compareTo(o2.getTableNumber());
+                                    int table1 = Integer.parseInt(o1.getTableNumber());
+                                    int table2 = Integer.parseInt(o2.getTableNumber());
+                                    return Integer.compare(table1,table2);
                             }
                         });
                         gridListAdapter.addItemsInGrid(listData);
@@ -275,6 +284,7 @@ public class RestaurantFragment extends Fragment {
                             saveTableNumber(listData.size()+"");
                             tableNumber = listData.size()+"";
                         }
+                        closeLoadingDialog();
                     }
                 }
             });

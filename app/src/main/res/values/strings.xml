@@ -81,8 +81,8 @@
     <string name="dialogCheckOut">Do you want to check out this order?</string>
     <string name="checkOutDone">Check out complete</string>
     <string name="customerNoName">Customer</string>
-    <string name="dialogRemoveFood">Do you want to delete %s?</string>
-    <string name="RemoveMultiQuantity">Input quantity of %s you need to remove</string>
+    <string name="dialogRemoveFood">Do you want to delete \"%s\"?</string>
+    <string name="RemoveMultiQuantity">Input quantity of \"%s\" you need to remove</string>
     <string name="error_still_food_need_service">There is some food still not service</string>
     <string name="remove_too_much_food">You can not remove number of food larger than the customer order</string>
     <string name="error_food_cooked">You can not remove food has been serviced</string>
@@ -144,6 +144,9 @@
     <string name="employee_Waiter">Waiter</string>
     <string name="employee_Cashier">Cashier</string>
     <string name="employee_Contact">Contact Number</string>
+    <string name="employee_On_Work">On Work</string>
+    <string name="employee_go_to_work">Have employee \"%s\" go to work?</string>
+    <string name="employee_left_work">Have employee \"%s\" left work?</string>
 
     <!--=================================Employee Fragment================================================-->
     <string name="employee_time_work">Time Work</string>
@@ -183,6 +186,8 @@
     <string name="sign_in_faild_input">Email or Password is incorrect, please check again.</string>
     <string name="sign_in_required">Required</string>
     <string name="sign_in_exit_app_noti">Press back again to exit app</string>
+    <string name="email_not_available">Email does not exists. Please check again!</string>
+    <string name="password_error">Password is not correct. Please check again!</string>
 
     <!--=================================Loading Dialog================================================-->
     <string name="loading_dialog_loading">Loading</string>
@@ -256,7 +261,7 @@
 
     <!--===============================Order Fragment=============================================-->
     <string name="order_frag_no_checked">You have not check any food</string>
-    <string name="order_frag_input_food_cooked">Input quantity of %s you have cooked</string>
+    <string name="order_frag_input_food_cooked">Input quantity of \"%s\" you have cooked</string>
     <string name="order_frag_add_too_much_food">The customer just call %d of this food. Please check again.</string>
     <string name="money_type">%s VNĐ</string>
 

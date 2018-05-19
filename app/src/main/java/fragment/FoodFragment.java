@@ -178,7 +178,13 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == Activity.RESULT_OK){
             if(requestCode == QuanLyConstants.FOOD_DETAIL){
-                adapter.notifyDataSetChanged();
+                boolean flagFoodType = data.getBooleanExtra(QuanLyConstants.NEW_FOOD_TYPE,false);
+                if(!flagFoodType){
+                    adapter.notifyDataSetChanged();
+                }
+                else {
+                    refreshMenu();
+                }
             }
             if (requestCode == QuanLyConstants.INTENT_CART_ACTIVITY) {
                 listFoodChoose.clear();
@@ -205,8 +211,8 @@ public class FoodFragment extends Fragment implements TabLayout.OnTabSelectedLis
         }
         if(flagAdd){
             listFoodChoose.add(food);
-        }
     }
+}
 
     @Override
     public void refreshMenu(){

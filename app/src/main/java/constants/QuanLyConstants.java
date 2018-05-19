@@ -24,6 +24,7 @@ public class QuanLyConstants {
     public static final String SHARED_LANGUAGE = "Language";
     public static final String SHARED_POSITION = "Position";
     public static final String NOTIFICATION = "notification";
+    public static final String NEW_FOOD_TYPE = "NewFoodType";
 
 
     // Field of employee
@@ -34,7 +35,7 @@ public class QuanLyConstants {
     public static final String EMPLOYEE_CONTACT = "ContactNumber";
     public static final String EMPLOYEE_POSITION = "Position";
     public static final String EMPLOYEE_WORKDAY = "WorkDay";
-    public static final String EMPLOYEE_TIMEWORK = "Time";
+    public static final String EMPLOYEE_ONWORK = "OnWork";
 
     // Field of food
     public static final String FOOD = "food";
@@ -77,6 +78,7 @@ public class QuanLyConstants {
     public static final String RESTAURANT_NAME = "Name";
     public static final String RESTAURANT_FOOD_TYPE = "FoodType";
     public static final String FOOD_TYPE_NAME = "Name";
+    public static final String RESET_CHECK_IN = "CheckIn";
 
     // Field of Cook Notification
     public static final String COOK = "cook";

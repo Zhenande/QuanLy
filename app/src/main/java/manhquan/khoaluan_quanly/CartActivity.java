@@ -190,7 +190,9 @@ public class CartActivity extends AppCompatActivity implements  AdapterView.OnIt
                         Collections.sort(listFullTable, new Comparator<String>() {
                             @Override
                             public int compare(String o1, String o2) {
-                                return o1.compareTo(o2);
+                                int table1 = Integer.parseInt(o1);
+                                int table2 = Integer.parseInt(o2);
+                                return Integer.compare(table1,table2);
                             }
                         });
 

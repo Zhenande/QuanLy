@@ -13,6 +13,7 @@ public abstract class Employee {
     private String emID;
     private String dayWork;
     private String restaurantid;
+    private boolean onWork;
 
     public Employee(String contactnumber, String name, String password, int position, String restaurantid) {
         this.contactnumber = contactnumber;
@@ -23,6 +24,14 @@ public abstract class Employee {
     }
 
     public Employee() {
+    }
+
+    public boolean isOnWork() {
+        return onWork;
+    }
+
+    public void setOnWork(boolean onWork) {
+        this.onWork = onWork;
     }
 
     public String getEmID() {

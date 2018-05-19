@@ -83,8 +83,8 @@
     <string name="dialogCheckOut">Bạn muốn thanh toán hóa đơn này?</string>
     <string name="checkOutDone">Thanh toán thành công</string>
     <string name="customerNoName">Khách</string>
-    <string name="dialogRemoveFood">Bạn có muốn xóa món %s?</string>
-    <string name="RemoveMultiQuantity">Nhập số lượng món %s cần xóa</string>
+    <string name="dialogRemoveFood">Bạn có muốn xóa món \"%s\"?</string>
+    <string name="RemoveMultiQuantity">Nhập số lượng món \"%s\" cần xóa</string>
     <string name="error_still_food_need_service">Có một số món ăn chưa được phục vụ</string>
     <string name="remove_too_much_food">Bạn không thể xóa số lượng món ăn nhiều hơn số khách hàng gọi</string>
     <string name="error_food_cooked">Bạn không thể xóa món ăn đã được phục vụ</string>
@@ -146,6 +146,9 @@
     <string name="employee_Waiter">Phục vụ</string>
     <string name="employee_Cashier">Thu ngân</string>
     <string name="employee_Contact">Số điện thoại</string>
+    <string name="employee_On_Work">Đang làm việc</string>
+    <string name="employee_go_to_work">Có phải nhân viên \"%s\" đã đến làm việc?</string>
+    <string name="employee_left_work">Có phải nhân viên \"%s\" đã rời chỗ làm?</string>
 
 
     <!--=================================Add Account Activity================================================-->
@@ -182,6 +185,8 @@
     <string name="sign_in_faild_input">Email hoặc Password không đúng, vui lòng kiểm tra lại</string>
     <string name="sign_in_required">Bắt buộc</string>
     <string name="sign_in_exit_app_noti">Bấm back lần nữa để thoát ứng dụng</string>
+    <string name="email_not_available">Email không tồn tại. Vui lòng kiểm tra lại!</string>
+    <string name="password_error">Password không chính xác. Vui lòng kiểm tra lại!</string>
 
     <!--=================================Loading Dialog================================================-->
     <string name="loading_dialog_loading">Đang xử lý</string>
@@ -253,7 +258,7 @@
 
     <!--===============================Order Fragment=============================================-->
     <string name="order_frag_no_checked">Bạn chưa tích món ăn nào cả.</string>
-    <string name="order_frag_input_food_cooked">Nhập số lượng món %s bạn đã nấu xong</string>
+    <string name="order_frag_input_food_cooked">Nhập số lượng món \"%s\" bạn đã nấu xong</string>
     <string name="order_frag_add_too_much_food">Khách hàng chỉ gọi %d món này. Hãy kiểm tra lại.</string>
     <string name="money_type">%s VNĐ</string>
     <string name="normal_string">%d</string>

@@ -1,9 +1,12 @@
 package manhquan.khoaluan_quanly;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -28,11 +31,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import constants.QuanLyConstants;
 import model.Restaurant;
 import util.GlobalVariable;
+import util.StringEncryption;
 
 public class SignInActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -52,8 +59,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        mEmailField.setText("lieumanh96@gmail.com");
-        mPasswordField.setText("zhenande");
         updateUI(null);
     }
     // [END on_start_check_user]
@@ -181,9 +186,69 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         if(id == R.id.sign_in_button_action){
             if(validateForm()){
                 GlobalVariable.showLoadingDialog(SignInActivity.this);
-                signIn(mEmailField.getText().toString().trim(),mPasswordField.getText().toString().trim());
+                if(isOnline()) {
+                    signIn(mEmailField.getText().toString().trim(), mPasswordField.getText().toString().trim());
+                }
+                else{
+                    signInOffline();
+                }
             }
         }
+    }
+
+    /*
+    * @author: ManhLD
+    * Sign in with offline mode
+    * */
+    private void signInOffline() {
+        db.collection(QuanLyConstants.EMPLOYEE)
+            .whereGreaterThanOrEqualTo(QuanLyConstants.EMPLOYEE_POSITION,1)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        boolean flagEmail = false;
+                        for(DocumentSnapshot document : task.getResult()){
+                            try {
+                                String emailInput = mEmailField.getText().toString().trim();
+                                String passwordInput = StringEncryption.SHA1(mPasswordField.getText().toString().trim());
+                                
+                                String emailServer = document.get(QuanLyConstants.EMPLOYEE_USERNAME).toString();
+                                String passwordServer = document.get(QuanLyConstants.EMPLOYEE_PASSWORD).toString();
+                                if(emailInput.equals(emailServer)){
+                                    flagEmail = true;
+                                    if(passwordInput.equals(passwordServer)){
+                                        position = Integer.parseInt(document.get(QuanLyConstants.EMPLOYEE_POSITION).toString());
+                                        String emName = document.get(QuanLyConstants.EMPLOYEE_NAME).toString();
+                                        Intent i = new Intent(SignInActivity.this,MainActivity.class);
+                                        i.putExtra(QuanLyConstants.EMPLOYEE_POSITION,position);
+                                        i.putExtra(QuanLyConstants.EMPLOYEE_NAME,emName);
+                                        GlobalVariable.employeeID = document.getId();
+                                        saveRestaurantID(document.get(QuanLyConstants.RESTAURANT_ID).toString());
+                                        GlobalVariable.closeLoadingDialog();
+                                        startActivity(i);
+                                    }
+                                    else{
+                                        Toast.makeText(SignInActivity.this, getResources().getString(R.string.password_error), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        if(!flagEmail){
+                            Toast.makeText(SignInActivity.this, getResources().getString(R.string.email_not_available), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG,e.getMessage());    
+                }
+            });
     }
 
     @Override
@@ -203,5 +268,17 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 doubleBackToExitPressedOnce=false;
             }
         }, 2000);
+    }
+
+    /*
+    * @author: ManhLD
+    * Check the network is available or not.
+    * If the network not available, we will sign in offline
+    * */
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnected();
     }
 }
