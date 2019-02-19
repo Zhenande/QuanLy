@@ -55,7 +55,7 @@ import static util.GlobalVariable.closeLoadingDialog;
 import static util.GlobalVariable.showLoadingDialog;
 
 public class BillDetailActivity extends AppCompatActivity {
-
+	// Them comment cho code them phan vui tinh
     @BindView(R.id.order_detail_button_check_out)
     public Button buttonCheckOut;
     @BindView(R.id.order_detail_list_food)
